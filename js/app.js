@@ -1,9 +1,10 @@
 // =============================================================================
 // INDIA EWC ESPORTS HUB - APPLICATION ENGINE
 // Developed by Pritesh Gehlot (@priteshgehlot)
-// Role-Based System:
-//   ADMIN  → Full CRUD: add/edit/delete players & EWC games, approve/reject user requests
-//   USER   → Submit player/game suggestions; pending admin approval before going live
+// Role-Based Architecture:
+//   - Normal Users: Can suggest new players/games AND suggest edits on existing ones.
+//   - Admin Access: Unlimited PIN attempts (never locked out). Only admin can approve
+//                   requests (which reflect live immediately) and delete posts.
 // =============================================================================
 
 class CleanEsportsHub {
@@ -11,8 +12,8 @@ class CleanEsportsHub {
     this.storageKey    = "ewc_hub_data_v2";
     this.adminKey      = "ewc_admin_session";
     this.pendingKey    = "ewc_pending_requests";
-    this.adminPin      = "admin123"; // Change this to your secret PIN
-    this.isAdmin       = false;      // Always starts as regular user
+    this.adminPin      = "admin";   // Primary Admin PIN (also accepts admin123)
+    this.isAdmin       = false;     // Default to standard visitor mode
 
     this.homeScreen    = document.getElementById("home-screen");
     this.godlikeScreen = document.getElementById("screen-godlike");
@@ -20,7 +21,7 @@ class CleanEsportsHub {
     this.cardGodlike   = document.getElementById("card-godlike-select");
     this.cardS8ul      = document.getElementById("card-s8ul-select");
 
-    // Restore admin session if still active (tab-level only)
+    // Restore active admin session if already authenticated in this tab
     if (sessionStorage.getItem(this.adminKey) === "true") {
       this.isAdmin = true;
     }
@@ -33,10 +34,10 @@ class CleanEsportsHub {
     this.injectAdminLoginBtn();
   }
 
-  // ─── Deep clone ───────────────────────────────────────────────────────────
+  // ─── Deep Clone ───────────────────────────────────────────────────────────
   cloneData(obj) { return JSON.parse(JSON.stringify(obj)); }
 
-  // ─── Persistent Data ──────────────────────────────────────────────────────
+  // ─── Persistent Storage ───────────────────────────────────────────────────
   loadData() {
     try {
       const saved = localStorage.getItem(this.storageKey);
@@ -46,30 +47,30 @@ class CleanEsportsHub {
       this.data = this.cloneData(INITIAL_HUB_DATA);
     }
   }
+
   saveData() {
     try { localStorage.setItem(this.storageKey, JSON.stringify(this.data)); } catch(e) {}
   }
 
-  // ─── Pending Request Queue (user submissions) ─────────────────────────────
+  // ─── Pending Requests Queue ───────────────────────────────────────────────
   loadPending() {
     try {
       const raw = localStorage.getItem(this.pendingKey);
       this.pending = raw ? JSON.parse(raw) : [];
     } catch(e) { this.pending = []; }
   }
+
   savePending() {
     try { localStorage.setItem(this.pendingKey, JSON.stringify(this.pending)); } catch(e) {}
   }
 
-  // ─── Reset to defaults ────────────────────────────────────────────────────
-  resetToDefaults() {
-    if (!this.isAdmin) return;
-    if (confirm("Reset ALL data to official defaults? Custom changes will be cleared.")) {
-      this.data = this.cloneData(INITIAL_HUB_DATA);
-      this.saveData();
-      this.renderAll();
-      this.showToast("🔄 Reset to official defaults!");
+  // ─── Admin Check (No lockouts, never blocks access) ────────────────────────
+  checkAdminAuth() {
+    if (!this.isAdmin || sessionStorage.getItem(this.adminKey) !== "true") {
+      alert("⛔ Admin Access Required: Only verified administrators can approve, reject, or delete items. Please log in using the Admin button.");
+      return false;
     }
+    return true;
   }
 
   // ─── Event Bindings ───────────────────────────────────────────────────────
@@ -77,7 +78,7 @@ class CleanEsportsHub {
     if (this.cardGodlike) this.cardGodlike.addEventListener("click", () => this.showGodlike());
     if (this.cardS8ul)    this.cardS8ul.addEventListener("click",    () => this.showS8ul());
 
-    // Sub-tabs
+    // Sub-Tabs
     document.querySelectorAll(".sub-tab-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         const screen = btn.closest(".detail-screen");
@@ -91,7 +92,7 @@ class CleanEsportsHub {
       });
     });
 
-    // Close modals on outside click
+    // Close Modals on click outside
     window.addEventListener("click", e => {
       if (e.target.classList.contains("modal-overlay")) e.target.classList.remove("active");
     });
@@ -104,11 +105,11 @@ class CleanEsportsHub {
     const gf = document.getElementById("game-modal-form");
     if (gf) gf.addEventListener("submit", e => { e.preventDefault(); this.handleSaveGame(); });
 
-    // User request form
+    // User suggestion form
     const rf = document.getElementById("request-modal-form");
     if (rf) rf.addEventListener("submit", e => { e.preventDefault(); this.handleUserRequest(); });
 
-    // Division selector
+    // Division dropdown change
     const divSel = document.getElementById("player-division-select");
     const divCWrap = document.getElementById("player-custom-division-wrap");
     if (divSel && divCWrap) {
@@ -127,12 +128,14 @@ class CleanEsportsHub {
     this.homeScreen.style.display = "flex";
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
+
   showGodlike() {
     this.homeScreen.style.display = "none";
     this.s8ulScreen.classList.remove("active");
     this.godlikeScreen.classList.add("active");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
+
   showS8ul() {
     this.homeScreen.style.display = "none";
     this.godlikeScreen.classList.remove("active");
@@ -141,39 +144,33 @@ class CleanEsportsHub {
   }
 
   // =========================================================================
-  // ADMIN AUTH & ACCESS CONTROL
+  // ADMIN AUTH (UNLIMITED ATTEMPTS - NEVER LOCKS OUT OR BLOCKS)
   // =========================================================================
-  checkAdminAuth() {
-    if (!this.isAdmin || sessionStorage.getItem(this.adminKey) !== "true") {
-      alert("⛔ Access Denied: Only administrators with verified Admin PIN access can delete or modify posts.");
-      return false;
-    }
-    return true;
-  }
-
   injectAdminLoginBtn() {
-    // Add a subtle admin login button at the bottom of the page
     const existing = document.getElementById("admin-login-fab");
     if (existing) return;
     const fab = document.createElement("button");
     fab.id = "admin-login-fab";
     fab.className = "admin-login-fab";
     fab.title = this.isAdmin ? "Exit Admin Mode" : "Admin Login";
-    fab.innerHTML = this.isAdmin ? "👑 Admin: ON" : "🔑 Admin";
+    fab.innerHTML = this.isAdmin ? "👑 Admin: ON (Exit)" : "🔑 Admin Login";
     fab.onclick = () => this.toggleAdminMode();
     document.body.appendChild(fab);
   }
 
   toggleAdminMode() {
     if (this.isAdmin) {
-      if (confirm("Exit admin mode?")) {
+      if (confirm("Exit Admin Mode?")) {
         this.isAdmin = false;
         sessionStorage.removeItem(this.adminKey);
         this.updateAdminUI();
         this.renderAll();
-        this.showToast("🔒 Logged out of admin mode");
-        document.getElementById("admin-login-fab").innerHTML = "🔑 Admin";
-        document.getElementById("admin-login-fab").title = "Admin Login";
+        this.showToast("🔒 Logged out of admin mode.");
+        const fab = document.getElementById("admin-login-fab");
+        if (fab) {
+          fab.innerHTML = "🔑 Admin Login";
+          fab.title = "Admin Login";
+        }
       }
     } else {
       this.openAdminLoginModal();
@@ -193,21 +190,26 @@ class CleanEsportsHub {
 
   submitAdminLogin() {
     const pin = document.getElementById("admin-pin-input").value.trim();
+    // Validate PIN (admin or admin123). Unlimited attempts without lockout.
     if (pin === "admin" || pin === "admin123" || pin === this.adminPin) {
       this.isAdmin = true;
       sessionStorage.setItem(this.adminKey, "true");
       this.updateAdminUI();
       this.renderAll();
       this.closeModal("admin-login-modal");
-      this.showToast("👑 Admin access granted! You can now edit, approve & manage.");
+      this.showToast("👑 Admin access unlocked! You can now accept edits and delete posts.");
       const fab = document.getElementById("admin-login-fab");
       if (fab) {
         fab.innerHTML = "👑 Admin: ON (Exit)";
         fab.title = "Exit Admin Mode";
       }
     } else {
+      // NEVER BLOCK: Simply display error message and allow immediate retry
       const err = document.getElementById("admin-pin-error");
-      if (err) err.style.display = "block";
+      if (err) {
+        err.textContent = "⚠️ Incorrect password. Try again (unlimited attempts allowed).";
+        err.style.display = "block";
+      }
       document.getElementById("admin-pin-input").value = "";
       document.getElementById("admin-pin-input").focus();
     }
@@ -219,11 +221,10 @@ class CleanEsportsHub {
 
     const pendingCount = (this.pending || []).filter(r => r.status === "pending").length;
 
-    // Show pending badge on admin banner
     if (this.isAdmin) {
       const badge = document.getElementById("pending-count-badge");
       if (badge) {
-        badge.textContent = pendingCount > 0 ? `${pendingCount} new request${pendingCount > 1 ? 's' : ''}` : "";
+        badge.textContent = pendingCount > 0 ? `${pendingCount} pending request${pendingCount > 1 ? 's' : ''}` : "";
         badge.style.display = pendingCount > 0 ? "inline-block" : "none";
       }
       const numSpan = document.getElementById("admin-pending-num");
@@ -232,19 +233,19 @@ class CleanEsportsHub {
 
     document.body.classList.toggle("admin-mode-active", this.isAdmin);
 
-    // Show/hide submit request buttons (only for non-admins)
-    document.querySelectorAll(".btn-user-submit-request").forEach(btn => {
-      btn.style.display = this.isAdmin ? "none" : "inline-flex";
-    });
-
-    // Show/hide admin only buttons
+    // Show/hide direct add buttons (only visible to admin)
     document.querySelectorAll(".admin-only-btn").forEach(btn => {
       btn.style.display = this.isAdmin ? "inline-flex" : "none";
+    });
+
+    // Show/hide user general submit button (only visible to non-admins)
+    document.querySelectorAll(".btn-user-submit-request").forEach(btn => {
+      btn.style.display = this.isAdmin ? "none" : "inline-flex";
     });
   }
 
   // =========================================================================
-  // RENDERING
+  // RENDERING ALL CONTENT
   // =========================================================================
   renderAll() {
     this.renderEWC("godlike", "godl-ewc-tbody", "var(--godl-gold)");
@@ -253,6 +254,7 @@ class CleanEsportsHub {
     this.renderRosters("s8ul",    "s8ul-roster-container",  "var(--s8ul-blue)");
   }
 
+  // ─── Render EWC Games Table ───────────────────────────────────────────────
   renderEWC(teamKey, tbodyId, themeColor) {
     const tbody = document.getElementById(tbodyId);
     if (!tbody) return;
@@ -269,20 +271,19 @@ class CleanEsportsHub {
           <td data-label="Genre">${this.escapeHtml(g.genre)}</td>
           <td data-label="Roster">${this.escapeHtml(g.roster)}</td>
           <td ${statusStyle} data-label="Status">${this.escapeHtml(g.status)}</td>
-          ${this.isAdmin ? `
-            <td class="admin-td-actions" data-label="Actions">
-              <button class="btn-action-edit" onclick="window.cleanHub.openEditGameModal('${teamKey}','${g.id}')">✏️ Edit</button>
-              <button class="btn-action-delete" onclick="window.cleanHub.deleteGame('${teamKey}','${g.id}')">🗑️</button>
-            </td>` : ""}
+          <td class="admin-td-actions" data-label="Actions">
+            <button class="btn-action-edit" title="${this.isAdmin ? 'Edit Game' : 'Suggest Edit (Sends to Admin)'}" onclick="window.cleanHub.openEditGameModal('${teamKey}','${g.id}')">✏️ Edit</button>
+            ${this.isAdmin ? `<button class="btn-action-delete" title="Delete Game (Admin Only)" onclick="window.cleanHub.deleteGame('${teamKey}','${g.id}')">🗑️</button>` : ""}
+          </td>
         </tr>`;
     });
 
     if (games.length === 0) {
-      html = `<tr><td colspan="${this.isAdmin ? 6 : 5}" style="text-align:center;padding:2rem;color:var(--text-muted);">No EWC games listed yet.</td></tr>`;
+      html = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No EWC games listed yet.</td></tr>`;
     }
     tbody.innerHTML = html;
 
-    // Admin: add game button below table
+    // Admin direct Add Game button below table
     const container = tbody.closest(".sub-tab-content");
     let adminBar = container?.querySelector(".admin-table-bar");
     if (this.isAdmin) {
@@ -293,7 +294,7 @@ class CleanEsportsHub {
       }
       adminBar.innerHTML = `
         <button class="btn-admin-add" onclick="window.cleanHub.openAddGameModal('${teamKey}')">
-          ✨ + Add EWC Game Title
+          ✨ + Add EWC Game Title (Admin)
         </button>`;
       adminBar.style.display = "block";
     } else if (adminBar) {
@@ -301,6 +302,7 @@ class CleanEsportsHub {
     }
   }
 
+  // ─── Render Rosters ───────────────────────────────────────────────────────
   renderRosters(teamKey, containerId, themeColor) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -326,11 +328,10 @@ class CleanEsportsHub {
         div.players.forEach(p => {
           html += `
             <div class="player-box" style="border-top:2px solid ${themeColor};">
-              ${this.isAdmin ? `
-                <div class="player-card-admin-bar">
-                  <button class="btn-card-edit" onclick="window.cleanHub.openEditPlayerModal('${teamKey}','${p.id}')">✏️ Edit</button>
-                  <button class="btn-card-delete" onclick="window.cleanHub.deletePlayer('${teamKey}','${p.id}')">🗑️</button>
-                </div>` : ""}
+              <div class="player-card-admin-bar">
+                <button class="btn-card-edit" title="${this.isAdmin ? 'Edit Player' : 'Suggest Edit (Sends to Admin)'}" onclick="window.cleanHub.openEditPlayerModal('${teamKey}','${p.id}')">✏️ Edit</button>
+                ${this.isAdmin ? `<button class="btn-card-delete" title="Delete Player (Admin Only)" onclick="window.cleanHub.deletePlayer('${teamKey}','${p.id}')">🗑️</button>` : ""}
+              </div>
               <div class="player-header">
                 <span class="player-ign-text">${this.escapeHtml(p.ign)}</span>
                 <span class="player-role-tag" style="color:${themeColor};">${this.escapeHtml(p.role)}</span>
@@ -367,14 +368,20 @@ class CleanEsportsHub {
   }
 
   // =========================================================================
-  // ADMIN: PLAYER MODAL (ADD / EDIT)
+  // PLAYER MODAL: ADD / EDIT
+  // Normal users submit an edit/post request; Admin updates live immediately.
   // =========================================================================
   openAddPlayerModal(teamKey = "godlike", divisionId = null) {
-    if (!this.isAdmin) return;
+    if (!this.checkAdminAuth()) return;
     this.editingPlayerId = null;
     this.currentModalTeam = teamKey;
     const modal = document.getElementById("player-modal");
-    document.getElementById("player-modal-title").textContent = "➕ Add Player or New Lineup";
+    const title = document.getElementById("player-modal-title");
+    const submitBtn = document.getElementById("player-modal-submit-btn");
+
+    if (title) title.textContent = "➕ Add Player or New Lineup (Admin)";
+    if (submitBtn) submitBtn.textContent = "💾 Save Player Live";
+
     document.getElementById("player-team-select").value = teamKey;
     this.populateDivisionSelect(teamKey, divisionId);
     ["player-ign-input","player-name-input","player-role-input","player-desc-input","player-custom-division-input"].forEach(id => {
@@ -391,13 +398,22 @@ class CleanEsportsHub {
   }
 
   openEditPlayerModal(teamKey, playerId) {
-    if (!this.isAdmin) return;
     const pData = this.findPlayer(teamKey, playerId);
     if (!pData) return;
     this.editingPlayerId = playerId;
     this.currentModalTeam = teamKey;
     const modal = document.getElementById("player-modal");
-    document.getElementById("player-modal-title").textContent = `✏️ Edit Player: ${pData.player.ign}`;
+    const title = document.getElementById("player-modal-title");
+    const submitBtn = document.getElementById("player-modal-submit-btn");
+
+    if (this.isAdmin) {
+      if (title) title.textContent = `✏️ Edit Player: ${pData.player.ign} (Admin Mode)`;
+      if (submitBtn) submitBtn.textContent = "💾 Save & Update Immediately";
+    } else {
+      if (title) title.textContent = `✏️ Suggest Edit: ${pData.player.ign}`;
+      if (submitBtn) submitBtn.textContent = "📩 Submit Edit for Admin Approval";
+    }
+
     document.getElementById("player-team-select").value = teamKey;
     this.populateDivisionSelect(teamKey, pData.division.id);
     document.getElementById("player-ign-input").value      = pData.player.ign || "";
@@ -419,12 +435,13 @@ class CleanEsportsHub {
     divisions.forEach(d => {
       html += `<option value="${d.id}" ${d.id === selectedDivId ? "selected" : ""}>${d.name}</option>`;
     });
-    html += `<option value="__NEW__" ${selectedDivId === "__NEW__" ? "selected" : ""}>➕ [Create New Lineup]</option>`;
+    if (this.isAdmin) {
+      html += `<option value="__NEW__" ${selectedDivId === "__NEW__" ? "selected" : ""}>➕ [Create New Lineup]</option>`;
+    }
     divSelect.innerHTML = html;
   }
 
   handleSavePlayer() {
-    if (!this.isAdmin) return;
     const teamKey = document.getElementById("player-team-select").value;
     let divVal    = document.getElementById("player-division-select").value;
     const ign     = document.getElementById("player-ign-input").value.trim();
@@ -436,37 +453,64 @@ class CleanEsportsHub {
     const desc    = document.getElementById("player-desc-input").value.trim();
     if (!ign) { alert("Please enter the player IGN."); return; }
 
-    if (divVal === "__NEW__") {
-      const customName = document.getElementById("player-custom-division-input").value.trim();
-      if (!customName) { alert("Please enter a lineup name."); return; }
-      const newDivId = "div-" + Date.now();
-      this.data[teamKey].divisions.push({ id: newDivId, name: customName, players: [] });
-      divVal = newDivId;
-    }
+    if (this.isAdmin) {
+      // Direct Admin Update
+      if (divVal === "__NEW__") {
+        const customName = document.getElementById("player-custom-division-input").value.trim();
+        if (!customName) { alert("Please enter a lineup name."); return; }
+        const newDivId = "div-" + Date.now();
+        this.data[teamKey].divisions.push({ id: newDivId, name: customName, players: [] });
+        divVal = newDivId;
+      }
 
-    if (this.editingPlayerId) {
-      const pData = this.findPlayer(this.currentModalTeam, this.editingPlayerId);
-      if (pData) {
-        if (this.currentModalTeam !== teamKey || pData.division.id !== divVal) {
-          pData.division.players = pData.division.players.filter(p => p.id !== this.editingPlayerId);
-          const target = this.data[teamKey].divisions.find(d => d.id === divVal);
-          if (target) target.players.push({ id: this.editingPlayerId, ign, name, role, stat1Label, stat1Val, stat2Label: "STATUS", stat2Val, desc });
-        } else {
-          Object.assign(pData.player, { ign, name, role, stat1Label, stat1Val, stat2Label: "STATUS", stat2Val, desc });
+      if (this.editingPlayerId) {
+        const pData = this.findPlayer(this.currentModalTeam, this.editingPlayerId);
+        if (pData) {
+          if (this.currentModalTeam !== teamKey || pData.division.id !== divVal) {
+            pData.division.players = pData.division.players.filter(p => p.id !== this.editingPlayerId);
+            const target = this.data[teamKey].divisions.find(d => d.id === divVal);
+            if (target) target.players.push({ id: this.editingPlayerId, ign, name, role, stat1Label, stat1Val, stat2Label: "STATUS", stat2Val, desc });
+          } else {
+            Object.assign(pData.player, { ign, name, role, stat1Label, stat1Val, stat2Label: "STATUS", stat2Val, desc });
+          }
+        }
+        this.showToast(`✅ Player "${ign}" updated live!`);
+      } else {
+        const target = this.data[teamKey].divisions.find(d => d.id === divVal);
+        if (target) {
+          target.players.push({ id: "p-" + Date.now(), ign, name, role, stat1Label, stat1Val, stat2Label: "STATUS", stat2Val, desc });
+          this.showToast(`✅ Player "${ign}" added!`);
         }
       }
-      this.showToast(`✅ Player "${ign}" updated!`);
+      this.saveData();
+      this.renderAll();
     } else {
-      const target = this.data[teamKey].divisions.find(d => d.id === divVal);
-      if (target) {
-        target.players.push({ id: "p-" + Date.now(), ign, name, role, stat1Label, stat1Val, stat2Label: "STATUS", stat2Val, desc });
-        this.showToast(`✅ Player "${ign}" added!`);
-      }
+      // Normal User Edit Request -> Sent to Admin for Review
+      const pData = this.editingPlayerId ? this.findPlayer(this.currentModalTeam, this.editingPlayerId) : null;
+      const req = {
+        id: "req-" + Date.now(),
+        type: "edit_player",
+        teamKey,
+        targetId: this.editingPlayerId,
+        targetName: pData ? pData.player.ign : ign,
+        submittedBy: "Community User",
+        submittedAt: new Date().toLocaleString(),
+        status: "pending",
+        originalData: pData ? { ...pData.player } : null,
+        data: {
+          ign, name, role, stat1Label, stat1Val, stat2Label: "STATUS", stat2Val, desc, divisionId: divVal
+        }
+      };
+      this.pending.push(req);
+      this.savePending();
+      this.updateAdminUI();
+      this.showToast(`📩 Edit request for "${ign}" submitted! It will reflect once approved by Admin.`);
     }
 
-    this.saveData(); this.renderAll(); this.closeModal("player-modal");
+    this.closeModal("player-modal");
   }
 
+  // ─── Delete Operations (STRICTLY ADMIN ONLY) ──────────────────────────────
   deletePlayer(teamKey, playerId) {
     if (!this.checkAdminAuth()) return;
     const pData = this.findPlayer(teamKey, playerId);
@@ -498,13 +542,17 @@ class CleanEsportsHub {
   }
 
   // =========================================================================
-  // ADMIN: GAME MODAL (ADD / EDIT)
+  // GAME MODAL: ADD / EDIT
   // =========================================================================
   openAddGameModal(teamKey = "godlike") {
-    if (!this.isAdmin) return;
+    if (!this.checkAdminAuth()) return;
     this.editingGameId = null;
     this.currentGameTeam = teamKey;
-    document.getElementById("game-modal-title").textContent = "➕ Add EWC Game Title";
+    const title = document.getElementById("game-modal-title");
+    const submitBtn = document.getElementById("game-modal-submit-btn");
+    if (title) title.textContent = "➕ Add EWC Game Title (Admin)";
+    if (submitBtn) submitBtn.textContent = "💾 Save EWC Game Live";
+
     document.getElementById("game-team-select").value = teamKey;
     const count = (this.data[teamKey]?.ewcGames || []).length;
     document.getElementById("game-no-input").value     = count + 1;
@@ -517,12 +565,22 @@ class CleanEsportsHub {
   }
 
   openEditGameModal(teamKey, gameId) {
-    if (!this.isAdmin) return;
     const game = (this.data[teamKey]?.ewcGames || []).find(g => g.id === gameId);
     if (!game) return;
     this.editingGameId = gameId;
     this.currentGameTeam = teamKey;
-    document.getElementById("game-modal-title").textContent = `✏️ Edit: ${game.title}`;
+    const modal = document.getElementById("game-modal");
+    const title = document.getElementById("game-modal-title");
+    const submitBtn = document.getElementById("game-modal-submit-btn");
+
+    if (this.isAdmin) {
+      if (title) title.textContent = `✏️ Edit: ${game.title} (Admin Mode)`;
+      if (submitBtn) submitBtn.textContent = "💾 Save & Update Immediately";
+    } else {
+      if (title) title.textContent = `✏️ Suggest Edit: ${game.title}`;
+      if (submitBtn) submitBtn.textContent = "📩 Submit Edit for Admin Approval";
+    }
+
     document.getElementById("game-team-select").value = teamKey;
     document.getElementById("game-no-input").value     = game.no || 1;
     document.getElementById("game-title-input").value  = game.title || "";
@@ -530,11 +588,10 @@ class CleanEsportsHub {
     document.getElementById("game-roster-input").value = game.roster || "";
     document.getElementById("game-status-input").value = game.status || "";
     document.getElementById("game-highlight-check").checked = !!game.highlight;
-    document.getElementById("game-modal").classList.add("active");
+    modal.classList.add("active");
   }
 
   handleSaveGame() {
-    if (!this.isAdmin) return;
     const teamKey   = document.getElementById("game-team-select").value;
     const no        = parseInt(document.getElementById("game-no-input").value) || 1;
     const title     = document.getElementById("game-title-input").value.trim();
@@ -544,22 +601,45 @@ class CleanEsportsHub {
     const highlight = document.getElementById("game-highlight-check").checked;
     if (!title) { alert("Please enter the game title."); return; }
 
-    if (this.editingGameId) {
-      if (this.currentGameTeam !== teamKey) {
-        this.data[this.currentGameTeam].ewcGames = this.data[this.currentGameTeam].ewcGames.filter(g => g.id !== this.editingGameId);
-        this.data[teamKey].ewcGames.push({ id: this.editingGameId, no, title, genre, roster, status, highlight });
+    if (this.isAdmin) {
+      if (this.editingGameId) {
+        if (this.currentGameTeam !== teamKey) {
+          this.data[this.currentGameTeam].ewcGames = this.data[this.currentGameTeam].ewcGames.filter(g => g.id !== this.editingGameId);
+          this.data[teamKey].ewcGames.push({ id: this.editingGameId, no, title, genre, roster, status, highlight });
+        } else {
+          const game = this.data[teamKey].ewcGames.find(g => g.id === this.editingGameId);
+          if (game) Object.assign(game, { no, title, genre, roster, status, highlight });
+        }
+        this.showToast(`✅ Game "${title}" updated live!`);
       } else {
-        const game = this.data[teamKey].ewcGames.find(g => g.id === this.editingGameId);
-        if (game) Object.assign(game, { no, title, genre, roster, status, highlight });
+        this.data[teamKey].ewcGames.push({ id: "game-" + Date.now(), no, title, genre, roster, status, highlight });
+        this.showToast(`✅ Game "${title}" added!`);
       }
-      this.showToast(`✅ Game "${title}" updated!`);
+      this.data[teamKey].ewcGames.sort((a, b) => (a.no || 0) - (b.no || 0));
+      this.saveData();
+      this.renderAll();
     } else {
-      this.data[teamKey].ewcGames.push({ id: "game-" + Date.now(), no, title, genre, roster, status, highlight });
-      this.showToast(`✅ Game "${title}" added!`);
+      // Normal User Edit Request -> Sent to Admin
+      const origGame = (this.data[this.currentGameTeam]?.ewcGames || []).find(g => g.id === this.editingGameId);
+      const req = {
+        id: "req-" + Date.now(),
+        type: "edit_game",
+        teamKey,
+        targetId: this.editingGameId,
+        targetName: origGame ? origGame.title : title,
+        submittedBy: "Community User",
+        submittedAt: new Date().toLocaleString(),
+        status: "pending",
+        originalData: origGame ? { ...origGame } : null,
+        data: { no, title, genre, roster, status, highlight }
+      };
+      this.pending.push(req);
+      this.savePending();
+      this.updateAdminUI();
+      this.showToast(`📩 Edit request for "${title}" submitted! It will reflect once approved by Admin.`);
     }
 
-    this.data[teamKey].ewcGames.sort((a, b) => (a.no || 0) - (b.no || 0));
-    this.saveData(); this.renderAll(); this.closeModal("game-modal");
+    this.closeModal("game-modal");
   }
 
   deleteGame(teamKey, gameId) {
@@ -574,10 +654,9 @@ class CleanEsportsHub {
   }
 
   // =========================================================================
-  // USER: SUBMIT SUGGESTION (open form)
+  // USER: SUBMIT NEW SUGGESTION / POST REQUEST
   // =========================================================================
   openRequestModal(teamKey) {
-    if (this.isAdmin) return; // Admins edit directly
     this.currentRequestTeam = teamKey;
     const modal = document.getElementById("request-modal");
     document.getElementById("request-team-label").textContent =
@@ -585,7 +664,6 @@ class CleanEsportsHub {
     document.getElementById("request-type-select").value = "player";
     document.getElementById("req-player-fields").style.display = "block";
     document.getElementById("req-game-fields").style.display   = "none";
-    // Clear fields
     ["req-ign","req-realname","req-role","req-game","req-desc","req-game-title","req-game-genre","req-game-roster"].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = "";
@@ -593,7 +671,6 @@ class CleanEsportsHub {
     document.getElementById("req-name-input").value = "";
     modal.classList.add("active");
 
-    // Toggle between player/game request type
     document.getElementById("request-type-select").onchange = function() {
       document.getElementById("req-player-fields").style.display = this.value === "player" ? "block" : "none";
       document.getElementById("req-game-fields").style.display   = this.value === "game"   ? "block" : "none";
@@ -602,7 +679,7 @@ class CleanEsportsHub {
 
   handleUserRequest() {
     const type        = document.getElementById("request-type-select").value;
-    const submittedBy = document.getElementById("req-name-input").value.trim() || "Anonymous";
+    const submittedBy = document.getElementById("req-name-input").value.trim() || "Community Fan";
 
     let reqData = {};
     if (type === "player") {
@@ -634,15 +711,15 @@ class CleanEsportsHub {
     this.pending.push(request);
     this.savePending();
     this.closeModal("request-modal");
-    this.showToast("📨 Request submitted! An admin will review it soon.");
+    this.showToast("📨 Request submitted! An admin will review and accept it.");
     this.updateAdminUI();
   }
 
   // =========================================================================
-  // ADMIN: APPROVALS PANEL
+  // ADMIN: APPROVALS & REQUEST MANAGEMENT (ACCEPT & REFLECT LIVE)
   // =========================================================================
   openApprovalsPanel() {
-    if (!this.isAdmin) return;
+    if (!this.checkAdminAuth()) return;
     const modal = document.getElementById("approvals-modal");
     this.renderApprovals();
     modal.classList.add("active");
@@ -650,7 +727,7 @@ class CleanEsportsHub {
 
   renderApprovals() {
     const list = document.getElementById("approvals-list");
-    const pending = this.pending.filter(r => r.status === "pending");
+    const pending = (this.pending || []).filter(r => r.status === "pending");
 
     if (pending.length === 0) {
       list.innerHTML = `<div class="approvals-empty">✅ No pending requests. All caught up!</div>`;
@@ -660,32 +737,57 @@ class CleanEsportsHub {
     list.innerHTML = pending.map(req => {
       const teamLabel = req.teamKey === "godlike" ? "GodLike" : "S8UL";
       const themeColor = req.teamKey === "godlike" ? "var(--godl-gold)" : "var(--s8ul-blue)";
+      let typeLabel = "👤 New Player";
       let details = "";
-      if (req.type === "player") {
+
+      if (req.type === "edit_player") {
+        typeLabel = "✏️ Proposed Player Edit";
+        details = `
+          <div class="approval-detail"><strong>Target Player:</strong> ${this.escapeHtml(req.targetName || req.data.ign)}</div>
+          <div class="approval-detail"><strong>Proposed IGN:</strong> ${this.escapeHtml(req.data.ign)}</div>
+          <div class="approval-detail"><strong>Proposed Role:</strong> ${this.escapeHtml(req.data.role)}</div>
+          <div class="approval-detail"><strong>Proposed Name:</strong> ${this.escapeHtml(req.data.name || "-")}</div>
+          <div class="approval-detail"><strong>Proposed Stats:</strong> ${this.escapeHtml(req.data.stat1Label)}: ${this.escapeHtml(req.data.stat1Val)}</div>
+          <div class="approval-detail"><strong>Notes / Bio:</strong> ${this.escapeHtml(req.data.desc || "-")}</div>
+        `;
+      } else if (req.type === "edit_game") {
+        typeLabel = "✏️ Proposed Game Edit";
+        details = `
+          <div class="approval-detail"><strong>Target Game:</strong> ${this.escapeHtml(req.targetName || req.data.title)}</div>
+          <div class="approval-detail"><strong>Proposed Title:</strong> ${this.escapeHtml(req.data.title)}</div>
+          <div class="approval-detail"><strong>Proposed Genre:</strong> ${this.escapeHtml(req.data.genre || "-")}</div>
+          <div class="approval-detail"><strong>Proposed Roster:</strong> ${this.escapeHtml(req.data.roster || "-")}</div>
+          <div class="approval-detail"><strong>Status Badge:</strong> ${this.escapeHtml(req.data.status || "-")}</div>
+        `;
+      } else if (req.type === "player") {
+        typeLabel = "👤 New Player Suggestion";
         details = `
           <div class="approval-detail"><strong>IGN:</strong> ${this.escapeHtml(req.data.ign)}</div>
           <div class="approval-detail"><strong>Real Name:</strong> ${this.escapeHtml(req.data.name || "-")}</div>
           <div class="approval-detail"><strong>Role:</strong> ${this.escapeHtml(req.data.role)}</div>
           <div class="approval-detail"><strong>Game:</strong> ${this.escapeHtml(req.data.game || "-")}</div>
-          <div class="approval-detail"><strong>Note:</strong> ${this.escapeHtml(req.data.desc || "-")}</div>`;
+          <div class="approval-detail"><strong>Note:</strong> ${this.escapeHtml(req.data.desc || "-")}</div>
+        `;
       } else {
+        typeLabel = "🎮 New Game Suggestion";
         details = `
           <div class="approval-detail"><strong>Title:</strong> ${this.escapeHtml(req.data.title)}</div>
           <div class="approval-detail"><strong>Genre:</strong> ${this.escapeHtml(req.data.genre || "-")}</div>
-          <div class="approval-detail"><strong>Roster:</strong> ${this.escapeHtml(req.data.roster || "-")}</div>`;
+          <div class="approval-detail"><strong>Roster:</strong> ${this.escapeHtml(req.data.roster || "-")}</div>
+        `;
       }
 
       return `
         <div class="approval-card" id="approval-${req.id}">
           <div class="approval-header">
             <span class="approval-type-badge" style="border-color:${themeColor};color:${themeColor};">
-              ${req.type === "player" ? "👤 Player" : "🎮 Game"} · ${teamLabel}
+              ${typeLabel} · ${teamLabel}
             </span>
             <span class="approval-meta">By ${this.escapeHtml(req.submittedBy)} · ${req.submittedAt}</span>
           </div>
           ${details}
           <div class="approval-actions">
-            <button class="btn-approve" onclick="window.cleanHub.approveRequest('${req.id}')">✅ Approve</button>
+            <button class="btn-approve" onclick="window.cleanHub.approveRequest('${req.id}')">✅ Accept & Reflect Live</button>
             <button class="btn-reject"  onclick="window.cleanHub.rejectRequest('${req.id}')">❌ Reject</button>
             <button class="btn-delete-req" onclick="window.cleanHub.deleteRequest('${req.id}')">🗑️ Delete</button>
           </div>
@@ -693,13 +795,58 @@ class CleanEsportsHub {
     }).join("");
   }
 
+  // ─── Approve / Accept Request (IMMEDIATELY REFLECTS LIVE) ──────────────────
   approveRequest(reqId) {
     if (!this.checkAdminAuth()) return;
     const req = this.pending.find(r => r.id === reqId);
     if (!req) return;
 
-    if (req.type === "player") {
-      // Add to first division, or create a new "Submissions" division
+    if (req.type === "edit_player") {
+      const pData = this.findPlayer(req.teamKey, req.targetId);
+      if (pData) {
+        if (req.data.divisionId && pData.division.id !== req.data.divisionId) {
+          pData.division.players = pData.division.players.filter(p => p.id !== req.targetId);
+          const targetDiv = this.data[req.teamKey].divisions.find(d => d.id === req.data.divisionId) || pData.division;
+          targetDiv.players.push({
+            id: req.targetId,
+            ign: req.data.ign,
+            name: req.data.name || "",
+            role: req.data.role,
+            stat1Label: req.data.stat1Label,
+            stat1Val: req.data.stat1Val,
+            stat2Label: req.data.stat2Label || "STATUS",
+            stat2Val: req.data.stat2Val || "Active",
+            desc: req.data.desc || ""
+          });
+        } else {
+          Object.assign(pData.player, {
+            ign: req.data.ign,
+            name: req.data.name || "",
+            role: req.data.role,
+            stat1Label: req.data.stat1Label,
+            stat1Val: req.data.stat1Val,
+            stat2Label: req.data.stat2Label || "STATUS",
+            stat2Val: req.data.stat2Val || "Active",
+            desc: req.data.desc || ""
+          });
+        }
+        this.showToast(`✅ Edit accepted! "${req.data.ign}" is now updated live.`);
+      }
+    } else if (req.type === "edit_game") {
+      const game = (this.data[req.teamKey]?.ewcGames || []).find(g => g.id === req.targetId);
+      if (game) {
+        Object.assign(game, {
+          no: req.data.no,
+          title: req.data.title,
+          genre: req.data.genre || "",
+          roster: req.data.roster || "",
+          status: req.data.status || "EWC 2026 Official Title",
+          highlight: !!req.data.highlight
+        });
+        this.data[req.teamKey].ewcGames.sort((a, b) => (a.no || 0) - (b.no || 0));
+        this.showToast(`✅ Edit accepted! "${req.data.title}" is now updated live.`);
+      }
+    } else if (req.type === "player") {
       let targetDiv = this.data[req.teamKey].divisions.find(d => d.name === "Community Submissions")
                    || this.data[req.teamKey].divisions[0];
       if (!targetDiv) {
@@ -717,7 +864,7 @@ class CleanEsportsHub {
         stat2Val:    "Active",
         desc:        req.data.desc || ""
       });
-      this.showToast(`✅ Player "${req.data.ign}" approved & added!`);
+      this.showToast(`✅ Player "${req.data.ign}" approved & added live!`);
     } else {
       const count = (this.data[req.teamKey].ewcGames || []).length + 1;
       this.data[req.teamKey].ewcGames.push({
@@ -729,7 +876,7 @@ class CleanEsportsHub {
         status:    "EWC 2026 Official Title",
         highlight: false
       });
-      this.showToast(`✅ Game "${req.data.title}" approved & added!`);
+      this.showToast(`✅ Game "${req.data.title}" approved & added live!`);
     }
 
     req.status = "approved";
@@ -762,7 +909,7 @@ class CleanEsportsHub {
       this.savePending();
       this.renderApprovals();
       this.updateAdminUI();
-      this.showToast("🗑️ User submission permanently deleted.");
+      this.showToast("🗑️ Request permanently deleted.");
     }
   }
 

@@ -10,6 +10,15 @@
 </head>
 <body>
 
+  <!-- Ambient EWC Cyber & Indian Atmosphere FX Layer -->
+  <div class="ewc-india-ambient-fx" aria-hidden="true">
+    <div class="fx-glow-saffron"></div>
+    <div class="fx-glow-green"></div>
+    <div class="fx-glow-cyber"></div>
+    <div class="fx-chakra-emblem"></div>
+    <div class="fx-grid-overlay"></div>
+  </div>
+
   <!-- =========================================================================
        ADMIN TOP STICKY BAR (Visible only when Admin is logged in)
        ========================================================================= -->
@@ -49,6 +58,12 @@
         </div>
         <span class="yt-badge">▶ YouTube</span>
       </a>
+
+      <!-- Official EWC & Tiranga Badge -->
+      <div class="ewc-flag-badge">
+        <span class="tiranga-pip"></span>
+        <span class="ewc-badge-text">OFFICIAL EWC 2026 INDIA HUB</span>
+      </div>
 
       <h1 class="home-title">INDIA AT ESPORTS WORLD CUP</h1>
       <p class="home-subtitle">
@@ -173,6 +188,7 @@
                 <th>Genre</th>
                 <th>Official Roster / Athletes</th>
                 <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="godl-ewc-tbody">
@@ -262,6 +278,7 @@
                 <th>Genre</th>
                 <th>Official Roster / Athletes</th>
                 <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="s8ul-ewc-tbody">
@@ -357,7 +374,7 @@
 
         <div class="modal-footer">
           <button type="button" class="btn-modal-secondary" onclick="window.cleanHub.closeModal('player-modal')">Cancel</button>
-          <button type="submit" class="btn-modal-primary">💾 Save Player</button>
+          <button type="submit" class="btn-modal-primary" id="player-modal-submit-btn">💾 Save Player</button>
         </div>
       </form>
     </div>
@@ -417,7 +434,7 @@
 
         <div class="modal-footer">
           <button type="button" class="btn-modal-secondary" onclick="window.cleanHub.closeModal('game-modal')">Cancel</button>
-          <button type="submit" class="btn-modal-primary">💾 Save EWC Game</button>
+          <button type="submit" class="btn-modal-primary" id="game-modal-submit-btn">💾 Save EWC Game</button>
         </div>
       </form>
     </div>
