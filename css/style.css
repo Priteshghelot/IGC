@@ -1196,3 +1196,189 @@ button {
   box-shadow: 0 0 16px var(--s8ul-glow);
   transform: translateY(-1px);
 }
+
+/* User Submit Request Buttons (for regular users) */
+.btn-user-submit-request {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  letter-spacing: 0.02em;
+}
+
+.btn-team-req-godl {
+  background: rgba(255, 184, 0, 0.15);
+  border: 1.5px solid var(--godl-gold);
+  color: var(--godl-gold);
+  box-shadow: 0 0 12px rgba(255, 184, 0, 0.2);
+}
+
+.btn-team-req-godl:hover {
+  background: var(--godl-gold);
+  color: #000;
+  box-shadow: 0 0 20px var(--godl-glow);
+  transform: translateY(-1px);
+}
+
+.btn-team-req-s8ul {
+  background: rgba(0, 168, 255, 0.15);
+  border: 1.5px solid var(--s8ul-blue);
+  color: var(--s8ul-blue);
+  box-shadow: 0 0 12px rgba(0, 168, 255, 0.2);
+}
+
+.btn-team-req-s8ul:hover {
+  background: var(--s8ul-blue);
+  color: #fff;
+  box-shadow: 0 0 20px var(--s8ul-glow);
+  transform: translateY(-1px);
+}
+
+/* Floating Admin Access Pill (FAB) */
+.admin-login-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(30, 27, 75, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid #8b5cf6;
+  color: #c4b5fd;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-login-fab:hover {
+  background: #8b5cf6;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+  transform: translateY(-2px);
+}
+
+/* Pending Badge on Admin Banner */
+.pending-badge {
+  background: #ef4444;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  margin-left: 6px;
+}
+
+/* Approvals Panel Styling */
+.approvals-container {
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.approvals-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.approval-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 1rem;
+  transition: all 0.2s;
+}
+
+.approval-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.approval-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.approval-type-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid;
+  text-transform: uppercase;
+}
+
+.approval-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.approval-detail {
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  margin-bottom: 4px;
+}
+
+.approval-detail strong {
+  color: #fff;
+}
+
+.approval-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.btn-approve {
+  background: #10B981;
+  color: #fff;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-approve:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.btn-reject {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-reject:hover {
+  background: #ef4444;
+  color: #fff;
+}

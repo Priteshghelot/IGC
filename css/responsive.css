@@ -604,3 +604,13 @@ html, body {
   overflow-x: hidden;
   width: 100%;
 }
+
+@media (max-width: 480px) {
+  .admin-login-fab {
+    bottom: 12px;
+    right: 12px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+}
+

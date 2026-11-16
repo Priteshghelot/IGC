@@ -11,6 +11,27 @@
 <body>
 
   <!-- =========================================================================
+       ADMIN TOP STICKY BAR (Visible only when Admin is logged in)
+       ========================================================================= -->
+  <div id="admin-banner" class="admin-banner" style="display:none;">
+    <div class="admin-banner-inner">
+      <div class="admin-banner-left">
+        <span class="admin-badge-dot"></span>
+        <strong>👑 Admin Mode Active</strong>
+        <span id="pending-count-badge" class="pending-badge"></span>
+      </div>
+      <div class="admin-banner-right">
+        <button class="btn-admin-action" onclick="window.cleanHub.openApprovalsPanel()">
+          📋 Review Requests <span id="admin-pending-num"></span>
+        </button>
+        <button class="btn-admin-action btn-admin-exit" onclick="window.cleanHub.toggleAdminMode()">
+          🚪 Exit Admin
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
        1. HOME SCREEN - GODLIKE (GOLDEN YELLOW) & S8UL (SKY BLUE)
        ========================================================================= -->
   <section id="home-screen">
@@ -88,14 +109,19 @@
   <main class="detail-screen" id="screen-godlike">
     <div class="container">
       
-      <!-- Top Bar: Back to Home + Add Lineup Button + Creator Profile Link -->
+      <!-- Top Bar: Back to Home + Add Lineup Button / Submit Request + Creator Profile Link -->
       <div class="detail-top-nav">
         <button class="btn-back-home" onclick="window.cleanHub.showHome()">
           ← Back to Clubs
         </button>
         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-          <button class="btn-team-add-action btn-team-add-godl" onclick="window.cleanHub.openAddPlayerModal('godlike')">
+          <!-- Admin Only -->
+          <button class="btn-team-add-action btn-team-add-godl admin-only-btn" style="display:none;" onclick="window.cleanHub.openAddPlayerModal('godlike')">
             ➕ Add Lineup / Player
+          </button>
+          <!-- Regular Users: Submit Post / Request -->
+          <button class="btn-team-add-action btn-user-submit-request btn-team-req-godl" onclick="window.cleanHub.openRequestModal('godlike')">
+            📩 Submit Roster / Game Request
           </button>
           <a href="https://www.youtube.com/@priteshgehlot" target="_blank" rel="noopener noreferrer" class="creator-inline-link" style="color:var(--godl-gold);">
             <img src="images/pritesh_avatar.jpg" alt="Pritesh Gehlot" class="mini-creator-avatar" style="border-color:var(--godl-gold);">
@@ -172,14 +198,19 @@
   <main class="detail-screen" id="screen-s8ul">
     <div class="container">
       
-      <!-- Top Bar: Back to Home + Add Lineup Button + Creator Profile Link -->
+      <!-- Top Bar: Back to Home + Add Lineup Button / Submit Request + Creator Profile Link -->
       <div class="detail-top-nav">
         <button class="btn-back-home" onclick="window.cleanHub.showHome()">
           ← Back to Clubs
         </button>
         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-          <button class="btn-team-add-action btn-team-add-s8ul" onclick="window.cleanHub.openAddPlayerModal('s8ul')">
+          <!-- Admin Only -->
+          <button class="btn-team-add-action btn-team-add-s8ul admin-only-btn" style="display:none;" onclick="window.cleanHub.openAddPlayerModal('s8ul')">
             ➕ Add Lineup / Player
+          </button>
+          <!-- Regular Users: Submit Post / Request -->
+          <button class="btn-team-add-action btn-user-submit-request btn-team-req-s8ul" onclick="window.cleanHub.openRequestModal('s8ul')">
+            📩 Submit Roster / Game Request
           </button>
           <a href="https://www.youtube.com/@priteshgehlot" target="_blank" rel="noopener noreferrer" class="creator-inline-link" style="color:var(--s8ul-blue);">
             <img src="images/pritesh_avatar.jpg" alt="Pritesh Gehlot" class="mini-creator-avatar" style="border-color:var(--s8ul-blue);">
@@ -392,6 +423,139 @@
     </div>
   </div>
 
+  <!-- =========================================================================
+       MODAL: USER SUBMIT POST / REQUEST (PENDING ADMIN APPROVAL)
+       ========================================================================= -->
+  <div class="modal-overlay" id="request-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 id="request-modal-title">📩 Submit Suggestion / Request</h3>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+            Target: <strong id="request-team-label" style="color:#fff;">Team</strong> (Requires Admin Review)
+          </p>
+        </div>
+        <button class="modal-close-btn" onclick="window.cleanHub.closeModal('request-modal')">✕</button>
+      </div>
+      <form id="request-modal-form" class="modal-body">
+        <div class="form-grid">
+
+          <div class="form-group form-col-full">
+            <label>Request Type *</label>
+            <select id="request-type-select" class="form-input">
+              <option value="player">👤 Player / Athlete Suggestion</option>
+              <option value="game">🎮 EWC Game Title Suggestion</option>
+            </select>
+          </div>
+
+          <div class="form-group form-col-full">
+            <label>Your Name / Handle</label>
+            <input type="text" id="req-name-input" class="form-input" placeholder="e.g. EsportsFan99">
+          </div>
+
+          <!-- Dynamic Player Request Fields -->
+          <div id="req-player-fields" class="form-col-full">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Player IGN *</label>
+                <input type="text" id="req-ign" class="form-input" placeholder="e.g. Jonathan, Mortal">
+              </div>
+              <div class="form-group">
+                <label>Real Name</label>
+                <input type="text" id="req-realname" class="form-input" placeholder="e.g. Jonathan Amaral">
+              </div>
+              <div class="form-group">
+                <label>Role / Position *</label>
+                <input type="text" id="req-role" class="form-input" placeholder="e.g. Assaulter, IGL, Coach">
+              </div>
+              <div class="form-group">
+                <label>Game Title</label>
+                <input type="text" id="req-game" class="form-input" placeholder="e.g. BGMI, Tekken 8, CODM">
+              </div>
+              <div class="form-group form-col-full">
+                <label>Why add this player? / Source / Notes</label>
+                <textarea id="req-desc" class="form-input form-textarea" rows="2" placeholder="Recent roster change announcement link or details..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Game Request Fields -->
+          <div id="req-game-fields" class="form-col-full" style="display:none;">
+            <div class="form-grid">
+              <div class="form-group form-col-full">
+                <label>Game Title *</label>
+                <input type="text" id="req-game-title" class="form-input" placeholder="e.g. Street Fighter 6, Honor of Kings">
+              </div>
+              <div class="form-group">
+                <label>Genre / Category</label>
+                <input type="text" id="req-game-genre" class="form-input" placeholder="e.g. FGC, MOBA">
+              </div>
+              <div class="form-group">
+                <label>Roster / Athlete(s)</label>
+                <input type="text" id="req-game-roster" class="form-input" placeholder="Athletes competing in this game">
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-secondary" onclick="window.cleanHub.closeModal('request-modal')">Cancel</button>
+          <button type="submit" class="btn-modal-primary">🚀 Submit for Review</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: ADMIN LOGIN (PIN PROTECTED)
+       ========================================================================= -->
+  <div class="modal-overlay" id="admin-login-modal">
+    <div class="modal-card" style="max-width:400px;">
+      <div class="modal-header">
+        <h3>🔑 Admin Access Login</h3>
+        <button class="modal-close-btn" onclick="window.cleanHub.closeModal('admin-login-modal')">✕</button>
+      </div>
+      <div class="modal-body" style="padding:1.5rem 1.25rem;">
+        <p style="font-size:0.85rem; color:var(--text-sub); margin-bottom:1rem;">
+          Enter the secret admin PIN to enable modify access and review community requests.
+        </p>
+        <div class="form-group">
+          <label>Admin PIN (Default: <code>admin</code> or <code>admin123</code>)</label>
+          <input type="password" id="admin-pin-input" class="form-input" placeholder="Enter PIN" onkeydown="if(event.key==='Enter') window.cleanHub.submitAdminLogin()">
+          <div id="admin-pin-error" style="color:#ef4444; font-size:0.8rem; margin-top:6px; display:none;">⚠️ Invalid PIN. Please try again.</div>
+        </div>
+        <div class="modal-footer" style="padding:1rem 0 0; margin-top:1rem; border-top:1px solid var(--border-color);">
+          <button type="button" class="btn-modal-secondary" onclick="window.cleanHub.closeModal('admin-login-modal')">Cancel</button>
+          <button type="button" class="btn-modal-primary" onclick="window.cleanHub.submitAdminLogin()">🔓 Unlock Admin</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: ADMIN APPROVALS PANEL
+       ========================================================================= -->
+  <div class="modal-overlay" id="approvals-modal">
+    <div class="modal-card" style="max-width:650px;">
+      <div class="modal-header">
+        <h3>📋 Community Submissions & Approvals</h3>
+        <button class="modal-close-btn" onclick="window.cleanHub.closeModal('approvals-modal')">✕</button>
+      </div>
+      <div class="modal-body" style="padding:1.25rem;">
+        <p style="font-size:0.85rem; color:var(--text-sub); margin-bottom:1rem;">
+          Review requests submitted by users. Approved items will instantly go live on the tracker!
+        </p>
+        <div id="approvals-list" class="approvals-container">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-secondary" onclick="window.cleanHub.closeModal('approvals-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Clean Developer Footer with Pritesh's Avatar + Admin Link -->
   <footer class="creator-footer">
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
@@ -403,8 +567,13 @@
         </a>
       </div>
     </div>
-    <div style="font-size:0.8rem; color:var(--text-sub);">
+    <div style="font-size:0.8rem; color:var(--text-sub); margin-bottom:12px;">
       India's Official EWC Club Partners:
+    </div>
+    <div>
+      <button class="footer-admin-btn" onclick="window.cleanHub.toggleAdminMode()">
+        🔐 Admin Portal Login
+      </button>
     </div>
   </footer>
 
