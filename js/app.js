@@ -32,6 +32,41 @@ class CleanEsportsHub {
     this.initEvents();
     this.renderAll();
     this.updateAdminUI();
+
+    // Sync from Cloud Database (Redis API)
+    this.syncCloudData();
+    this.syncCloudPending();
+  }
+
+  async syncCloudData() {
+    try {
+      const res = await fetch('/api/data');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.ok && json.data) {
+          this.data = json.data;
+          this.saveData();
+          this.renderAll();
+        }
+      }
+    } catch(e) {}
+  }
+
+  async syncCloudPending() {
+    try {
+      const res = await fetch('/api/requests');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.ok && Array.isArray(json.requests)) {
+          const map = new Map();
+          this.pending.forEach(r => map.set(r.id, r));
+          json.requests.forEach(r => map.set(r.id, r));
+          this.pending = Array.from(map.values());
+          this.savePending();
+          this.updateAdminUI();
+        }
+      }
+    } catch(e) {}
   }
 
   // ─── Deep Clone ───────────────────────────────────────────────────────────
@@ -570,13 +605,8 @@ class CleanEsportsHub {
     const title = document.getElementById("game-modal-title");
     const submitBtn = document.getElementById("game-modal-submit-btn");
 
-    if (this.isAdmin) {
-      if (title) title.textContent = `✏️ Edit Line-UP: ${game.title} (Admin)`;
-      if (submitBtn) submitBtn.textContent = "💾 Save & Apply Live";
-    } else {
-      if (title) title.textContent = `📝 Suggest Edit: ${game.title}`;
-      if (submitBtn) submitBtn.textContent = "📩 Submit for Admin Approval";
-    }
+    if (title) title.textContent = `📝 Suggest Edit: ${game.title}`;
+    if (submitBtn) submitBtn.textContent = "📩 Submit for Admin Approval";
 
     document.getElementById("game-team-select").value = teamKey;
     document.getElementById("game-no-input").value     = game.no || 1;
@@ -612,46 +642,36 @@ class CleanEsportsHub {
 
     if (!title) { alert("Please enter the game title."); return; }
 
-    if (this.isAdmin) {
-      // ── ADMIN: Apply changes directly and live ──────────────────────────
-      if (this.editingGameId) {
-        if (this.currentGameTeam !== teamKey) {
-          this.data[this.currentGameTeam].ewcGames = this.data[this.currentGameTeam].ewcGames.filter(g => g.id !== this.editingGameId);
-          this.data[teamKey].ewcGames.push({ id: this.editingGameId, no, title, genre, roster, status, highlight, updatedBy, updatedAt });
-        } else {
-          const game = this.data[teamKey].ewcGames.find(g => g.id === this.editingGameId);
-          if (game) Object.assign(game, { no, title, genre, roster, status, highlight, updatedBy, updatedAt });
-        }
-        this.showToast(`✅ "${title}" updated live by ${updatedBy}!`);
-      } else {
-        this.data[teamKey].ewcGames.push({ id: "game-" + Date.now(), no, title, genre, roster, status, highlight, updatedBy, updatedAt });
-        this.showToast(`✅ "${title}" added live by ${updatedBy}!`);
-      }
-      this.data[teamKey].ewcGames.sort((a, b) => (a.no || 0) - (b.no || 0));
-      this.saveData();
-      this.renderAll();
+    // ── ALWAYS SEND TABLE EDITS TO ADMIN APPROVAL QUEUE ────────────────────────
+    const origGame = (this.data[this.currentGameTeam]?.ewcGames || []).find(g => g.id === this.editingGameId);
+    const req = {
+      id: "req-" + Date.now(),
+      type: "edit_game",
+      teamKey,
+      targetId: this.editingGameId,
+      targetName: origGame ? origGame.title : title,
+      submittedBy: updatedBy,
+      submittedAt: new Date().toLocaleString(),
+      status: "pending",
+      originalData: origGame ? { ...origGame } : null,
+      data: { no, title, genre, roster, status, highlight, updatedBy, updatedAt }
+    };
 
-    } else {
-      // ── NORMAL USER: Send to Admin approval queue ───────────────────────
-      const origGame = (this.data[this.currentGameTeam]?.ewcGames || []).find(g => g.id === this.editingGameId);
-      const req = {
-        id: "req-" + Date.now(),
-        type: "edit_game",
-        teamKey,
-        targetId: this.editingGameId,
-        targetName: origGame ? origGame.title : title,
-        submittedBy: updatedBy,
-        submittedAt: new Date().toLocaleString(),
-        status: "pending",
-        originalData: origGame ? { ...origGame } : null,
-        data: { no, title, genre, roster, status, highlight, updatedBy, updatedAt }
-      };
-      this.pending.push(req);
-      this.savePending();
-      this.updateAdminUI();
-      this.showToast(`📩 Edit by "${updatedBy}" sent to Admin for approval! Changes will appear once approved.`);
-    }
+    // 1. Add to pending queue immediately in local storage
+    this.pending.unshift(req);
+    this.savePending();
+    this.updateAdminUI();
 
+    // 2. Broadcast to Cloud Redis API
+    try {
+      fetch('/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'add', request: req })
+      }).catch(e => console.warn('Cloud sync error:', e));
+    } catch(e) {}
+
+    this.showToast(`📩 Edit by "${updatedBy}" sent to Admin for approval!`);
     this.closeModal("game-modal");
   }
 
@@ -900,6 +920,20 @@ class CleanEsportsHub {
     this.renderAll();
     this.renderApprovals();
     this.updateAdminUI();
+
+    // Sync to Cloud Redis API
+    try {
+      fetch('/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'approve', id: req.id })
+      }).catch(() => {});
+      fetch('/api/data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: this.data })
+      }).catch(() => {});
+    } catch(e) {}
   }
 
   rejectRequest(reqId) {
@@ -911,6 +945,13 @@ class CleanEsportsHub {
       this.savePending();
       this.renderApprovals();
       this.updateAdminUI();
+      try {
+        fetch('/api/requests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'reject', id: reqId })
+        }).catch(() => {});
+      } catch(e) {}
       this.showToast("❌ Request marked as rejected.");
     }
   }
@@ -924,6 +965,13 @@ class CleanEsportsHub {
       this.savePending();
       this.renderApprovals();
       this.updateAdminUI();
+      try {
+        fetch('/api/requests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', id: reqId })
+        }).catch(() => {});
+      } catch(e) {}
       this.showToast("🗑️ Request permanently deleted.");
     }
   }

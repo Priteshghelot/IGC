@@ -337,9 +337,29 @@
         try { localStorage.setItem(this.pendingKey, JSON.stringify(this.pending)); } catch(e) {}
       }
 
-      refreshRequests() {
+      async refreshRequests() {
         this.loadPending();
         this.loadData();
+        this.renderList();
+
+        // Fetch latest from Cloud Redis API
+        try {
+          const res = await fetch('/api/requests');
+          if (res.ok) {
+            const json = await res.json();
+            if (json.ok && Array.isArray(json.requests)) {
+              const map = new Map();
+              this.pending.forEach(r => map.set(r.id, r));
+              json.requests.forEach(r => map.set(r.id, r));
+              this.pending = Array.from(map.values());
+              this.savePending();
+              this.renderList();
+            }
+          }
+        } catch(e) {}
+      }
+
+      renderList() {
         const list = document.getElementById("portal-requests-list");
         const badge = document.getElementById("portal-pending-badge");
         const pending = this.pending.filter(r => r.status === "pending");
@@ -488,7 +508,22 @@
         req.status = "approved";
         this.saveData();
         this.savePending();
-        this.refreshRequests();
+        this.renderList();
+
+        // Sync approve & new data to Cloud Redis
+        try {
+          fetch('/api/requests', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'approve', id: reqId })
+          }).catch(() => {});
+          fetch('/api/data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: this.data })
+          }).catch(() => {});
+        } catch(e) {}
+
         alert(`✅ Accepted! Changes have been updated in the database and will reflect live on the website.`);
       }
 
@@ -497,14 +532,28 @@
         if (!req) return;
         req.status = "rejected";
         this.savePending();
-        this.refreshRequests();
+        this.renderList();
+        try {
+          fetch('/api/requests', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'reject', id: reqId })
+          }).catch(() => {});
+        } catch(e) {}
       }
 
       deleteReq(reqId) {
         if (confirm("Delete this submission permanently?")) {
           this.pending = this.pending.filter(r => r.id !== reqId);
           this.savePending();
-          this.refreshRequests();
+          this.renderList();
+          try {
+            fetch('/api/requests', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'delete', id: reqId })
+            }).catch(() => {});
+          } catch(e) {}
         }
       }
 
