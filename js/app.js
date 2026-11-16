@@ -22,7 +22,7 @@ class CleanEsportsHub {
     this.cardS8ul      = document.getElementById("card-s8ul-select");
 
     // Restore active admin session if already authenticated in this tab or from /admin
-    if (sessionStorage.getItem(this.adminKey) === "true" || window.location.search.includes("admin=true")) {
+    if (sessionStorage.getItem(this.adminKey) === "true" || (window.location && window.location.search && window.location.search.includes("admin=true"))) {
       this.isAdmin = true;
       sessionStorage.setItem(this.adminKey, "true");
     }
@@ -157,9 +157,6 @@ class CleanEsportsHub {
       }
     } else {
       window.location.href = "/admin";
-    }
-  }
-      this.openAdminLoginModal();
     }
   }
 
