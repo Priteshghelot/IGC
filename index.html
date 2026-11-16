@@ -71,6 +71,40 @@
       </p>
     </div>
 
+    <!-- =========================================================================
+         DAILY ESPORTS UPDATES - MARQUEE CTA BUTTON
+         Positioned Center Above S8UL & GodLike Club Cards
+         ========================================================================= -->
+    <div class="daily-marquee-wrapper">
+      <button class="daily-marquee-btn" onclick="window.cleanHub && window.cleanHub.showDailyUpdates()" aria-label="Open Daily Esports Updates Page">
+        <div class="marquee-live-indicator">
+          <span class="pulsing-live-dot"></span>
+          <span class="marquee-live-text">⚡ DAILY UPDATE</span>
+        </div>
+        <div class="marquee-track-container">
+          <div class="marquee-scrolling-content">
+            <span class="marquee-headline">🔥 <strong>Daily Esports Updates:</strong> Real-Time Match Scores, EWC 2026 Roadmaps, Standings & Roster Movements</span>
+            <span class="marquee-divider">✦</span>
+            <span class="marquee-headline">🏆 <strong>GodLike & S8UL Campaign:</strong> 21 EWC Riyadh Titles Confirmed</span>
+            <span class="marquee-divider">✦</span>
+            <span class="marquee-headline">🎮 <strong>BGMI, PMWC & Apex:</strong> International Invitationals & Scrims Highlights</span>
+            <span class="marquee-divider">✦</span>
+            <!-- Seamless Duplicate for Infinite Loop -->
+            <span class="marquee-headline">🔥 <strong>Daily Esports Updates:</strong> Real-Time Match Scores, EWC 2026 Roadmaps, Standings & Roster Movements</span>
+            <span class="marquee-divider">✦</span>
+            <span class="marquee-headline">🏆 <strong>GodLike & S8UL Campaign:</strong> 21 EWC Riyadh Titles Confirmed</span>
+            <span class="marquee-divider">✦</span>
+            <span class="marquee-headline">🎮 <strong>BGMI, PMWC & Apex:</strong> International Invitationals & Scrims Highlights</span>
+            <span class="marquee-divider">✦</span>
+          </div>
+        </div>
+        <div class="marquee-cta-pill">
+          <span>Daily Updates</span>
+          <span class="marquee-cta-icon">➔</span>
+        </div>
+      </button>
+    </div>
+
     <!-- The 2 Big Team Portal Cards -->
     <div class="portal-grid">
       
@@ -267,6 +301,104 @@
             </tbody>
           </table>
         </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       3. DAILY ESPORTS UPDATES SCREEN
+       ========================================================================= -->
+  <main class="detail-screen" id="screen-daily-updates">
+    <div class="container">
+      
+      <!-- Top Bar: Back to Home + Date + Creator Profile Link -->
+      <div class="detail-top-nav">
+        <button class="btn-back-home" onclick="window.cleanHub && window.cleanHub.showHome()">
+          ← Back to Clubs
+        </button>
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <div class="daily-live-timestamp-pill">
+            <span class="pulsing-live-dot"></span>
+            <span id="daily-live-date-text">TODAY'S ESPORTS DESK</span>
+          </div>
+          <a href="https://www.youtube.com/@priteshgehlot" target="_blank" rel="noopener noreferrer" class="creator-inline-link" style="color:var(--tiranga-saffron);">
+            <img src="images/pritesh_avatar.jpg" alt="Pritesh Gehlot" class="mini-creator-avatar" style="border-color:var(--tiranga-saffron);">
+            <span>Developed by Pritesh Gehlot (@priteshgehlot) ↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Hero Banner for Daily Esports Updates -->
+      <div class="daily-hero-card">
+        <div class="daily-hero-glow"></div>
+        <div class="daily-hero-badge-wrap">
+          <span class="daily-hero-badge tiranga-badge">🇮🇳 BHARAT ESPORTS DAILY BULLETIN</span>
+          <span class="daily-hero-badge ewc-badge">🏆 EWC 2026 ROADMAP</span>
+        </div>
+        <h1 class="daily-hero-title">Daily Esports Updates</h1>
+        <p class="daily-hero-subtitle">
+          Real-time daily coverage tracking GodLike Esports, S8UL Esports, and Indian contenders across the Esports World Cup, international qualifiers, daily scrims, and pro roster shifts.
+        </p>
+
+        <!-- Fast Stats Ticker Bar -->
+        <div class="daily-stats-bar">
+          <div class="daily-stat-box">
+            <span class="stat-number" style="color:var(--tiranga-saffron);">21</span>
+            <span class="stat-label">EWC Titles Tracked</span>
+          </div>
+          <div class="daily-stat-divider"></div>
+          <div class="daily-stat-box">
+            <span class="stat-number" style="color:var(--godl-gold);">2</span>
+            <span class="stat-label">Official Club Partners</span>
+          </div>
+          <div class="daily-stat-divider"></div>
+          <div class="daily-stat-box">
+            <span class="stat-number" style="color:var(--s8ul-blue);">100%</span>
+            <span class="stat-label">Verified Pro Coverage</span>
+          </div>
+          <div class="daily-stat-divider"></div>
+          <div class="daily-stat-box">
+            <span class="stat-number" style="color:#00ff88;">LIVE</span>
+            <span class="stat-label">Daily Reporting Desk</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="daily-filter-wrapper">
+        <div class="daily-filter-scroll" id="daily-filter-buttons">
+          <button class="daily-filter-pill active" onclick="window.cleanHub && window.cleanHub.filterDailyUpdates('all', this)">🔥 All Updates</button>
+          <button class="daily-filter-pill" onclick="window.cleanHub && window.cleanHub.filterDailyUpdates('ewc', this)">🏆 EWC 2026</button>
+          <button class="daily-filter-pill" onclick="window.cleanHub && window.cleanHub.filterDailyUpdates('godlike', this)">👑 GodLike Esports</button>
+          <button class="daily-filter-pill" onclick="window.cleanHub && window.cleanHub.filterDailyUpdates('s8ul', this)">⚡ S8UL Esports</button>
+          <button class="daily-filter-pill" onclick="window.cleanHub && window.cleanHub.filterDailyUpdates('bgmi', this)">🎮 BGMI & Mobile</button>
+          <button class="daily-filter-pill" onclick="window.cleanHub && window.cleanHub.filterDailyUpdates('pc', this)">⚔️ PC & FGC</button>
+        </div>
+      </div>
+
+      <!-- Featured Spotlight Article -->
+      <div class="daily-spotlight-card" id="daily-spotlight-box">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Feed Grid of Daily Updates -->
+      <div class="daily-feed-header">
+        <h2 class="daily-feed-title">
+          <span>📰 Today's News & Match Dispatches</span>
+        </h2>
+        <span class="daily-feed-count" id="daily-feed-counter">Showing Updates</span>
+      </div>
+
+      <div class="daily-updates-grid" id="daily-updates-container">
+        <!-- Rendered dynamically via CleanEsportsHub.renderDailyUpdates() -->
+      </div>
+
+      <!-- Bottom Return Button -->
+      <div style="text-align:center; margin-top:3.5rem; margin-bottom:2rem;">
+        <button class="btn-back-home" style="padding:0.9rem 2.5rem; font-size:1.05rem;" onclick="window.cleanHub && window.cleanHub.showHome()">
+          ← Back to Clubs Overview
+        </button>
       </div>
 
     </div>

@@ -102,5 +102,117 @@ const INITIAL_HUB_DATA = {
         ]
       }
     ]
-  }
+  },
+  dailyUpdates: [
+    {
+      id: "up-1",
+      date: "16 Nov 2026",
+      time: "04:15 PM",
+      category: "EWC 2026",
+      team: "both",
+      teamName: "GodLike & S8UL",
+      title: "India Secures Direct Contender Slots across 21 Titles for EWC Riyadh 2026",
+      summary: "In a monumental milestone for South Asian esports, both S8UL Esports (12 titles) and GodLike Esports (9 titles) have confirmed their multi-title campaigns for the Esports World Cup 2026 Club Championship in Riyadh, boasting India's largest combined esports contingent in history.",
+      highlights: [
+        "21 total game titles represented including PMWC, Apex Legends, Tekken 8, and Chess",
+        "Club Championship points will count towards multi-million dollar global prize pool",
+        "Official bootcamp schedules starting in Riyadh and Dubai in early 2026"
+      ],
+      updatedBy: "Pritesh Gehlot",
+      badgeColor: "var(--tiranga-saffron)",
+      isBreaking: true
+    },
+    {
+      id: "up-2",
+      date: "16 Nov 2026",
+      time: "02:30 PM",
+      category: "GodLike BGMI",
+      team: "godlike",
+      teamName: "GodLike Esports",
+      title: "GodLike BGMI Lineup Dominates Day 3 Scrims with 3 Chicken Dinners",
+      summary: "The GodLike battle royale roster led by Manya, Jonathan, Admino, and Spower displayed unmatched combat efficiency during international invitation scrims, securing 68 total finishes across 6 matches with aggressive zone edge control.",
+      highlights: [
+        "Jonathan takes top fragger honor with 19 eliminations and 3,420 damage",
+        "Admino clutches 1v3 final circle against APAC contenders on Erangel",
+        "Average placement: 2.1 across the entire day's match set"
+      ],
+      updatedBy: "Pritesh Gehlot",
+      badgeColor: "var(--godl-gold)",
+      isBreaking: false
+    },
+    {
+      id: "up-3",
+      date: "16 Nov 2026",
+      time: "01:00 PM",
+      category: "S8UL Apex",
+      team: "s8ul",
+      teamName: "S8UL Esports",
+      title: "S8UL Apex Legends Division Locks Top 3 Seed for Global Qualifiers",
+      summary: "The S8UL Apex squad featuring urban, taskmast33r, and player rosters demonstrated surgical team fighting in APAC regional qualifiers, advancing comfortably to the EWC 2026 Championship Playoff bracket.",
+      highlights: [
+        "Ranked #2 in total match points with 4 top-five finishes",
+        "Urban records highest sniper accuracy (84%) across Storm Point maps",
+        "Playoffs set to commence live this coming weekend"
+      ],
+      updatedBy: "Pritesh Gehlot",
+      badgeColor: "var(--s8ul-blue)",
+      isBreaking: false
+    },
+    {
+      id: "up-4",
+      date: "16 Nov 2026",
+      time: "11:45 AM",
+      category: "FGC & Tekken",
+      team: "godlike",
+      teamName: "GodLike Esports",
+      title: "KEISUKE & GodLike FGC Announce Extended Riyadh Training Bootcamp",
+      summary: "GodLike's Tekken 8 ace KEISUKE alongside the Street Fighter 6 and Fatal Fury divisions have entered an intensive technical training camp focused on frame data optimization and matchup preparations for international EWC pools.",
+      highlights: [
+        "Daily sparring sessions against top Japanese and Korean masters",
+        "KEISUKE ranked #1 in Asian online invitational ladders this week",
+        "Fatal Fury: City of the Wolves roster locked with full team roster"
+      ],
+      updatedBy: "Pritesh Gehlot",
+      badgeColor: "var(--godl-gold)",
+      isBreaking: false
+    },
+    {
+      id: "up-5",
+      date: "16 Nov 2026",
+      time: "10:15 AM",
+      category: "S8UL Chess",
+      team: "s8ul",
+      teamName: "S8UL Esports",
+      title: "Grandmasters Nihal Sarin & Pranesh M Lead S8UL EWC Strategy Campaign",
+      summary: "S8UL's elite chess grandmaster division is preparing for the fast-paced rapid and blitz brackets of EWC 2026, pairing classical depth with high-pressure tactical preparation under S8UL's global esports banner.",
+      highlights: [
+        "GM Nihal Sarin holds FIDE 2680+ rating and top blitz speed stats",
+        "Specialized opening preparation designed specifically for EWC time controls",
+        "Exhibition stream and tactical masterclass announced for fans"
+      ],
+      updatedBy: "Pritesh Gehlot",
+      badgeColor: "var(--s8ul-blue)",
+      isBreaking: false
+    },
+    {
+      id: "up-6",
+      date: "15 Nov 2026",
+      time: "08:30 PM",
+      category: "Team SouL BGMI",
+      team: "s8ul",
+      teamName: "S8UL Esports",
+      title: "Team SouL Announces Tactical Formation Shifts Ahead of Major Invitationals",
+      summary: "Under the leadership of NakuL and supported by the explosive firepower of Goblin, LEGIT, Thunder, and Jokerr, Team SouL is executing advanced utility-first zone transitions that yielded high kill-to-death ratios in latest tournament runs.",
+      highlights: [
+        "Goblin leads weekly assault damage charts with 4,110 damage",
+        "NakuL introduces flexible split rotations for Miramar high-ground control",
+        "Team SouL holds #1 spot in fan-favorite rankings for the 5th consecutive week"
+      ],
+      updatedBy: "Pritesh Gehlot",
+      badgeColor: "var(--s8ul-blue)",
+      isBreaking: false
+    }
+  ]
 };
+
+const INITIAL_DAILY_UPDATES = INITIAL_HUB_DATA.dailyUpdates;

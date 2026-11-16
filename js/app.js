@@ -15,11 +15,14 @@ class CleanEsportsHub {
     this.adminPin      = "admin";   // Primary Admin PIN (also accepts admin123)
     this.isAdmin       = false;     // Default to standard visitor mode
 
-    this.homeScreen    = document.getElementById("home-screen");
-    this.godlikeScreen = document.getElementById("screen-godlike");
-    this.s8ulScreen    = document.getElementById("screen-s8ul");
-    this.cardGodlike   = document.getElementById("card-godlike-select");
-    this.cardS8ul      = document.getElementById("card-s8ul-select");
+    this.homeScreen         = document.getElementById("home-screen");
+    this.godlikeScreen      = document.getElementById("screen-godlike");
+    this.s8ulScreen         = document.getElementById("screen-s8ul");
+    this.dailyUpdatesScreen = document.getElementById("screen-daily-updates");
+    this.cardGodlike        = document.getElementById("card-godlike-select");
+    this.cardS8ul           = document.getElementById("card-s8ul-select");
+    this.dailyUpdates       = (typeof INITIAL_DAILY_UPDATES !== "undefined") ? INITIAL_DAILY_UPDATES : (INITIAL_HUB_DATA.dailyUpdates || []);
+    this.currentDailyFilter = "all";
 
     // Restore active admin session if already authenticated in this tab or from /admin
     if (sessionStorage.getItem(this.adminKey) === "true" || (window.location && window.location.search && window.location.search.includes("admin=true"))) {
@@ -36,6 +39,18 @@ class CleanEsportsHub {
     // Sync from Cloud Database (Redis API)
     this.syncCloudData();
     this.syncCloudPending();
+
+    // Check deep link hash
+    if (window.location.hash === "#daily-updates") {
+      this.showDailyUpdates();
+    }
+    window.addEventListener("hashchange", () => {
+      if (window.location.hash === "#daily-updates") {
+        this.showDailyUpdates();
+      } else if (!window.location.hash || window.location.hash === "#home" || window.location.hash === "#") {
+        this.showHome();
+      }
+    });
   }
 
   async syncCloudData() {
@@ -160,13 +175,18 @@ class CleanEsportsHub {
   showHome() {
     this.godlikeScreen.classList.remove("active");
     this.s8ulScreen.classList.remove("active");
+    if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.remove("active");
     this.homeScreen.style.display = "flex";
+    if (window.location.hash === "#daily-updates") {
+      try { history.replaceState(null, null, " "); } catch(e) {}
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   showGodlike() {
     this.homeScreen.style.display = "none";
     this.s8ulScreen.classList.remove("active");
+    if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.remove("active");
     this.godlikeScreen.classList.add("active");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -174,8 +194,122 @@ class CleanEsportsHub {
   showS8ul() {
     this.homeScreen.style.display = "none";
     this.godlikeScreen.classList.remove("active");
+    if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.remove("active");
     this.s8ulScreen.classList.add("active");
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  showDailyUpdates() {
+    this.homeScreen.style.display = "none";
+    this.godlikeScreen.classList.remove("active");
+    this.s8ulScreen.classList.remove("active");
+    if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.add("active");
+    this.renderDailyUpdates(this.currentDailyFilter || "all");
+    try { window.location.hash = "daily-updates"; } catch(e) {}
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  filterDailyUpdates(filter, btn) {
+    this.currentDailyFilter = filter;
+    const buttons = document.querySelectorAll(".daily-filter-pill");
+    buttons.forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    this.renderDailyUpdates(filter);
+  }
+
+  renderDailyUpdates(filter = "all") {
+    const list = this.dailyUpdates || [];
+    const container = document.getElementById("daily-updates-container");
+    const spotlightBox = document.getElementById("daily-spotlight-box");
+    const counter = document.getElementById("daily-feed-counter");
+    const dateEl = document.getElementById("daily-live-date-text");
+
+    if (dateEl) {
+      const today = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+      dateEl.textContent = `${today} · LIVE DESK`;
+    }
+
+    // Filter items
+    let filtered = list;
+    if (filter === "ewc") {
+      filtered = list.filter(u => (u.category && u.category.includes("EWC")) || (u.title && u.title.includes("EWC")));
+    } else if (filter === "godlike") {
+      filtered = list.filter(u => u.team === "godlike" || u.team === "both" || (u.title && u.title.toLowerCase().includes("godlike")));
+    } else if (filter === "s8ul") {
+      filtered = list.filter(u => u.team === "s8ul" || u.team === "both" || (u.title && u.title.toLowerCase().includes("s8ul")) || (u.title && u.title.toLowerCase().includes("soul")));
+    } else if (filter === "bgmi") {
+      filtered = list.filter(u => (u.category && u.category.toLowerCase().includes("bgmi")) || (u.title && u.title.toLowerCase().includes("bgmi")));
+    } else if (filter === "pc") {
+      filtered = list.filter(u => (u.category && (u.category.includes("FGC") || u.category.includes("Tekken") || u.category.includes("Apex") || u.category.includes("Chess"))));
+    }
+
+    if (counter) {
+      counter.textContent = `Showing ${filtered.length} Dispatches`;
+    }
+
+    // 1. Render Spotlight Banner (first breaking update, or default)
+    if (spotlightBox) {
+      const spotlight = list.find(u => u.isBreaking) || list[0];
+      if (spotlight) {
+        const highlightsHtml = (spotlight.highlights || []).map(h => `<li>${this.escapeHtml(h)}</li>`).join("");
+        spotlightBox.innerHTML = `
+          <div class="spotlight-meta-line">
+            <span class="spotlight-category-tag">${this.escapeHtml(spotlight.category)}</span>
+            <span class="spotlight-time-tag">📅 ${this.escapeHtml(spotlight.date)} · ${this.escapeHtml(spotlight.time)}</span>
+          </div>
+          <h2 class="spotlight-title">${this.escapeHtml(spotlight.title)}</h2>
+          <p class="spotlight-summary">${this.escapeHtml(spotlight.summary)}</p>
+          ${highlightsHtml ? `<ul class="spotlight-highlights-list">${highlightsHtml}</ul>` : ""}
+          <div class="spotlight-footer">
+            <span class="updater-pill" style="border-color:var(--tiranga-saffron);">
+              <span class="updater-icon">👤</span>
+              <span class="updater-name">Reported by ${this.escapeHtml(spotlight.updatedBy || "Pritesh Gehlot")}</span>
+            </span>
+            <span style="font-size:0.8rem; color:#94a3b8; font-weight:700;">🇮🇳 India EWC Live Coverage</span>
+          </div>
+        `;
+      }
+    }
+
+    // 2. Render Cards Grid
+    if (container) {
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1/-1; text-align:center; padding:3rem; color:#94a3b8;">
+            🔍 No updates found for this category today. Check back soon!
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        let teamBadgeColor = "var(--tiranga-saffron)";
+        if (item.team === "godlike") teamBadgeColor = "var(--godl-gold)";
+        if (item.team === "s8ul") teamBadgeColor = "var(--s8ul-blue)";
+
+        const highlightsHtml = (item.highlights || []).map(h => `<li>${this.escapeHtml(h)}</li>`).join("");
+
+        return `
+          <article class="daily-update-card">
+            <div class="daily-card-top">
+              <span class="daily-card-category" style="color:${teamBadgeColor}; border-color:${teamBadgeColor}; background:rgba(255,255,255,0.03);">
+                ${this.escapeHtml(item.category)}
+              </span>
+              <span class="daily-card-time">${this.escapeHtml(item.date)} · ${this.escapeHtml(item.time)}</span>
+            </div>
+            <h3 class="daily-card-title">${this.escapeHtml(item.title)}</h3>
+            <p class="daily-card-summary">${this.escapeHtml(item.summary)}</p>
+            ${highlightsHtml ? `<ul class="daily-card-highlights">${highlightsHtml}</ul>` : ""}
+            <div class="daily-card-footer">
+              <span class="updater-pill">
+                <span class="updater-icon">👤</span>
+                <span class="updater-name">${this.escapeHtml(item.updatedBy || "Pritesh Gehlot")}</span>
+              </span>
+              <span style="color:#00ff88; font-weight:700; font-size:0.75rem;">Verified News</span>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
   }
 
   // =========================================================================

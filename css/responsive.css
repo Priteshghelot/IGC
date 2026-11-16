@@ -634,3 +634,89 @@ html, body {
   }
 }
 
+/* ── Daily Esports Updates Mobile & Tablet Optimization ── */
+@media (max-width: 768px) {
+  .daily-marquee-wrapper {
+    margin-bottom: 1.75rem;
+    padding: 0 0.5rem;
+  }
+
+  .daily-marquee-btn {
+    padding: 6px 8px;
+    border-radius: 9999px;
+  }
+
+  .marquee-live-indicator {
+    padding: 6px 10px;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+  }
+
+  .marquee-track-container {
+    margin: 0 8px;
+  }
+
+  .marquee-scrolling-content {
+    font-size: 0.8rem;
+    gap: 16px;
+  }
+
+  .marquee-cta-pill {
+    padding: 6px 12px;
+    font-size: 0.74rem;
+  }
+
+  .daily-hero-card {
+    padding: 1.75rem 1.25rem 1.25rem;
+    border-radius: 14px;
+    margin-bottom: 1.5rem;
+  }
+
+  .daily-hero-title {
+    font-size: 2rem;
+  }
+
+  .daily-hero-subtitle {
+    font-size: 0.92rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .daily-stats-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .daily-stat-divider {
+    display: none;
+  }
+
+  .daily-updates-grid {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+  }
+
+  .daily-spotlight-card {
+    padding: 1.25rem;
+  }
+
+  .spotlight-title {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 440px) {
+  .marquee-live-indicator span:last-child {
+    font-size: 0.68rem;
+  }
+
+  .marquee-cta-pill span:first-child {
+    display: none;
+  }
+
+  .marquee-cta-pill {
+    padding: 6px 10px;
+  }
+}
+
