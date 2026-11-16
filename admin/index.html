@@ -435,7 +435,9 @@
             Object.assign(g, {
               title: req.data.title,
               genre: req.data.genre,
-              roster: req.data.roster
+              roster: req.data.roster,
+              updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
+              updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
             });
           }
         } else if (req.type === "player") {
@@ -465,7 +467,9 @@
             genre: req.data.genre || "",
             roster: req.data.roster || "",
             status: "EWC 2026 Official Title",
-            highlight: false
+            highlight: false,
+            updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
+            updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
           });
         }
 

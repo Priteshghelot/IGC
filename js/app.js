@@ -247,12 +247,19 @@ class CleanEsportsHub {
     games.forEach((g, index) => {
       const rowStyle = g.highlight ? `style="background:rgba(255,255,255,0.05);"` : "";
       const statusStyle = `style="color:${themeColor}; font-weight:700;"`;
+      const updaterName = g.updatedBy || "Pritesh Gehlot";
       html += `
         <tr ${rowStyle}>
           <td class="col-num" style="color:${themeColor};" data-label="#">${g.no || index + 1}</td>
           <td class="col-title" data-label="Game">${this.escapeHtml(g.title)}</td>
           <td data-label="Genre">${this.escapeHtml(g.genre)}</td>
           <td data-label="Roster">${this.escapeHtml(g.roster)}</td>
+          <td data-label="Updated By">
+            <span class="updater-pill" title="${g.updatedAt ? `Last updated: ${this.escapeHtml(g.updatedAt)}` : 'Verified updater'}">
+              <span class="updater-icon">👤</span>
+              <span class="updater-name">${this.escapeHtml(updaterName)}</span>
+            </span>
+          </td>
           <td ${statusStyle} data-label="Status">${this.escapeHtml(g.status)}</td>
           ${this.isAdmin ? `
             <td class="admin-td-actions" data-label="Actions">
@@ -263,7 +270,7 @@ class CleanEsportsHub {
     });
 
     if (games.length === 0) {
-      html = `<tr><td colspan="${this.isAdmin ? 6 : 5}" style="text-align:center;padding:2rem;color:var(--text-muted);">No EWC games listed yet.</td></tr>`;
+      html = `<tr><td colspan="${this.isAdmin ? 7 : 6}" style="text-align:center;padding:2rem;color:var(--text-muted);">No EWC games listed yet.</td></tr>`;
     }
     tbody.innerHTML = html;
 
@@ -559,6 +566,11 @@ class CleanEsportsHub {
     document.getElementById("game-roster-input").value = "";
     document.getElementById("game-status-input").value = "EWC 2026 Official Title";
     document.getElementById("game-highlight-check").checked = false;
+
+    const lastUpdater = localStorage.getItem("last_updater_name") || "Pritesh Gehlot";
+    const updaterInput = document.getElementById("game-updater-input");
+    if (updaterInput) updaterInput.value = lastUpdater;
+
     document.getElementById("game-modal").classList.add("active");
   }
 
@@ -582,6 +594,12 @@ class CleanEsportsHub {
     document.getElementById("game-roster-input").value = game.roster || "";
     document.getElementById("game-status-input").value = game.status || "";
     document.getElementById("game-highlight-check").checked = !!game.highlight;
+
+    const updaterInput = document.getElementById("game-updater-input");
+    if (updaterInput) {
+      updaterInput.value = game.updatedBy || localStorage.getItem("last_updater_name") || "Pritesh Gehlot";
+    }
+
     modal.classList.add("active");
   }
 
@@ -593,21 +611,27 @@ class CleanEsportsHub {
     const roster    = document.getElementById("game-roster-input").value.trim();
     const status    = document.getElementById("game-status-input").value.trim();
     const highlight = document.getElementById("game-highlight-check").checked;
+
+    const updaterInput = document.getElementById("game-updater-input");
+    const updatedBy = (updaterInput ? updaterInput.value.trim() : "") || localStorage.getItem("last_updater_name") || "Pritesh Gehlot";
+    localStorage.setItem("last_updater_name", updatedBy);
+    const updatedAt = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+
     if (!title) { alert("Please enter the game title."); return; }
 
     if (this.isAdmin) {
       if (this.editingGameId) {
         if (this.currentGameTeam !== teamKey) {
           this.data[this.currentGameTeam].ewcGames = this.data[this.currentGameTeam].ewcGames.filter(g => g.id !== this.editingGameId);
-          this.data[teamKey].ewcGames.push({ id: this.editingGameId, no, title, genre, roster, status, highlight });
+          this.data[teamKey].ewcGames.push({ id: this.editingGameId, no, title, genre, roster, status, highlight, updatedBy, updatedAt });
         } else {
           const game = this.data[teamKey].ewcGames.find(g => g.id === this.editingGameId);
-          if (game) Object.assign(game, { no, title, genre, roster, status, highlight });
+          if (game) Object.assign(game, { no, title, genre, roster, status, highlight, updatedBy, updatedAt });
         }
-        this.showToast(`✅ Game "${title}" updated live!`);
+        this.showToast(`✅ Game "${title}" updated by ${updatedBy}!`);
       } else {
-        this.data[teamKey].ewcGames.push({ id: "game-" + Date.now(), no, title, genre, roster, status, highlight });
-        this.showToast(`✅ Game "${title}" added!`);
+        this.data[teamKey].ewcGames.push({ id: "game-" + Date.now(), no, title, genre, roster, status, highlight, updatedBy, updatedAt });
+        this.showToast(`✅ Game "${title}" added by ${updatedBy}!`);
       }
       this.data[teamKey].ewcGames.sort((a, b) => (a.no || 0) - (b.no || 0));
       this.saveData();
@@ -621,16 +645,16 @@ class CleanEsportsHub {
         teamKey,
         targetId: this.editingGameId,
         targetName: origGame ? origGame.title : title,
-        submittedBy: "Community User",
+        submittedBy: updatedBy,
         submittedAt: new Date().toLocaleString(),
         status: "pending",
         originalData: origGame ? { ...origGame } : null,
-        data: { no, title, genre, roster, status, highlight }
+        data: { no, title, genre, roster, status, highlight, updatedBy, updatedAt }
       };
       this.pending.push(req);
       this.savePending();
       this.updateAdminUI();
-      this.showToast(`📩 Edit request for "${title}" submitted! It will reflect once approved by Admin.`);
+      this.showToast(`📩 Edit submitted by ${updatedBy}! It will reflect once approved by Admin.`);
     }
 
     this.closeModal("game-modal");

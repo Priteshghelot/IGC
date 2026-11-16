@@ -181,6 +181,7 @@
                 <th>Game Title</th>
                 <th>Genre</th>
                 <th>Official Roster / Athletes</th>
+                <th>Updated By</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -257,6 +258,7 @@
                 <th>Game Title</th>
                 <th>Genre</th>
                 <th>Official Roster / Athletes</th>
+                <th>Updated By</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -342,6 +344,11 @@
             <textarea id="player-desc-input" class="form-input form-textarea" rows="2" placeholder="Brief note about the player's achievements or playstyle..."></textarea>
           </div>
 
+          <div class="form-group form-col-full">
+            <label>👤 Updated By / Editor Name *</label>
+            <input type="text" id="player-updater-input" class="form-input" placeholder="e.g. Pritesh Gehlot">
+          </div>
+
         </div>
 
         <div class="modal-footer">
@@ -395,6 +402,14 @@
           <div class="form-group form-col-full">
             <label>Official Roster / Athletes</label>
             <input type="text" id="game-roster-input" class="form-input" placeholder="e.g. Manya, Jonathan, Admino, Spower, Saumay, Godz">
+          </div>
+
+          <div class="form-group form-col-full">
+            <label>👤 Updated By / Editor Name *</label>
+            <input type="text" id="game-updater-input" class="form-input" placeholder="e.g. Pritesh Gehlot" required>
+            <small style="color:var(--text-muted); font-size:0.75rem; margin-top:4px; display:block;">
+              Your name will be publicly credited under "Updated By" on this active line-up.
+            </small>
           </div>
 
           <div class="form-group form-col-full" style="display:flex; align-items:center; gap:8px;">

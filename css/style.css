@@ -763,6 +763,36 @@ button {
   color: #fff;
 }
 
+.updater-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.updater-pill:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.updater-icon {
+  font-size: 0.82rem;
+  opacity: 0.9;
+}
+
+.updater-pill .updater-name {
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
 /* Clean Roster Cards (No fake photos) */
 .roster-grid-clean {
   display: grid;

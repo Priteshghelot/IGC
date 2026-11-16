@@ -9,15 +9,15 @@ const INITIAL_HUB_DATA = {
     name: "GodLike Esports",
     themeColor: "var(--godl-gold)",
     ewcGames: [
-      { id: "gl-g1", no: 1, title: "Fatal Fury: City of the Wolves", genre: "Fighting Game (FGC)", roster: "GodLike FGC Division", status: "EWC 2026 Official Title", highlight: false },
-      { id: "gl-g2", no: 2, title: "EA SPORTS FC 26", genre: "Sports Simulation", roster: "Charanjot (Charanjot Singh)", status: "EWC 2026 Official Title", highlight: false },
-      { id: "gl-g3", no: 3, title: "Teamfight Tactics (TFT)", genre: "Strategy / Auto-Battler", roster: "BrosephTFT, dehua, Deisik, Gobosteur, Ryko", status: "EWC 2026 Official Title", highlight: false },
-      { id: "gl-g4", no: 4, title: "Street Fighter 6", genre: "Fighting Game (FGC)", roster: "GodLike FGC Division", status: "EWC 2026 Official Title", highlight: false },
-      { id: "gl-g5", no: 5, title: "Call of Duty: Warzone", genre: "Battle Royale / FPS", roster: "GodLike Warzone Squad", status: "EWC 2026 Official Title", highlight: false },
-      { id: "gl-g6", no: 6, title: "Tekken 8", genre: "Fighting Game (FGC)", roster: "KEISUKE", status: "EWC 2026 Official Title", highlight: false },
-      { id: "gl-g7", no: 7, title: "PUBG Mobile World Cup (PMWC)", genre: "Mobile Battle Royale", roster: "Manya, Jonathan, Admino, Spower, Saumay, Godz", status: "Core Flagship (Grand Finalists)", highlight: true },
-      { id: "gl-g8", no: 8, title: "Chess", genre: "Mind Sport / Strategy", roster: "GM Hans Moke Niemann", status: "Super Grandmaster", highlight: true },
-      { id: "gl-g9", no: 9, title: "Trackmania", genre: "Speed Racing / Time Attack", roster: "GodLike Trackmania Division", status: "EWC 2026 Official Title", highlight: false }
+      { id: "gl-g1", no: 1, title: "Fatal Fury: City of the Wolves", genre: "Fighting Game (FGC)", roster: "GodLike FGC Division", status: "EWC 2026 Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "gl-g2", no: 2, title: "EA SPORTS FC 26", genre: "Sports Simulation", roster: "Charanjot (Charanjot Singh)", status: "EWC 2026 Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "gl-g3", no: 3, title: "Teamfight Tactics (TFT)", genre: "Strategy / Auto-Battler", roster: "BrosephTFT, dehua, Deisik, Gobosteur, Ryko", status: "EWC 2026 Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "gl-g4", no: 4, title: "Street Fighter 6", genre: "Fighting Game (FGC)", roster: "GodLike FGC Division", status: "EWC 2026 Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "gl-g5", no: 5, title: "Call of Duty: Warzone", genre: "Battle Royale / FPS", roster: "GodLike Warzone Squad", status: "EWC 2026 Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "gl-g6", no: 6, title: "Tekken 8", genre: "Fighting Game (FGC)", roster: "KEISUKE", status: "EWC 2026 Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "gl-g7", no: 7, title: "PUBG Mobile World Cup (PMWC)", genre: "Mobile Battle Royale", roster: "Manya, Jonathan, Admino, Spower, Saumay, Godz", status: "Core Flagship (Grand Finalists)", highlight: true, updatedBy: "Pritesh Gehlot" },
+      { id: "gl-g8", no: 8, title: "Chess", genre: "Mind Sport / Strategy", roster: "GM Hans Moke Niemann", status: "Super Grandmaster", highlight: true, updatedBy: "Pritesh Gehlot" },
+      { id: "gl-g9", no: 9, title: "Trackmania", genre: "Speed Racing / Time Attack", roster: "GodLike Trackmania Division", status: "EWC 2026 Official Title", highlight: false, updatedBy: "Pritesh Gehlot" }
     ],
     divisions: [
       {
@@ -67,18 +67,18 @@ const INITIAL_HUB_DATA = {
     name: "S8UL Esports",
     themeColor: "var(--s8ul-blue)",
     ewcGames: [
-      { id: "s8-g1", no: 1, title: "Apex Legends", genre: "Battle Royale", roster: "Sharky (Rick Wirth), Jesko, Legacy", status: "EWC Official Title", highlight: false },
-      { id: "s8-g2", no: 2, title: "BGMI (Team SouL)", genre: "Battle Royale", roster: "NakuL, Goblin, LEGIT, Thunder, Jokerr", status: "Flagship Team SouL", highlight: true },
-      { id: "s8-g3", no: 3, title: "Call of Duty: Warzone", genre: "Battle Royale", roster: "Knight (Aidan Provenzano), Clumziy, Rxul", status: "EWC Official Title", highlight: false },
-      { id: "s8-g4", no: 4, title: "Chess (Mind Sports)", genre: "Mind Sport", roster: "GM Nihal Sarin, GM Aravindh, GM Pranesh M", status: "Super Grandmasters", highlight: true },
-      { id: "s8-g5", no: 5, title: "EA Sports FC", genre: "Sports Sim", roster: "Krusher (Aditya Chadha), Jonny, Fouma", status: "EWC Official Title", highlight: false },
-      { id: "s8-g6", no: 6, title: "Fighting Games (Fatal Fury & SF6)", genre: "FGC", roster: "Closing Regent (Ansh Arora), B Haunt, Prince", status: "Talent Hunt Reps", highlight: false },
-      { id: "s8-g7", no: 7, title: "Fortnite", genre: "Battle Royale", roster: "Faded (David Ciubotariu), Kaan (Kaan Tafli)", status: "EWC Official Title", highlight: false },
-      { id: "s8-g8", no: 8, title: "Honor of Kings", genre: "MOBA", roster: "Darkness, Meruem, Xtreme, Kyurem, Kong", status: "EWC Official Title", highlight: false },
-      { id: "s8-g9", no: 9, title: "MOBA Legends 5v5 (MLBB)", genre: "MOBA", roster: "Bobe (Bikash Tamang), Radium, Anti, J, Apex", status: "EWC Official Title", highlight: false },
-      { id: "s8-g10", no: 10, title: "Tekken 8", genre: "FGC", roster: "Tetsu (Akhil Kakar), Soul, AK Arhaan", status: "EWC Official Title", highlight: false },
-      { id: "s8-g11", no: 11, title: "Trackmania", genre: "Speed Racing", roster: "Whizzy (Alexander Page), Spark, Neal", status: "EWC Official Title", highlight: false },
-      { id: "s8-g12", no: 12, title: "PUBG: Battlegrounds", genre: "Battle Royale", roster: "Team Question Mark Partnership", status: "Club Partner Title", highlight: false }
+      { id: "s8-g1", no: 1, title: "Apex Legends", genre: "Battle Royale", roster: "Sharky (Rick Wirth), Jesko, Legacy", status: "EWC Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "s8-g2", no: 2, title: "BGMI (Team SouL)", genre: "Battle Royale", roster: "NakuL, Goblin, LEGIT, Thunder, Jokerr", status: "Flagship Team SouL", highlight: true, updatedBy: "Pritesh Gehlot" },
+      { id: "s8-g3", no: 3, title: "Call of Duty: Warzone", genre: "Battle Royale", roster: "Knight (Aidan Provenzano), Clumziy, Rxul", status: "EWC Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "s8-g4", no: 4, title: "Chess (Mind Sports)", genre: "Mind Sport", roster: "GM Nihal Sarin, GM Aravindh, GM Pranesh M", status: "Super Grandmasters", highlight: true, updatedBy: "Pritesh Gehlot" },
+      { id: "s8-g5", no: 5, title: "EA Sports FC", genre: "Sports Sim", roster: "Krusher (Aditya Chadha), Jonny, Fouma", status: "EWC Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "s8-g6", no: 6, title: "Fighting Games (Fatal Fury & SF6)", genre: "FGC", roster: "Closing Regent (Ansh Arora), B Haunt, Prince", status: "Talent Hunt Reps", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "s8-g7", no: 7, title: "Fortnite", genre: "Battle Royale", roster: "Faded (David Ciubotariu), Kaan (Kaan Tafli)", status: "EWC Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "s8-g8", no: 8, title: "Honor of Kings", genre: "MOBA", roster: "Darkness, Meruem, Xtreme, Kyurem, Kong", status: "EWC Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "s8-g9", no: 9, title: "MOBA Legends 5v5 (MLBB)", genre: "MOBA", roster: "Bobe (Bikash Tamang), Radium, Anti, J, Apex", status: "EWC Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "s8-g10", no: 10, title: "Tekken 8", genre: "FGC", roster: "Tetsu (Akhil Kakar), Soul, AK Arhaan", status: "EWC Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "s8-g11", no: 11, title: "Trackmania", genre: "Speed Racing", roster: "Whizzy (Alexander Page), Spark, Neal", status: "EWC Official Title", highlight: false, updatedBy: "Pritesh Gehlot" },
+      { id: "s8-g12", no: 12, title: "PUBG: Battlegrounds", genre: "Battle Royale", roster: "Team Question Mark Partnership", status: "Club Partner Title", highlight: false, updatedBy: "Pritesh Gehlot" }
     ],
     divisions: [
       {
