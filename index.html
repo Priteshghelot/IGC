@@ -72,6 +72,39 @@
     </div>
 
     <!-- =========================================================================
+         EWC27 GAMES SECTION (Positioned Just Above Daily Update Marquee)
+         ========================================================================= -->
+    <section class="ewc27-games-section" id="ewc27-games-section">
+      <div class="ewc27-header-row">
+        <div class="ewc27-header-left">
+          <div class="ewc27-badge-pill">
+            <span class="pulsing-live-dot"></span>
+            <span>NEXT CHAPTER ROADMAP</span>
+          </div>
+          <h2 class="ewc27-main-title" id="ewc27-display-title">EWC27 Games</h2>
+          <p class="ewc27-main-subtitle" id="ewc27-display-subtitle">
+            Every game brings a new battle to the global stage. Keep watch here as we reveal the games that will set the stage for our next chapter.
+          </p>
+        </div>
+        <div class="ewc27-header-actions">
+          <button class="btn-ewc27-action btn-ewc27-add" onclick="window.cleanHub && window.cleanHub.openAddEwc27GameModal()">
+            ➕ Propose / Add Game
+          </button>
+          <button class="btn-ewc27-action btn-ewc27-edit" onclick="window.cleanHub && window.cleanHub.openEditEwc27TextModal()">
+            ✏️ Edit Text
+          </button>
+        </div>
+      </div>
+
+      <!-- Horizontal Cards Carousel / Grid -->
+      <div class="ewc27-carousel-container">
+        <div class="ewc27-carousel-track" id="ewc27-games-track">
+          <!-- Rendered dynamically by CleanEsportsHub.renderEwc27Games() -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
          DAILY ESPORTS UPDATES - MARQUEE CTA BUTTON
          Positioned Center Above S8UL & GodLike Club Cards
          ========================================================================= -->
@@ -698,6 +731,84 @@
       <div class="modal-footer">
         <button type="button" class="btn-modal-secondary" onclick="window.cleanHub.closeModal('approvals-modal')">Close</button>
       </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: PROPOSE / ADD EWC27 GAME
+       ========================================================================= -->
+  <div class="modal-overlay" id="ewc27-game-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="ewc27-game-modal-title">🎮 Propose / Add EWC27 Game</h3>
+        <button class="modal-close-btn" onclick="window.cleanHub.closeModal('ewc27-game-modal')">✕</button>
+      </div>
+      <form id="ewc27-game-modal-form" class="modal-body" onsubmit="window.cleanHub.handleEwc27GameSubmit(event)">
+        <div class="form-grid">
+          <div class="form-group form-col-full">
+            <label>Game Title / Name *</label>
+            <input type="text" id="ewc27-modal-game-title" class="form-input" placeholder="e.g. Counter-Strike 2, Valorant, BGMI" required>
+          </div>
+          <div class="form-group">
+            <label>Category / Genre</label>
+            <input type="text" id="ewc27-modal-game-genre" class="form-input" placeholder="e.g. Tactical FPS, MOBA, Fighting (FGC)">
+          </div>
+          <div class="form-group">
+            <label>Publisher / Subtitle</label>
+            <input type="text" id="ewc27-modal-game-sub" class="form-input" placeholder="e.g. Valve, Riot Games, City of the Wolves">
+          </div>
+          <div class="form-group form-col-full">
+            <label>Your Name / Handle *</label>
+            <input type="text" id="ewc27-modal-game-submitter" class="form-input" placeholder="e.g. Pritesh Gehlot, EsportsFan" required>
+          </div>
+          <div class="form-group form-col-full">
+            <label>Notes / Official Announcement Source</label>
+            <textarea id="ewc27-modal-game-notes" class="form-input form-textarea" rows="2" placeholder="Links or context on why this game is part of EWC 2027..."></textarea>
+          </div>
+        </div>
+        <p style="font-size:0.78rem; color:var(--text-sub); margin-top:8px;">
+          ℹ️ Your submission will be sent to the Admin queue. Approved games appear highlighted with enlarged font in the EWC27 Games row!
+        </p>
+        <div class="modal-footer" style="padding:1rem 0 0;">
+          <button type="button" class="btn-modal-secondary" onclick="window.cleanHub.closeModal('ewc27-game-modal')">Cancel</button>
+          <button type="submit" class="btn-modal-primary">📩 Submit for Admin Approval</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: EDIT EWC27 SECTION TEXT
+       ========================================================================= -->
+  <div class="modal-overlay" id="ewc27-text-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>✏️ Edit EWC27 Intro Text</h3>
+        <button class="modal-close-btn" onclick="window.cleanHub.closeModal('ewc27-text-modal')">✕</button>
+      </div>
+      <form id="ewc27-text-modal-form" class="modal-body" onsubmit="window.cleanHub.handleEwc27TextSubmit(event)">
+        <div class="form-grid">
+          <div class="form-group form-col-full">
+            <label>Section Title *</label>
+            <input type="text" id="ewc27-modal-text-title" class="form-input" value="EWC27 Games" required>
+          </div>
+          <div class="form-group form-col-full">
+            <label>Subtitle / Description *</label>
+            <textarea id="ewc27-modal-text-sub" class="form-input form-textarea" rows="3" required>Every game brings a new battle to the global stage. Keep watch here as we reveal the games that will set the stage for our next chapter.</textarea>
+          </div>
+          <div class="form-group form-col-full">
+            <label>Your Name / Handle *</label>
+            <input type="text" id="ewc27-modal-text-submitter" class="form-input" placeholder="e.g. Pritesh Gehlot" required>
+          </div>
+        </div>
+        <p style="font-size:0.78rem; color:var(--text-sub); margin-top:8px;">
+          ℹ️ Changes will be reviewed by Admin before updating the live EWC27 section.
+        </p>
+        <div class="modal-footer" style="padding:1rem 0 0;">
+          <button type="button" class="btn-modal-secondary" onclick="window.cleanHub.closeModal('ewc27-text-modal')">Cancel</button>
+          <button type="submit" class="btn-modal-primary">📩 Submit Text Edit</button>
+        </div>
+      </form>
     </div>
   </div>
 

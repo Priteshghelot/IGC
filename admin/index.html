@@ -382,7 +382,23 @@
           let typeLabel = "👤 New Player";
           let details = "";
 
-          if (req.type === "daily_post") {
+          if (req.type === "ewc27_game") {
+            typeLabel = "🎮 EWC27 Game Suggestion";
+            details = `
+              <div class="approval-detail"><strong>Proposed Game Title:</strong> <span style="font-size:1.15rem; font-weight:800; color:#fff;">${this.escape(req.data.title)}</span></div>
+              <div class="approval-detail"><strong>Category / Genre:</strong> ${this.escape(req.data.genre || "-")}</div>
+              <div class="approval-detail"><strong>Publisher / Subtitle:</strong> ${this.escape(req.data.sub || "-")}</div>
+              <div class="approval-detail"><strong>Notes:</strong> ${this.escape(req.data.notes || "-")}</div>
+              <div class="approval-detail"><strong>Submitted By:</strong> <span style="color:var(--godl-gold); font-weight:700;">👤 ${this.escape(req.submittedBy)}</span></div>
+            `;
+          } else if (req.type === "ewc27_text") {
+            typeLabel = "✏️ EWC27 Text Edit";
+            details = `
+              <div class="approval-detail"><strong>Proposed Title:</strong> ${this.escape(req.data.title)}</div>
+              <div class="approval-detail"><strong>Proposed Subtitle:</strong> ${this.escape(req.data.subtitle)}</div>
+              <div class="approval-detail"><strong>Submitted By:</strong> <span style="color:var(--godl-gold); font-weight:700;">👤 ${this.escape(req.submittedBy)}</span></div>
+            `;
+          } else if (req.type === "daily_post") {
             typeLabel = "📸 Daily Update Post";
             const imgHtml = req.imageUrl ? `<div style="margin:10px 0;"><img src="${this.escape(req.imageUrl)}" style="max-height:180px; max-width:100%; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.15);" onerror="this.style.display='none'"></div>` : '';
             details = `
@@ -450,6 +466,70 @@
       approve(reqId) {
         const req = this.pending.find(r => r.id === reqId);
         if (!req) return;
+
+        if (req.type === "ewc27_game") {
+          if (!Array.isArray(this.data.ewc27Games)) this.data.ewc27Games = [];
+          if (req.targetId) {
+            const item = this.data.ewc27Games.find(g => g.id === req.targetId);
+            if (item) {
+              item.title = req.data.title;
+              item.genre = req.data.genre;
+              item.sub = req.data.sub;
+              item.isNewlyAdded = true;
+            }
+          } else {
+            this.data.ewc27Games.push({
+              id: "e27-" + Date.now(),
+              title: req.data.title,
+              genre: req.data.genre || "",
+              sub: req.data.sub || "",
+              isNewlyAdded: true
+            });
+          }
+          req.status = "approved";
+          this.saveData();
+          this.savePending();
+          this.renderList();
+          try {
+            fetch('/api/requests', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'approve', id: reqId })
+            }).catch(() => {});
+            fetch('/api/data', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ data: this.data })
+            }).catch(() => {});
+          } catch(e) {}
+          alert(`✅ Accepted! Game "${req.data.title}" has been added & highlighted in the EWC27 Games section.`);
+          return;
+        }
+
+        if (req.type === "ewc27_text") {
+          this.data.ewc27Meta = {
+            title: req.data.title,
+            subtitle: req.data.subtitle
+          };
+          req.status = "approved";
+          this.saveData();
+          this.savePending();
+          this.renderList();
+          try {
+            fetch('/api/requests', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'approve', id: reqId })
+            }).catch(() => {});
+            fetch('/api/data', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ data: this.data })
+            }).catch(() => {});
+          } catch(e) {}
+          alert(`✅ Accepted! EWC27 text has been updated.`);
+          return;
+        }
 
         if (req.type === "daily_post") {
           req.status = "approved";

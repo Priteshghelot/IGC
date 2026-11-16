@@ -708,6 +708,48 @@ html, body {
     font-size: 0.74rem;
   }
 
+  /* ── EWC27 Games Showcase Mobile ── */
+  .ewc27-games-section {
+    padding: 1.5rem 1rem 1.75rem;
+    border-radius: 16px;
+    margin-bottom: 1.75rem;
+  }
+
+  .ewc27-main-title {
+    font-size: 1.85rem;
+  }
+
+  .ewc27-main-subtitle {
+    font-size: 0.92rem;
+  }
+
+  .ewc27-header-actions {
+    width: 100%;
+  }
+
+  .btn-ewc27-action {
+    flex: 1;
+    justify-content: center;
+    font-size: 0.82rem;
+    padding: 8px 12px;
+  }
+
+  .ewc27-game-card {
+    min-width: 180px;
+    max-width: 200px;
+    min-height: 115px;
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+  }
+
+  .ewc27-game-name {
+    font-size: 1.18rem;
+  }
+
+  .ewc27-game-card.ewc27-card-highlighted .ewc27-game-name {
+    font-size: 1.3rem;
+  }
+
   .daily-simple-title {
     font-size: 1.85rem;
   }

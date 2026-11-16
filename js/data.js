@@ -103,6 +103,22 @@ const INITIAL_HUB_DATA = {
       }
     ]
   },
+  ewc27Meta: {
+    title: "EWC27 Games",
+    subtitle: "Every game brings a new battle to the global stage. Keep watch here as we reveal the games that will set the stage for our next chapter."
+  },
+  ewc27Games: [
+    { id: "e27-1", title: "COUNTER STRIKE 2", genre: "Tactical FPS", sub: "Valve", isNewlyAdded: false },
+    { id: "e27-2", title: "VALORANT", genre: "Hero Tactical Shooter", sub: "Riot Games", isNewlyAdded: false },
+    { id: "e27-3", title: "FATAL FURY", genre: "Fighting Game (FGC)", sub: "City of the Wolves", isNewlyAdded: false },
+    { id: "e27-4", title: "CHESS", genre: "Mind Sport / Strategy", sub: "Classical & Blitz", isNewlyAdded: false },
+    { id: "e27-5", title: "DOTA 2", genre: "MOBA", sub: "Valve", isNewlyAdded: false },
+    { id: "e27-6", title: "LEAGUE OF LEGENDS", genre: "MOBA", sub: "Riot Games", isNewlyAdded: false },
+    { id: "e27-7", title: "TEKKEN 8", genre: "Fighting Game (FGC)", sub: "Bandai Namco", isNewlyAdded: false },
+    { id: "e27-8", title: "PUBG MOBILE / BGMI", genre: "Battle Royale", sub: "Krafton", isNewlyAdded: false },
+    { id: "e27-9", title: "APEX LEGENDS", genre: "Battle Royale / Hero", sub: "Respawn", isNewlyAdded: false },
+    { id: "e27-10", title: "EA SPORTS FC", genre: "Sports Simulation", sub: "EA Sports", isNewlyAdded: false }
+  ],
   dailyUpdates: []
 };
 
