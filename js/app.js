@@ -204,112 +204,238 @@ class CleanEsportsHub {
     this.godlikeScreen.classList.remove("active");
     this.s8ulScreen.classList.remove("active");
     if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.add("active");
-    this.renderDailyUpdates(this.currentDailyFilter || "all");
-    try { window.location.hash = "daily-updates"; } catch(e) {}
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  filterDailyUpdates(filter, btn) {
-    this.currentDailyFilter = filter;
-    const buttons = document.querySelectorAll(".daily-filter-pill");
-    buttons.forEach(b => b.classList.remove("active"));
-    if (btn) btn.classList.add("active");
-    this.renderDailyUpdates(filter);
-  }
-
-  renderDailyUpdates(filter = "all") {
-    const list = this.dailyUpdates || [];
-    const container = document.getElementById("daily-updates-container");
-    const spotlightBox = document.getElementById("daily-spotlight-box");
-    const counter = document.getElementById("daily-feed-counter");
+    
     const dateEl = document.getElementById("daily-live-date-text");
-
     if (dateEl) {
       const today = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
       dateEl.textContent = `${today} · LIVE DESK`;
     }
 
-    // Filter items
-    let filtered = list;
-    if (filter === "ewc") {
-      filtered = list.filter(u => (u.category && u.category.includes("EWC")) || (u.title && u.title.includes("EWC")));
-    } else if (filter === "godlike") {
-      filtered = list.filter(u => u.team === "godlike" || u.team === "both" || (u.title && u.title.toLowerCase().includes("godlike")));
-    } else if (filter === "s8ul") {
-      filtered = list.filter(u => u.team === "s8ul" || u.team === "both" || (u.title && u.title.toLowerCase().includes("s8ul")) || (u.title && u.title.toLowerCase().includes("soul")));
-    } else if (filter === "bgmi") {
-      filtered = list.filter(u => (u.category && u.category.toLowerCase().includes("bgmi")) || (u.title && u.title.toLowerCase().includes("bgmi")));
-    } else if (filter === "pc") {
-      filtered = list.filter(u => (u.category && (u.category.includes("FGC") || u.category.includes("Tekken") || u.category.includes("Apex") || u.category.includes("Chess"))));
+    this.renderApprovedPosts();
+    try { window.location.hash = "daily-updates"; } catch(e) {}
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ── Image preview handling for post upload ──────────────────────────────
+  handleImageFileSelect(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      this.showToast("⚠️ Image is too large. Please select an image under 5MB.");
+      e.target.value = "";
+      return;
     }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        const maxDim = 900;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.78);
+
+        this.selectedPostImage = compressedDataUrl;
+        const preview = document.getElementById("daily-image-preview");
+        const wrap = document.getElementById("daily-image-preview-wrap");
+        if (preview && wrap) {
+          preview.src = compressedDataUrl;
+          wrap.style.display = "block";
+        }
+        const urlInput = document.getElementById("daily-post-image");
+        if (urlInput) urlInput.value = "";
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  handleImageUrlInput(e) {
+    const url = e.target.value.trim();
+    const preview = document.getElementById("daily-image-preview");
+    const wrap = document.getElementById("daily-image-preview-wrap");
+    const fileInput = document.getElementById("daily-post-file");
+
+    if (url) {
+      this.selectedPostImage = url;
+      if (preview && wrap) {
+        preview.src = url;
+        wrap.style.display = "block";
+      }
+      if (fileInput) fileInput.value = "";
+    } else {
+      if (!this.selectedPostImage || this.selectedPostImage.startsWith("http")) {
+        this.clearImagePreview();
+      }
+    }
+  }
+
+  clearImagePreview() {
+    this.selectedPostImage = "";
+    const preview = document.getElementById("daily-image-preview");
+    const wrap = document.getElementById("daily-image-preview-wrap");
+    const fileInput = document.getElementById("daily-post-file");
+    const urlInput = document.getElementById("daily-post-image");
+    if (preview) preview.src = "";
+    if (wrap) wrap.style.display = "none";
+    if (fileInput) fileInput.value = "";
+    if (urlInput) urlInput.value = "";
+  }
+
+  // ── Handle daily post submission ──────────────────────────────────────────
+  async handleDailyPostSubmit(e) {
+    e.preventDefault();
+    const urlInput = document.getElementById("daily-post-image");
+    const imageUrl = this.selectedPostImage || (urlInput ? urlInput.value.trim() : "");
+    const caption  = (document.getElementById("daily-post-caption") || {}).value.trim();
+    const name     = (document.getElementById("daily-post-name") || {}).value.trim();
+
+    if (!caption || !name) {
+      this.showToast("⚠️ Please fill in both the post description and your name.");
+      return;
+    }
+
+    const submitBtn = document.getElementById("daily-submit-btn");
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "⏳ Submitting...";
+    }
+
+    const request = {
+      id: "dp_" + Date.now(),
+      type: "daily_post",
+      imageUrl: imageUrl || "",
+      caption: caption,
+      submittedBy: name,
+      submittedAt: new Date().toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }),
+      status: "pending"
+    };
+
+    // Save locally
+    this.pending.unshift(request);
+    this.savePending();
+    this.updateAdminUI();
+
+    // Sync to cloud Redis API
+    try {
+      await fetch("/api/requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "add", request })
+      });
+    } catch(err) { /* local fallback will work */ }
+
+    // Reset form
+    const form = document.getElementById("daily-post-form");
+    if (form) form.reset();
+    this.clearImagePreview();
+
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "📩 Submit Post for Admin Approval";
+    }
+
+    this.showToast("📩 Post submitted! An admin will review and approve it.");
+    this.renderApprovedPosts();
+  }
+
+  // ── Render approved posts: Recent Post Upload at Top ──────────────────────
+  async renderApprovedPosts() {
+    const container = document.getElementById("daily-posts-feed-container");
+    const counter   = document.getElementById("daily-feed-counter");
+    if (!container) return;
+
+    // 1. Gather all approved daily_post items from local pending
+    let approved = (this.pending || []).filter(r => r.type === "daily_post" && r.status === "approved");
+
+    // 2. Fetch fresh from cloud Redis
+    try {
+      const res = await fetch("/api/requests");
+      if (res.ok) {
+        const json = await res.json();
+        if (json.ok && Array.isArray(json.requests)) {
+          const map = new Map();
+          this.pending.forEach(r => map.set(r.id, r));
+          json.requests.forEach(r => map.set(r.id, r));
+          this.pending = Array.from(map.values());
+          this.savePending();
+          this.updateAdminUI();
+
+          approved = this.pending.filter(r => r.type === "daily_post" && r.status === "approved");
+        }
+      }
+    } catch(err) { /* use local */ }
+
+    // 3. Sort newest/recent first by id or timestamp so recent post upload is on TOP
+    approved.sort((a, b) => {
+      const timeA = a.id && a.id.startsWith("dp_") ? parseInt(a.id.replace("dp_", ""), 10) : 0;
+      const timeB = b.id && b.id.startsWith("dp_") ? parseInt(b.id.replace("dp_", ""), 10) : 0;
+      return timeB - timeA;
+    });
 
     if (counter) {
-      counter.textContent = `Showing ${filtered.length} Dispatches`;
+      counter.textContent = approved.length > 0 ? `Showing ${approved.length} Post${approved.length > 1 ? "s" : ""}` : "0 Posts";
     }
 
-    // 1. Render Spotlight Banner (first breaking update, or default)
-    if (spotlightBox) {
-      const spotlight = list.find(u => u.isBreaking) || list[0];
-      if (spotlight) {
-        const highlightsHtml = (spotlight.highlights || []).map(h => `<li>${this.escapeHtml(h)}</li>`).join("");
-        spotlightBox.innerHTML = `
-          <div class="spotlight-meta-line">
-            <span class="spotlight-category-tag">${this.escapeHtml(spotlight.category)}</span>
-            <span class="spotlight-time-tag">📅 ${this.escapeHtml(spotlight.date)} · ${this.escapeHtml(spotlight.time)}</span>
-          </div>
-          <h2 class="spotlight-title">${this.escapeHtml(spotlight.title)}</h2>
-          <p class="spotlight-summary">${this.escapeHtml(spotlight.summary)}</p>
-          ${highlightsHtml ? `<ul class="spotlight-highlights-list">${highlightsHtml}</ul>` : ""}
-          <div class="spotlight-footer">
-            <span class="updater-pill" style="border-color:var(--tiranga-saffron);">
-              <span class="updater-icon">👤</span>
-              <span class="updater-name">Reported by ${this.escapeHtml(spotlight.updatedBy || "Pritesh Gehlot")}</span>
-            </span>
-            <span style="font-size:0.8rem; color:#94a3b8; font-weight:700;">🇮🇳 India EWC Live Coverage</span>
-          </div>
-        `;
-      }
+    if (approved.length === 0) {
+      container.innerHTML = `
+        <div class="daily-empty-feed-card">
+          <div style="font-size:2.5rem; margin-bottom:12px;">📭</div>
+          <h3 style="color:#fff; font-size:1.15rem; margin-bottom:6px;">No Daily Posts Published Yet</h3>
+          <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5; max-width:480px; margin:0 auto 1.25rem;">
+            Use the form above to upload an image and post news! Every post is reviewed & approved by Admin before appearing here.
+          </p>
+        </div>`;
+      return;
     }
 
-    // 2. Render Cards Grid
-    if (container) {
-      if (filtered.length === 0) {
-        container.innerHTML = `
-          <div style="grid-column: 1/-1; text-align:center; padding:3rem; color:#94a3b8;">
-            🔍 No updates found for this category today. Check back soon!
-          </div>`;
-        return;
-      }
+    container.innerHTML = approved.map(post => {
+      const hasImage = post.imageUrl && post.imageUrl.length > 5;
+      const imgHtml = hasImage ? `
+        <div class="daily-post-image-box">
+          <img src="${this.escapeHtml(post.imageUrl)}" alt="Daily Update Image" class="daily-post-main-img" onerror="this.parentElement.style.display='none'" />
+        </div>` : "";
 
-      container.innerHTML = filtered.map(item => {
-        let teamBadgeColor = "var(--tiranga-saffron)";
-        if (item.team === "godlike") teamBadgeColor = "var(--godl-gold)";
-        if (item.team === "s8ul") teamBadgeColor = "var(--s8ul-blue)";
-
-        const highlightsHtml = (item.highlights || []).map(h => `<li>${this.escapeHtml(h)}</li>`).join("");
-
-        return `
-          <article class="daily-update-card">
-            <div class="daily-card-top">
-              <span class="daily-card-category" style="color:${teamBadgeColor}; border-color:${teamBadgeColor}; background:rgba(255,255,255,0.03);">
-                ${this.escapeHtml(item.category)}
-              </span>
-              <span class="daily-card-time">${this.escapeHtml(item.date)} · ${this.escapeHtml(item.time)}</span>
+      return `
+        <article class="daily-clean-post-card">
+          <div class="daily-post-card-header">
+            <div class="daily-post-author-pill">
+              <span class="daily-post-author-icon">👤</span>
+              <span class="daily-post-author-name">${this.escapeHtml(post.submittedBy || "Admin")}</span>
             </div>
-            <h3 class="daily-card-title">${this.escapeHtml(item.title)}</h3>
-            <p class="daily-card-summary">${this.escapeHtml(item.summary)}</p>
-            ${highlightsHtml ? `<ul class="daily-card-highlights">${highlightsHtml}</ul>` : ""}
-            <div class="daily-card-footer">
-              <span class="updater-pill">
-                <span class="updater-icon">👤</span>
-                <span class="updater-name">${this.escapeHtml(item.updatedBy || "Pritesh Gehlot")}</span>
-              </span>
-              <span style="color:#00ff88; font-weight:700; font-size:0.75rem;">Verified News</span>
+            <div class="daily-post-badge-live">
+              <span class="daily-check-icon">✓</span> Verified by Admin
             </div>
-          </article>
-        `;
-      }).join("");
-    }
+          </div>
+
+          ${imgHtml}
+
+          <div class="daily-post-card-body">
+            <p class="daily-post-text">${this.escapeHtml(post.caption || "")}</p>
+          </div>
+
+          <div class="daily-post-card-footer">
+            <span class="daily-post-timestamp">🕒 ${this.escapeHtml(post.submittedAt || "Recent")}</span>
+            <span class="daily-post-tag">🇮🇳 India EWC Desk</span>
+          </div>
+        </article>
+      `;
+    }).join("");
   }
 
   // =========================================================================

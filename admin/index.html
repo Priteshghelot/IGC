@@ -382,7 +382,16 @@
           let typeLabel = "👤 New Player";
           let details = "";
 
-          if (req.type === "edit_player") {
+          if (req.type === "daily_post") {
+            typeLabel = "📸 Daily Update Post";
+            const imgHtml = req.imageUrl ? `<div style="margin:10px 0;"><img src="${this.escape(req.imageUrl)}" style="max-height:180px; max-width:100%; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.15);" onerror="this.style.display='none'"></div>` : '';
+            details = `
+              ${imgHtml}
+              <div class="approval-detail"><strong>Post Content / Caption:</strong> ${this.escape(req.caption || req.data?.caption || "-")}</div>
+              <div class="approval-detail"><strong>Uploaded By:</strong> <span style="color:var(--godl-gold); font-weight:700;">👤 ${this.escape(req.submittedBy || "-")}</span></div>
+              <div class="approval-detail"><strong>Submitted:</strong> ${this.escape(req.submittedAt || "-")}</div>
+            `;
+          } else if (req.type === "edit_player") {
             typeLabel = "✏️ Proposed Player Edit";
             details = `
               <div class="approval-detail"><strong>Target Player:</strong> ${this.escape(req.targetName || req.data.ign)}</div>
@@ -441,6 +450,24 @@
       approve(reqId) {
         const req = this.pending.find(r => r.id === reqId);
         if (!req) return;
+
+        if (req.type === "daily_post") {
+          req.status = "approved";
+          this.savePending();
+          this.renderList();
+
+          // Sync approve to Cloud Redis
+          try {
+            fetch('/api/requests', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'approve', id: reqId })
+            }).catch(() => {});
+          } catch(e) {}
+
+          alert("✅ Daily post approved! It is now live in the Daily Updates feed.");
+          return;
+        }
 
         if (req.type === "edit_player") {
           for (const div of (this.data[req.teamKey]?.divisions || [])) {

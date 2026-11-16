@@ -310,9 +310,9 @@
        3. DAILY ESPORTS UPDATES SCREEN
        ========================================================================= -->
   <main class="detail-screen" id="screen-daily-updates">
-    <div class="container">
+    <div class="container" style="max-width: 860px;">
       
-      <!-- Top Bar: Back to Home + Date + Creator Profile Link -->
+      <!-- Top Bar: Back to Home + Live Pill + Creator Profile Link -->
       <div class="detail-top-nav">
         <button class="btn-back-home" onclick="window.cleanHub && window.cleanHub.showHome()">
           ← Back to Clubs
@@ -320,78 +320,87 @@
         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
           <div class="daily-live-timestamp-pill">
             <span class="pulsing-live-dot"></span>
-            <span id="daily-live-date-text">TODAY'S ESPORTS DESK</span>
+            <span id="daily-live-date-text">DAILY ESPORTS UPDATES</span>
           </div>
           <a href="https://www.youtube.com/@priteshgehlot" target="_blank" rel="noopener noreferrer" class="creator-inline-link" style="color:var(--tiranga-saffron);">
             <img src="images/pritesh_avatar.jpg" alt="Pritesh Gehlot" class="mini-creator-avatar" style="border-color:var(--tiranga-saffron);">
-            <span>Developed by Pritesh Gehlot (@priteshgehlot) ↗</span>
+            <span>@priteshgehlot ↗</span>
           </a>
         </div>
       </div>
 
-      <!-- Hero Banner for Daily Esports Updates -->
-      <div class="daily-hero-card">
-        <div class="daily-hero-glow"></div>
-        <div class="daily-hero-badge-wrap">
-          <span class="daily-hero-badge tiranga-badge">🇮🇳 BHARAT ESPORTS DAILY BULLETIN</span>
-          <span class="daily-hero-badge ewc-badge">🏆 EWC 2026 ROADMAP</span>
+      <!-- Header Title -->
+      <div class="daily-simple-header">
+        <div class="daily-hero-badge-wrap" style="justify-content:center; margin-bottom:8px;">
+          <span class="daily-hero-badge tiranga-badge">🇮🇳 BHARAT ESPORTS FEED</span>
+          <span class="daily-hero-badge ewc-badge">⚡ LIVE DAILY DESK</span>
         </div>
-        <h1 class="daily-hero-title">Daily Esports Updates</h1>
-        <p class="daily-hero-subtitle">
-          Real-time daily coverage tracking GodLike Esports, S8UL Esports, and Indian contenders across the Esports World Cup, international qualifiers, daily scrims, and pro roster shifts.
-        </p>
+        <h1 class="daily-simple-title">Daily Esports Updates</h1>
+        <p class="daily-simple-sub">Community & official updates. Every post upload is reviewed & approved by Admin before appearing.</p>
+      </div>
 
-        <!-- Fast Stats Ticker Bar -->
-        <div class="daily-stats-bar">
-          <div class="daily-stat-box">
-            <span class="stat-number" style="color:var(--tiranga-saffron);">21</span>
-            <span class="stat-label">EWC Titles Tracked</span>
-          </div>
-          <div class="daily-stat-divider"></div>
-          <div class="daily-stat-box">
-            <span class="stat-number" style="color:var(--godl-gold);">2</span>
-            <span class="stat-label">Official Club Partners</span>
-          </div>
-          <div class="daily-stat-divider"></div>
-          <div class="daily-stat-box">
-            <span class="stat-number" style="color:var(--s8ul-blue);">100%</span>
-            <span class="stat-label">Verified Pro Coverage</span>
-          </div>
-          <div class="daily-stat-divider"></div>
-          <div class="daily-stat-box">
-            <span class="stat-number" style="color:#00ff88;">LIVE</span>
-            <span class="stat-label">Daily Reporting Desk</span>
+      <!-- ── TOP SECTION: UPLOAD / SUBMIT POST ───────────────────────── -->
+      <div class="daily-upload-box">
+        <div class="daily-upload-header">
+          <div class="daily-upload-icon-circle">📸</div>
+          <div>
+            <h2 class="daily-upload-title">Upload Recent Post</h2>
+            <p class="daily-upload-desc">Upload an image and write your update. Once approved by Admin, it appears immediately at the top!</p>
           </div>
         </div>
+
+        <form id="daily-post-form" class="daily-upload-form" onsubmit="window.cleanHub && window.cleanHub.handleDailyPostSubmit(event)">
+          
+          <!-- Image upload options: File from device OR Image URL -->
+          <div class="daily-img-row">
+            <div class="form-group" style="flex:1;">
+              <label class="daily-form-label">📁 Choose Photo / Image (from device)</label>
+              <input type="file" id="daily-post-file" accept="image/*" class="form-input daily-file-input" onchange="window.cleanHub && window.cleanHub.handleImageFileSelect(event)" />
+            </div>
+            <div class="daily-or-divider">OR</div>
+            <div class="form-group" style="flex:1;">
+              <label class="daily-form-label">🔗 Paste Image URL</label>
+              <input type="url" id="daily-post-image" class="form-input" placeholder="https://example.com/photo.jpg" oninput="window.cleanHub && window.cleanHub.handleImageUrlInput(event)" />
+            </div>
+          </div>
+
+          <!-- Live Image Preview -->
+          <div id="daily-image-preview-wrap" style="display:none;" class="daily-preview-wrap">
+            <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:6px; font-weight:700;">IMAGE PREVIEW:</div>
+            <img id="daily-image-preview" src="" alt="Preview" class="daily-preview-img" />
+            <button type="button" class="daily-preview-remove" onclick="window.cleanHub && window.cleanHub.clearImagePreview()">✕ Remove Image</button>
+          </div>
+
+          <!-- Post Content / Caption -->
+          <div class="form-group" style="margin-top:12px;">
+            <label class="daily-form-label">✏️ Post Description / News Update *</label>
+            <textarea id="daily-post-caption" class="form-input form-textarea" rows="3" placeholder="Write the update, match results, tournament news, or roster shift..." required></textarea>
+          </div>
+
+          <!-- Submitter Name -->
+          <div class="form-group" style="margin-top:12px;">
+            <label class="daily-form-label">👤 Your Name / Handle *</label>
+            <input type="text" id="daily-post-name" class="form-input" placeholder="e.g. Pritesh Gehlot, EsportsFan" required />
+          </div>
+
+          <button type="submit" id="daily-submit-btn" class="daily-upload-submit-btn">
+            📩 Submit Post for Admin Approval
+          </button>
+        </form>
       </div>
 
-      <!-- Category Filter Pills -->
-      <div class="daily-filter-wrapper">
-        <div class="daily-filter-scroll" id="daily-filter-buttons">
-          <button class="daily-filter-pill active" onclick="window.cleanHub && window.cleanHub.filterDailyUpdates('all', this)">🔥 All Updates</button>
-          <button class="daily-filter-pill" onclick="window.cleanHub && window.cleanHub.filterDailyUpdates('ewc', this)">🏆 EWC 2026</button>
-          <button class="daily-filter-pill" onclick="window.cleanHub && window.cleanHub.filterDailyUpdates('godlike', this)">👑 GodLike Esports</button>
-          <button class="daily-filter-pill" onclick="window.cleanHub && window.cleanHub.filterDailyUpdates('s8ul', this)">⚡ S8UL Esports</button>
-          <button class="daily-filter-pill" onclick="window.cleanHub && window.cleanHub.filterDailyUpdates('bgmi', this)">🎮 BGMI & Mobile</button>
-          <button class="daily-filter-pill" onclick="window.cleanHub && window.cleanHub.filterDailyUpdates('pc', this)">⚔️ PC & FGC</button>
+      <!-- ── POSTS FEED: RECENT POSTS AT TOP ────────────────────────── -->
+      <div class="daily-feed-section">
+        <div class="daily-feed-header">
+          <h2 class="daily-feed-title">
+            <span>📰 Recent Posts</span>
+          </h2>
+          <span class="daily-feed-count" id="daily-feed-counter">Showing Updates</span>
         </div>
-      </div>
 
-      <!-- Featured Spotlight Article -->
-      <div class="daily-spotlight-card" id="daily-spotlight-box">
-        <!-- Rendered dynamically -->
-      </div>
-
-      <!-- Feed Grid of Daily Updates -->
-      <div class="daily-feed-header">
-        <h2 class="daily-feed-title">
-          <span>📰 Today's News & Match Dispatches</span>
-        </h2>
-        <span class="daily-feed-count" id="daily-feed-counter">Showing Updates</span>
-      </div>
-
-      <div class="daily-updates-grid" id="daily-updates-container">
-        <!-- Rendered dynamically via CleanEsportsHub.renderDailyUpdates() -->
+        <div class="daily-posts-feed-container" id="daily-posts-feed-container">
+          <!-- Rendered dynamically via CleanEsportsHub.renderApprovedPosts() -->
+        </div>
       </div>
 
       <!-- Bottom Return Button -->
