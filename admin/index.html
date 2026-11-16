@@ -296,6 +296,7 @@
       }
 
       logout() {
+        if (this.refreshInterval) clearInterval(this.refreshInterval);
         sessionStorage.removeItem(this.adminKey);
         this.dashScreen.style.display = "none";
         this.loginScreen.style.display = "flex";
@@ -307,6 +308,11 @@
         this.dashScreen.style.display = "block";
         this.loadData();
         this.refreshRequests();
+
+        if (this.refreshInterval) clearInterval(this.refreshInterval);
+        this.refreshInterval = setInterval(() => {
+          this.refreshRequests();
+        }, 4000);
       }
 
       loadData() {
@@ -371,8 +377,10 @@
             details = `
               <div class="approval-detail"><strong>Target Game:</strong> ${this.escape(req.targetName || req.data.title)}</div>
               <div class="approval-detail"><strong>Proposed Title:</strong> ${this.escape(req.data.title)}</div>
-              <div class="approval-detail"><strong>Proposed Genre:</strong> ${this.escape(req.data.genre || "-")}</div>
+              <div class="approval-detail"><strong>Proposed Category:</strong> ${this.escape(req.data.genre || "-")}</div>
               <div class="approval-detail"><strong>Proposed Roster:</strong> ${this.escape(req.data.roster || "-")}</div>
+              <div class="approval-detail"><strong>Proposed Status:</strong> ${this.escape(req.data.status || "-")}</div>
+              <div class="approval-detail"><strong>Submitted By (Edited By):</strong> <span style="color:var(--godl-gold); font-weight:700;">👤 ${this.escape(req.data.updatedBy || req.submittedBy || "-")}</span></div>
             `;
           } else if (req.type === "player") {
             typeLabel = "👤 New Player Suggestion";
@@ -433,12 +441,16 @@
           const g = (this.data[req.teamKey]?.ewcGames || []).find(x => x.id === req.targetId);
           if (g) {
             Object.assign(g, {
+              no: req.data.no !== undefined ? req.data.no : g.no,
               title: req.data.title,
               genre: req.data.genre,
               roster: req.data.roster,
+              status: req.data.status || g.status,
+              highlight: req.data.highlight !== undefined ? req.data.highlight : g.highlight,
               updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
               updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
             });
+            this.data[req.teamKey].ewcGames.sort((a, b) => (a.no || 0) - (b.no || 0));
           }
         } else if (req.type === "player") {
           let targetDiv = this.data[req.teamKey].divisions.find(d => d.name === "Community Submissions")

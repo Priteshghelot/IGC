@@ -849,15 +849,17 @@ class CleanEsportsHub {
       const game = (this.data[req.teamKey]?.ewcGames || []).find(g => g.id === req.targetId);
       if (game) {
         Object.assign(game, {
-          no: req.data.no,
+          no: req.data.no !== undefined ? req.data.no : game.no,
           title: req.data.title,
           genre: req.data.genre || "",
           roster: req.data.roster || "",
-          status: req.data.status || "EWC 2026 Official Title",
-          highlight: !!req.data.highlight
+          status: req.data.status || game.status || "EWC 2026 Official Title",
+          highlight: !!req.data.highlight,
+          updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
+          updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
         });
         this.data[req.teamKey].ewcGames.sort((a, b) => (a.no || 0) - (b.no || 0));
-        this.showToast(`✅ Edit accepted! "${req.data.title}" is now updated live.`);
+        this.showToast(`✅ Edit accepted! "${req.data.title}" is now updated live by ${game.updatedBy}.`);
       }
     } else if (req.type === "player") {
       let targetDiv = this.data[req.teamKey].divisions.find(d => d.name === "Community Submissions")
