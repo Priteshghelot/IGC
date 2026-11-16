@@ -344,9 +344,21 @@
 
         // Fetch latest from Cloud Redis API
         try {
-          const res = await fetch('/api/requests');
-          if (res.ok) {
-            const json = await res.json();
+          const [reqRes, dataRes] = await Promise.all([
+            fetch('/api/requests'),
+            fetch('/api/data')
+          ]);
+
+          if (dataRes && dataRes.ok) {
+            const dataJson = await dataRes.json();
+            if (dataJson.ok && dataJson.data) {
+              this.data = dataJson.data;
+              this.saveData();
+            }
+          }
+
+          if (reqRes && reqRes.ok) {
+            const json = await reqRes.json();
             if (json.ok && Array.isArray(json.requests)) {
               const map = new Map();
               this.pending.forEach(r => map.set(r.id, r));
@@ -565,19 +577,37 @@
             }
           }
         } else if (req.type === "edit_game") {
-          const g = (this.data[req.teamKey]?.ewcGames || []).find(x => x.id === req.targetId);
+          if (!this.data[req.teamKey]) this.data[req.teamKey] = {};
+          if (!Array.isArray(this.data[req.teamKey].ewcGames)) this.data[req.teamKey].ewcGames = [];
+          const games = this.data[req.teamKey].ewcGames;
+          const g = req.targetId ? games.find(x => x.id === req.targetId) : null;
           if (g) {
             Object.assign(g, {
               no: req.data.no !== undefined ? req.data.no : g.no,
               title: req.data.title,
-              genre: req.data.genre,
-              roster: req.data.roster,
+              genre: req.data.genre || "",
+              roster: req.data.roster || "",
               status: req.data.status || g.status,
               highlight: req.data.highlight !== undefined ? req.data.highlight : g.highlight,
               updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
               updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
             });
-            this.data[req.teamKey].ewcGames.sort((a, b) => (a.no || 0) - (b.no || 0));
+            games.sort((a, b) => (a.no || 0) - (b.no || 0));
+          } else {
+            // Target game not found or new game submitted as edit_game -> Add at bottom
+            const nextNo = games.length > 0 ? Math.max(...games.map(x => x.no || 0)) + 1 : 1;
+            games.push({
+              id: "game-" + Date.now(),
+              no: req.data.no || nextNo,
+              title: req.data.title,
+              genre: req.data.genre || req.data.category || "",
+              roster: req.data.roster || "",
+              status: req.data.status || "EWC 2026 Official Title",
+              highlight: !!req.data.highlight,
+              updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
+              updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
+            });
+            games.sort((a, b) => (a.no || 0) - (b.no || 0));
           }
         } else if (req.type === "player") {
           let targetDiv = this.data[req.teamKey].divisions.find(d => d.name === "Community Submissions")
@@ -598,18 +628,23 @@
             desc: req.data.desc || ""
           });
         } else {
-          const count = (this.data[req.teamKey].ewcGames || []).length + 1;
-          this.data[req.teamKey].ewcGames.push({
+          // req.type === "game" or other game add request
+          if (!this.data[req.teamKey]) this.data[req.teamKey] = {};
+          if (!Array.isArray(this.data[req.teamKey].ewcGames)) this.data[req.teamKey].ewcGames = [];
+          const games = this.data[req.teamKey].ewcGames;
+          const nextNo = games.length > 0 ? Math.max(...games.map(x => x.no || 0)) + 1 : 1;
+          games.push({
             id: "game-" + Date.now(),
-            no: count,
+            no: req.data.no || nextNo,
             title: req.data.title,
-            genre: req.data.genre || "",
+            genre: req.data.genre || req.data.category || "",
             roster: req.data.roster || "",
-            status: "EWC 2026 Official Title",
-            highlight: false,
+            status: req.data.status || "EWC 2026 Official Title",
+            highlight: !!req.data.highlight,
             updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
             updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
           });
+          games.sort((a, b) => (a.no || 0) - (b.no || 0));
         }
 
         req.status = "approved";

@@ -61,6 +61,7 @@ class CleanEsportsHub {
         if (json.ok && json.data) {
           this.data = json.data;
           this.saveData();
+          this.reconcileApprovedRequests();
           this.renderAll();
         }
       }
@@ -78,10 +79,51 @@ class CleanEsportsHub {
           json.requests.forEach(r => map.set(r.id, r));
           this.pending = Array.from(map.values());
           this.savePending();
+          this.reconcileApprovedRequests();
           this.updateAdminUI();
         }
       }
     } catch(e) {}
+  }
+
+  reconcileApprovedRequests() {
+    if (!this.pending || !Array.isArray(this.pending)) return;
+    let modified = false;
+    this.pending.forEach(req => {
+      if (req.status === "approved" && (req.type === "edit_game" || req.type === "game") && req.data?.title && req.teamKey) {
+        if (!this.data[req.teamKey]) this.data[req.teamKey] = {};
+        if (!Array.isArray(this.data[req.teamKey].ewcGames)) this.data[req.teamKey].ewcGames = [];
+        const games = this.data[req.teamKey].ewcGames;
+        const exists = games.some(g => (req.targetId && g.id === req.targetId) || g.title.toLowerCase().trim() === req.data.title.toLowerCase().trim());
+        if (!exists) {
+          const nextNo = games.length > 0 ? Math.max(...games.map(g => g.no || 0)) + 1 : 1;
+          games.push({
+            id: req.targetId || "game-" + Date.now(),
+            no: req.data.no || nextNo,
+            title: req.data.title,
+            genre: req.data.genre || req.data.category || "",
+            roster: req.data.roster || "",
+            status: req.data.status || "EWC 2026 Official Title",
+            highlight: !!req.data.highlight,
+            updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
+            updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
+          });
+          games.sort((a, b) => (a.no || 0) - (b.no || 0));
+          modified = true;
+        }
+      }
+    });
+    if (modified) {
+      this.saveData();
+      this.renderAll();
+      try {
+        fetch('/api/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: this.data })
+        }).catch(() => {});
+      } catch(e) {}
+    }
   }
 
   // ─── Deep Clone ───────────────────────────────────────────────────────────
@@ -943,24 +985,81 @@ class CleanEsportsHub {
     const title     = document.getElementById("game-title-input").value.trim();
     const genre     = document.getElementById("game-genre-input").value.trim();
     const roster    = document.getElementById("game-roster-input").value.trim();
-    const status    = document.getElementById("game-status-input").value.trim();
+    const status    = document.getElementById("game-status-input").value.trim() || "EWC 2026 Official Title";
     const highlight = document.getElementById("game-highlight-check").checked;
 
     const updaterInput = document.getElementById("game-updater-input");
-    const updatedBy = (updaterInput ? updaterInput.value.trim() : "") || localStorage.getItem("last_updater_name") || "Community Member";
+    const updatedBy = (updaterInput ? updaterInput.value.trim() : "") || localStorage.getItem("last_updater_name") || (this.isAdmin ? "Admin" : "Community Member");
     if (!updatedBy) { alert("Please enter your name in the 'Edited By' field."); return; }
     localStorage.setItem("last_updater_name", updatedBy);
     const updatedAt = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 
     if (!title) { alert("Please enter the game title."); return; }
 
-    // ── ALWAYS SEND TABLE EDITS TO ADMIN APPROVAL QUEUE ────────────────────────
+    const isNew = !this.editingGameId;
+
+    if (this.isAdmin) {
+      if (!this.data[teamKey]) this.data[teamKey] = {};
+      if (!Array.isArray(this.data[teamKey].ewcGames)) this.data[teamKey].ewcGames = [];
+      const games = this.data[teamKey].ewcGames;
+
+      if (isNew) {
+        const nextNo = games.length > 0 ? Math.max(...games.map(g => g.no || 0)) + 1 : 1;
+        games.push({
+          id: "game-" + Date.now(),
+          no: no || nextNo,
+          title,
+          genre,
+          roster,
+          status,
+          highlight: !!highlight,
+          updatedBy,
+          updatedAt
+        });
+        games.sort((a, b) => (a.no || 0) - (b.no || 0));
+        this.saveData();
+        this.renderAll();
+        this.closeModal("game-modal");
+        this.showToast(`✅ Game "${title}" added to ${teamKey === "godlike" ? "GodLike" : "S8UL"} at bottom!`);
+      } else {
+        const game = games.find(g => g.id === this.editingGameId);
+        if (game) {
+          Object.assign(game, {
+            no: no !== undefined ? no : game.no,
+            title,
+            genre,
+            roster,
+            status,
+            highlight: !!highlight,
+            updatedBy,
+            updatedAt
+          });
+          games.sort((a, b) => (a.no || 0) - (b.no || 0));
+          this.saveData();
+          this.renderAll();
+          this.closeModal("game-modal");
+          this.showToast(`✅ Game "${title}" updated live!`);
+        }
+      }
+
+      // Sync data to Cloud Redis
+      try {
+        fetch('/api/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: this.data })
+        }).catch(() => {});
+      } catch(e) {}
+      return;
+    }
+
+    // Normal Visitor proposal -> Admin approval queue
     const origGame = (this.data[this.currentGameTeam]?.ewcGames || []).find(g => g.id === this.editingGameId);
     const req = {
       id: "req-" + Date.now(),
-      type: "edit_game",
+      type: isNew ? "game" : "edit_game",
       teamKey,
-      targetId: this.editingGameId,
+      targetId: this.editingGameId || null,
       targetName: origGame ? origGame.title : title,
       submittedBy: updatedBy,
       submittedAt: new Date().toLocaleString(),
@@ -983,7 +1082,7 @@ class CleanEsportsHub {
       }).catch(e => console.warn('Cloud sync error:', e));
     } catch(e) {}
 
-    this.showToast(`📩 Edit by "${updatedBy}" sent to Admin for approval!`);
+    this.showToast(isNew ? `📩 New Game "${title}" sent to Admin for approval!` : `📩 Edit for "${title}" sent to Admin for approval!`);
     this.closeModal("game-modal");
   }
 
@@ -1343,7 +1442,10 @@ class CleanEsportsHub {
         this.showToast(`✅ Edit accepted! "${req.data.ign}" is now updated live.`);
       }
     } else if (req.type === "edit_game") {
-      const game = (this.data[req.teamKey]?.ewcGames || []).find(g => g.id === req.targetId);
+      if (!this.data[req.teamKey]) this.data[req.teamKey] = {};
+      if (!Array.isArray(this.data[req.teamKey].ewcGames)) this.data[req.teamKey].ewcGames = [];
+      const games = this.data[req.teamKey].ewcGames;
+      const game = req.targetId ? games.find(g => g.id === req.targetId) : null;
       if (game) {
         Object.assign(game, {
           no: req.data.no !== undefined ? req.data.no : game.no,
@@ -1351,12 +1453,28 @@ class CleanEsportsHub {
           genre: req.data.genre || "",
           roster: req.data.roster || "",
           status: req.data.status || game.status || "EWC 2026 Official Title",
+          highlight: req.data.highlight !== undefined ? !!req.data.highlight : game.highlight,
+          updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
+          updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
+        });
+        games.sort((a, b) => (a.no || 0) - (b.no || 0));
+        this.showToast(`✅ Edit accepted! "${req.data.title}" is now updated live by ${game.updatedBy}.`);
+      } else {
+        // Target game not found or new game submitted as edit_game -> Add at bottom
+        const nextNo = games.length > 0 ? Math.max(...games.map(g => g.no || 0)) + 1 : 1;
+        games.push({
+          id:        "game-" + Date.now(),
+          no:        req.data.no || nextNo,
+          title:     req.data.title,
+          genre:     req.data.genre || req.data.category || "",
+          roster:    req.data.roster || "",
+          status:    req.data.status || "EWC 2026 Official Title",
           highlight: !!req.data.highlight,
           updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
           updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
         });
-        this.data[req.teamKey].ewcGames.sort((a, b) => (a.no || 0) - (b.no || 0));
-        this.showToast(`✅ Edit accepted! "${req.data.title}" is now updated live by ${game.updatedBy}.`);
+        games.sort((a, b) => (a.no || 0) - (b.no || 0));
+        this.showToast(`✅ Game "${req.data.title}" approved & added at the bottom!`);
       }
     } else if (req.type === "player") {
       let targetDiv = this.data[req.teamKey].divisions.find(d => d.name === "Community Submissions")
@@ -1378,17 +1496,24 @@ class CleanEsportsHub {
       });
       this.showToast(`✅ Player "${req.data.ign}" approved & added live!`);
     } else {
-      const count = (this.data[req.teamKey].ewcGames || []).length + 1;
-      this.data[req.teamKey].ewcGames.push({
+      // req.type === "game" or any other game title request
+      if (!this.data[req.teamKey]) this.data[req.teamKey] = {};
+      if (!Array.isArray(this.data[req.teamKey].ewcGames)) this.data[req.teamKey].ewcGames = [];
+      const games = this.data[req.teamKey].ewcGames;
+      const nextNo = games.length > 0 ? Math.max(...games.map(g => g.no || 0)) + 1 : 1;
+      games.push({
         id:        "game-" + Date.now(),
-        no:        count,
+        no:        req.data.no || nextNo,
         title:     req.data.title,
-        genre:     req.data.genre || "",
+        genre:     req.data.genre || req.data.category || "",
         roster:    req.data.roster || "",
-        status:    "EWC 2026 Official Title",
-        highlight: false
+        status:    req.data.status || "EWC 2026 Official Title",
+        highlight: !!req.data.highlight,
+        updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
+        updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
       });
-      this.showToast(`✅ Game "${req.data.title}" approved & added live!`);
+      games.sort((a, b) => (a.no || 0) - (b.no || 0));
+      this.showToast(`✅ Game "${req.data.title}" approved & added at the bottom!`);
     }
 
     req.status = "approved";
