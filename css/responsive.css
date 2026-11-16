@@ -6,15 +6,51 @@
 /* ── Large Desktop (1200px+) ── */
 @media (min-width: 1200px) {
   .container {
-    max-width: 1200px;
+    max-width: 1400px;
+    padding: 0 2rem;
   }
 
   .portal-grid {
-    gap: 2.5rem;
+    max-width: 1380px;
+    gap: 2.75rem;
+  }
+
+  .ewc27-games-section {
+    max-width: 1380px;
+  }
+
+  .daily-marquee-wrapper {
+    max-width: 1380px;
   }
 
   .home-title {
-    font-size: 3rem;
+    font-size: 3.2rem;
+  }
+}
+
+/* ── Ultra Wide Desktop (1440px+) ── */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1460px;
+    padding: 0 2.5rem;
+  }
+
+  .portal-grid {
+    max-width: 1440px;
+    gap: 3rem;
+  }
+
+  .ewc27-games-section {
+    max-width: 1440px;
+    padding: 2.75rem 3rem;
+  }
+
+  .daily-marquee-wrapper {
+    max-width: 1440px;
+  }
+
+  .home-title {
+    font-size: 3.5rem;
   }
 }
 
