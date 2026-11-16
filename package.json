@@ -1,0 +1,22 @@
+{
+  "name": "bharat-esports-ewc-hub",
+  "version": "1.0.0",
+  "description": "Indian Esports Hub for EWC (Esports World Cup) & Pro Lineups tracking S8UL, GodLike, TAG Esports, Team Tamilas and more with real-time publishing CMS.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "esports",
+    "ewc",
+    "esports-world-cup",
+    "bgmi",
+    "s8ul",
+    "godlike",
+    "tag-esports",
+    "team-tamilas",
+    "indian-esports"
+  ],
+  "author": "Antigravity",
+  "license": "MIT"
+}

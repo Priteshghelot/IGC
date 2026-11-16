@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>India EWC Hub | Developed by Pritesh Gehlot</title>
+  <meta name="description" content="Official tracker for India's EWC Club Partners (GodLike Esports in Golden Yellow & S8UL Esports in Sky Blue) developed by Pritesh Gehlot.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       1. HOME SCREEN - GODLIKE (GOLDEN YELLOW) & S8UL (SKY BLUE)
+       ========================================================================= -->
+  <section id="home-screen">
+    
+    <div class="home-header">
+      
+      <!-- Developer Branding Badge with Pritesh's Profile Picture -->
+      <a href="https://www.youtube.com/@priteshgehlot" target="_blank" rel="noopener noreferrer" class="creator-brand-pill" title="Visit Pritesh Gehlot's YouTube Channel">
+        <div class="creator-avatar-wrap">
+          <img src="images/pritesh_avatar.jpg" alt="Pritesh Gehlot Profile Picture" class="creator-avatar-img">
+        </div>
+        <div class="creator-brand-text">
+          <span>DEVELOPED BY</span>
+          <strong>PRITESH GEHLOT</strong>
+        </div>
+        <span class="yt-badge">▶ YouTube</span>
+      </a>
+
+      <h1 class="home-title">INDIA AT ESPORTS WORLD CUP</h1>
+      <p class="home-subtitle">
+        Select a club below to view official EWC titles, tournament roadmaps, and active pro rosters.
+      </p>
+    </div>
+
+    <!-- The 2 Big Team Portal Cards -->
+    <div class="portal-grid">
+      
+      <!-- S8UL ESPORTS PORTAL CARD (SKY BLUE) -->
+      <div class="portal-card card-s8ul" id="card-s8ul-select">
+        
+        <!-- Official S8UL Logo from Pritesh's Artwork -->
+        <div class="portal-logo-wrap">
+          <img src="images/s8ul_logo.png" alt="S8UL Esports Official Logo" class="portal-logo-img">
+        </div>
+
+        <h2 class="portal-team-name" style="color:var(--s8ul-blue);">S8UL Esports</h2>
+        <span class="portal-tag tag-s8ul">2-Year EWC Partner</span>
+
+        <p class="portal-summary">
+          India's 3x Global Esports Content Group fielding contenders across <strong>12 EWC titles</strong> including Team SouL BGMI, Chess Grandmasters, and Apex Legends.
+        </p>
+
+        <button class="portal-btn btn-s8ul">
+          Explore S8UL Esports →
+        </button>
+      </div>
+
+      <!-- GODLIKE ESPORTS PORTAL CARD (GOLDEN YELLOW) -->
+      <div class="portal-card card-godlike" id="card-godlike-select">
+        
+        <!-- Official GodLike Logo from Pritesh's Artwork -->
+        <div class="portal-logo-wrap">
+          <img src="images/godlike_logo.png" alt="GodLike Esports Official Logo" class="portal-logo-img">
+        </div>
+
+        <h2 class="portal-team-name" style="color:var(--godl-gold);">GodLike Esports</h2>
+        <span class="portal-tag tag-godl">EWC 2026 Club Partner</span>
+
+        <p class="portal-summary">
+          Competing across <strong>9 official EWC 2026 titles</strong> including PMWC Grand Finals, Warzone, Tekken 8, and active rosters in BGMI, CODM, and Free Fire.
+        </p>
+
+        <button class="portal-btn btn-godl">
+          Explore GodLike Esports →
+        </button>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =========================================================================
+       2. GODLIKE DEDICATED HUB SCREEN (GOLDEN YELLOW THEME)
+       ========================================================================= -->
+  <main class="detail-screen" id="screen-godlike">
+    <div class="container">
+      
+      <!-- Top Bar: Back to Home + Add Lineup Button + Creator Profile Link -->
+      <div class="detail-top-nav">
+        <button class="btn-back-home" onclick="window.cleanHub.showHome()">
+          ← Back to Clubs
+        </button>
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <button class="btn-team-add-action btn-team-add-godl" onclick="window.cleanHub.openAddPlayerModal('godlike')">
+            ➕ Add Lineup / Player
+          </button>
+          <a href="https://www.youtube.com/@priteshgehlot" target="_blank" rel="noopener noreferrer" class="creator-inline-link" style="color:var(--godl-gold);">
+            <img src="images/pritesh_avatar.jpg" alt="Pritesh Gehlot" class="mini-creator-avatar" style="border-color:var(--godl-gold);">
+            <span>Developed by Pritesh Gehlot (@priteshgehlot) ↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Header Card with GodLike Logo -->
+      <div class="detail-header-card" style="border-top: 3px solid var(--godl-gold);">
+        <div class="detail-brand">
+          <div class="detail-logo-small" style="border-color:var(--godl-gold);">
+            <img src="images/godlike_logo.png" alt="GodLike Logo">
+          </div>
+          <div class="detail-brand-info">
+            <h2 style="color:var(--godl-gold);">GodLike Esports</h2>
+            <p>EWC 2026 Partner • PMWC Grand Finalists in Riyadh • Founded by Kronten</p>
+          </div>
+        </div>
+
+        <div class="detail-social-links">
+          <a href="https://x.com/GodLike_in" target="_blank" rel="noopener noreferrer" class="social-pill" style="border-color:var(--godl-gold); color:var(--godl-gold);">
+            𝕏 @GodLike_in ↗
+          </a>
+          <a href="https://instagram.com/godlike.in" target="_blank" rel="noopener noreferrer" class="social-pill">
+            📸 Instagram ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- Sub-Tabs Bar -->
+      <div class="sub-tabs-bar">
+        <button class="sub-tab-btn active" data-sub="godl-ewc-view">
+          🎮 EWC 2026 Games & Rosters
+        </button>
+        <button class="sub-tab-btn" data-sub="godl-roster-view">
+          🛡️ Active Lineups & Rosters
+        </button>
+      </div>
+
+      <!-- Sub-View 1: GodLike EWC 2026 Games (Table) -->
+      <div class="sub-tab-content active" id="godl-ewc-view">
+        <div class="clean-table-box">
+          <table class="clean-table">
+            <thead>
+              <tr>
+                <th class="col-num" style="color:var(--godl-gold);">No.</th>
+                <th>Game Title</th>
+                <th>Genre</th>
+                <th>Official Roster / Athletes</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="godl-ewc-tbody">
+              <!-- Rendered dynamically by app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sub-View 2: GodLike Active Lineups (Rendered dynamically) -->
+      <div class="sub-tab-content" id="godl-roster-view">
+        <div id="godl-roster-container">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       3. S8UL DEDICATED HUB SCREEN (SKY BLUE THEME)
+       ========================================================================= -->
+  <main class="detail-screen" id="screen-s8ul">
+    <div class="container">
+      
+      <!-- Top Bar: Back to Home + Add Lineup Button + Creator Profile Link -->
+      <div class="detail-top-nav">
+        <button class="btn-back-home" onclick="window.cleanHub.showHome()">
+          ← Back to Clubs
+        </button>
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <button class="btn-team-add-action btn-team-add-s8ul" onclick="window.cleanHub.openAddPlayerModal('s8ul')">
+            ➕ Add Lineup / Player
+          </button>
+          <a href="https://www.youtube.com/@priteshgehlot" target="_blank" rel="noopener noreferrer" class="creator-inline-link" style="color:var(--s8ul-blue);">
+            <img src="images/pritesh_avatar.jpg" alt="Pritesh Gehlot" class="mini-creator-avatar" style="border-color:var(--s8ul-blue);">
+            <span>Developed by Pritesh Gehlot (@priteshgehlot) ↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Header Card with S8UL Logo -->
+      <div class="detail-header-card" style="border-top: 3px solid var(--s8ul-blue);">
+        <div class="detail-brand">
+          <div class="detail-logo-small" style="border-color:var(--s8ul-blue);">
+            <img src="images/s8ul_logo.png" alt="S8UL Logo">
+          </div>
+          <div class="detail-brand-info">
+            <h2 style="color:var(--s8ul-blue);">S8UL Esports</h2>
+            <p>2-Year Consecutive EWC Partner • 12 EWC Game Titles • Founded by Mortal, Thug, Goldy</p>
+          </div>
+        </div>
+
+        <div class="detail-social-links">
+          <a href="https://x.com/S8UL_esports" target="_blank" rel="noopener noreferrer" class="social-pill" style="border-color:var(--s8ul-blue); color:var(--s8ul-blue);">
+            𝕏 @S8UL_esports ↗
+          </a>
+          <a href="https://instagram.com/s8ul.esports" target="_blank" rel="noopener noreferrer" class="social-pill">
+            📸 Instagram ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- Sub-Tabs Bar -->
+      <div class="sub-tabs-bar">
+        <button class="sub-tab-btn active" data-sub="s8ul-ewc-view">
+          🎮 EWC Campaign (12 Titles & Rosters)
+        </button>
+        <button class="sub-tab-btn" data-sub="s8ul-roster-view">
+          🛡️ Team SouL BGMI & Active Lineups
+        </button>
+      </div>
+
+      <!-- Sub-View 1: S8UL EWC Games (Table) -->
+      <div class="sub-tab-content active" id="s8ul-ewc-view">
+        <div class="clean-table-box">
+          <table class="clean-table">
+            <thead>
+              <tr>
+                <th class="col-num" style="color:var(--s8ul-blue);">No.</th>
+                <th>Game Title</th>
+                <th>Genre</th>
+                <th>Official Roster / Athletes</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="s8ul-ewc-tbody">
+              <!-- Rendered dynamically by app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sub-View 2: S8UL Active Lineups (Rendered dynamically) -->
+      <div class="sub-tab-content" id="s8ul-roster-view">
+        <div id="s8ul-roster-container">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       MODAL: ADD / EDIT PLAYER & LINEUP
+       ========================================================================= -->
+  <div class="modal-overlay" id="player-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="player-modal-title">➕ Add Player / Lineup</h3>
+        <button class="modal-close-btn" onclick="window.cleanHub.closeModal('player-modal')">✕</button>
+      </div>
+      <form id="player-modal-form" class="modal-body">
+        <div class="form-grid">
+          
+          <div class="form-group">
+            <label>Club / Team</label>
+            <select id="player-team-select" class="form-input" onchange="window.cleanHub.populateDivisionSelect(this.value)">
+              <option value="godlike">GodLike Esports (Golden Yellow)</option>
+              <option value="s8ul">S8UL Esports (Sky Blue)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Lineup / Division</label>
+            <select id="player-division-select" class="form-input">
+              <!-- populated dynamically -->
+            </select>
+          </div>
+
+          <div class="form-group form-col-full" id="player-custom-division-wrap" style="display:none;">
+            <label style="color:#10B981;">New Lineup Name (e.g. 🎮 GodLike Valorant Division, 🏆 BGMI Lineup 2)</label>
+            <input type="text" id="player-custom-division-input" class="form-input" placeholder="Enter custom division name...">
+          </div>
+
+          <div class="form-group">
+            <label>In-Game Name (IGN) *</label>
+            <input type="text" id="player-ign-input" class="form-input" placeholder="e.g. Jonathan, Manya, Goblin" required>
+          </div>
+
+          <div class="form-group">
+            <label>Full Real Name</label>
+            <input type="text" id="player-name-input" class="form-input" placeholder="e.g. Jonathan Jude Amaral">
+          </div>
+
+          <div class="form-group">
+            <label>Role / Position</label>
+            <input type="text" id="player-role-input" class="form-input" placeholder="e.g. Star Assaulter, IGL, Main Sniper">
+          </div>
+
+          <div class="form-group">
+            <label>Status</label>
+            <select id="player-stat2-val" class="form-input">
+              <option value="Active">Active</option>
+              <option value="Sub / Bench">Sub / Bench</option>
+              <option value="Coach">Coach</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Stat 1 Label</label>
+            <input type="text" id="player-stat1-label" class="form-input" placeholder="e.g. K/D, ROLE, FIDE RATING" value="K/D">
+          </div>
+
+          <div class="form-group">
+            <label>Stat 1 Value</label>
+            <input type="text" id="player-stat1-val" class="form-input" placeholder="e.g. 3.85, Captain, 2730+" value="3.50">
+          </div>
+
+          <div class="form-group form-col-full">
+            <label>Description / Bio</label>
+            <textarea id="player-desc-input" class="form-input form-textarea" rows="2" placeholder="Brief note about the player's achievements or playstyle..."></textarea>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-secondary" onclick="window.cleanHub.closeModal('player-modal')">Cancel</button>
+          <button type="submit" class="btn-modal-primary">💾 Save Player</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: ADD / EDIT EWC GAME TITLE
+       ========================================================================= -->
+  <div class="modal-overlay" id="game-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="game-modal-title">➕ Add EWC Game Title</h3>
+        <button class="modal-close-btn" onclick="window.cleanHub.closeModal('game-modal')">✕</button>
+      </div>
+      <form id="game-modal-form" class="modal-body">
+        <div class="form-grid">
+          
+          <div class="form-group">
+            <label>Club / Team</label>
+            <select id="game-team-select" class="form-input">
+              <option value="godlike">GodLike Esports</option>
+              <option value="s8ul">S8UL Esports</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Game No. #</label>
+            <input type="number" id="game-no-input" class="form-input" min="1" max="50" value="1" required>
+          </div>
+
+          <div class="form-group form-col-full">
+            <label>Game Title *</label>
+            <input type="text" id="game-title-input" class="form-input" placeholder="e.g. PUBG Mobile World Cup, Tekken 8, Apex Legends" required>
+          </div>
+
+          <div class="form-group">
+            <label>Genre / Category</label>
+            <input type="text" id="game-genre-input" class="form-input" placeholder="e.g. Mobile Battle Royale, FGC, MOBA">
+          </div>
+
+          <div class="form-group">
+            <label>Status Badge Text</label>
+            <input type="text" id="game-status-input" class="form-input" placeholder="e.g. EWC 2026 Official Title, Core Flagship" value="EWC 2026 Official Title">
+          </div>
+
+          <div class="form-group form-col-full">
+            <label>Official Roster / Athletes</label>
+            <input type="text" id="game-roster-input" class="form-input" placeholder="e.g. Manya, Jonathan, Admino, Spower, Saumay, Godz">
+          </div>
+
+          <div class="form-group form-col-full" style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="game-highlight-check" style="width:18px; height:18px; cursor:pointer;">
+            <label for="game-highlight-check" style="margin:0; cursor:pointer; font-weight:700;">Highlight this row (Flagship title)</label>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-secondary" onclick="window.cleanHub.closeModal('game-modal')">Cancel</button>
+          <button type="submit" class="btn-modal-primary">💾 Save EWC Game</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Clean Developer Footer with Pritesh's Avatar + Admin Link -->
+  <footer class="creator-footer">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
+      <img src="images/pritesh_avatar.jpg" alt="Pritesh Gehlot" class="footer-creator-avatar">
+      <div style="text-align:left;">
+        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; font-weight:700;">Designed & Developed by</div>
+        <a href="https://www.youtube.com/@priteshgehlot" target="_blank" rel="noopener noreferrer" class="creator-footer-link" style="font-size:1.05rem;">
+          Pritesh Gehlot (@priteshgehlot) ↗
+        </a>
+      </div>
+    </div>
+    <div style="font-size:0.8rem; color:var(--text-sub);">
+      India's Official EWC Club Partners:
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
