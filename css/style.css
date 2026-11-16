@@ -608,6 +608,60 @@ button {
   border-color: #fff;
 }
 
+/* =============================================================================
+   ACTIVE LINE HEADING WITH GREEN RADIO BUTTON
+   ============================================================================= */
+.active-line-header-wrap {
+  margin: 1.75rem 0 1.25rem 0;
+  display: flex;
+  align-items: center;
+}
+
+.active-line-h1 {
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.green-radio-input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid #10B981;
+  border-radius: 50%;
+  outline: none;
+  background: rgba(16, 185, 129, 0.12);
+  display: inline-grid;
+  place-content: center;
+  margin: 0;
+  cursor: default;
+  position: relative;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.45);
+  flex-shrink: 0;
+}
+
+.green-radio-input::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 8px #10B981;
+  animation: pulse-radio 1.6s infinite ease-in-out;
+}
+
+@keyframes pulse-radio {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.75); opacity: 0.6; }
+}
+
 /* Sub-tabs */
 .sub-tabs-bar {
   display: flex;
