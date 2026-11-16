@@ -141,8 +141,16 @@ class CleanEsportsHub {
   }
 
   // =========================================================================
-  // ADMIN AUTH
+  // ADMIN AUTH & ACCESS CONTROL
   // =========================================================================
+  checkAdminAuth() {
+    if (!this.isAdmin || sessionStorage.getItem(this.adminKey) !== "true") {
+      alert("⛔ Access Denied: Only administrators with verified Admin PIN access can delete or modify posts.");
+      return false;
+    }
+    return true;
+  }
+
   injectAdminLoginBtn() {
     // Add a subtle admin login button at the bottom of the page
     const existing = document.getElementById("admin-login-fab");
@@ -151,7 +159,7 @@ class CleanEsportsHub {
     fab.id = "admin-login-fab";
     fab.className = "admin-login-fab";
     fab.title = this.isAdmin ? "Exit Admin Mode" : "Admin Login";
-    fab.innerHTML = this.isAdmin ? "👑 Admin" : "🔑 Admin";
+    fab.innerHTML = this.isAdmin ? "👑 Admin: ON" : "🔑 Admin";
     fab.onclick = () => this.toggleAdminMode();
     document.body.appendChild(fab);
   }
@@ -460,24 +468,24 @@ class CleanEsportsHub {
   }
 
   deletePlayer(teamKey, playerId) {
-    if (!this.isAdmin) return;
+    if (!this.checkAdminAuth()) return;
     const pData = this.findPlayer(teamKey, playerId);
     if (!pData) return;
-    if (confirm(`Remove player "${pData.player.ign}"?`)) {
+    if (confirm(`⚠️ [ADMIN CONFIRMATION]\nAre you sure you want to permanently delete player "${pData.player.ign}" from ${pData.division.name}?`)) {
       pData.division.players = pData.division.players.filter(p => p.id !== playerId);
       this.saveData(); this.renderAll();
-      this.showToast(`🗑️ Player "${pData.player.ign}" removed.`);
+      this.showToast(`🗑️ Player "${pData.player.ign}" permanently deleted.`);
     }
   }
 
   deleteDivision(teamKey, divisionId) {
-    if (!this.isAdmin) return;
+    if (!this.checkAdminAuth()) return;
     const div = this.data[teamKey]?.divisions.find(d => d.id === divisionId);
     if (!div) return;
-    if (confirm(`Delete entire lineup "${div.name}" and all its players?`)) {
+    if (confirm(`⚠️ [ADMIN CONFIRMATION]\nAre you sure you want to permanently delete lineup "${div.name}" and all its players?`)) {
       this.data[teamKey].divisions = this.data[teamKey].divisions.filter(d => d.id !== divisionId);
       this.saveData(); this.renderAll();
-      this.showToast(`🗑️ Lineup "${div.name}" deleted.`);
+      this.showToast(`🗑️ Lineup "${div.name}" permanently deleted.`);
     }
   }
 
@@ -555,13 +563,13 @@ class CleanEsportsHub {
   }
 
   deleteGame(teamKey, gameId) {
-    if (!this.isAdmin) return;
+    if (!this.checkAdminAuth()) return;
     const game = (this.data[teamKey]?.ewcGames || []).find(g => g.id === gameId);
     if (!game) return;
-    if (confirm(`Delete "${game.title}"?`)) {
+    if (confirm(`⚠️ [ADMIN CONFIRMATION]\nAre you sure you want to permanently delete "${game.title}"?`)) {
       this.data[teamKey].ewcGames = this.data[teamKey].ewcGames.filter(g => g.id !== gameId);
       this.saveData(); this.renderAll();
-      this.showToast(`🗑️ Game "${game.title}" removed.`);
+      this.showToast(`🗑️ Game "${game.title}" permanently deleted.`);
     }
   }
 
@@ -679,12 +687,14 @@ class CleanEsportsHub {
           <div class="approval-actions">
             <button class="btn-approve" onclick="window.cleanHub.approveRequest('${req.id}')">✅ Approve</button>
             <button class="btn-reject"  onclick="window.cleanHub.rejectRequest('${req.id}')">❌ Reject</button>
+            <button class="btn-delete-req" onclick="window.cleanHub.deleteRequest('${req.id}')">🗑️ Delete</button>
           </div>
         </div>`;
     }).join("");
   }
 
   approveRequest(reqId) {
+    if (!this.checkAdminAuth()) return;
     const req = this.pending.find(r => r.id === reqId);
     if (!req) return;
 
@@ -731,6 +741,7 @@ class CleanEsportsHub {
   }
 
   rejectRequest(reqId) {
+    if (!this.checkAdminAuth()) return;
     const req = this.pending.find(r => r.id === reqId);
     if (!req) return;
     if (confirm(`Reject this ${req.type} request from ${req.submittedBy}?`)) {
@@ -738,7 +749,20 @@ class CleanEsportsHub {
       this.savePending();
       this.renderApprovals();
       this.updateAdminUI();
-      this.showToast("❌ Request rejected.");
+      this.showToast("❌ Request marked as rejected.");
+    }
+  }
+
+  deleteRequest(reqId) {
+    if (!this.checkAdminAuth()) return;
+    const req = this.pending.find(r => r.id === reqId);
+    if (!req) return;
+    if (confirm(`⚠️ [ADMIN CONFIRMATION]\nAre you sure you want to permanently delete this request from ${req.submittedBy}?`)) {
+      this.pending = this.pending.filter(r => r.id !== reqId);
+      this.savePending();
+      this.renderApprovals();
+      this.updateAdminUI();
+      this.showToast("🗑️ User submission permanently deleted.");
     }
   }
 
