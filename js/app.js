@@ -870,18 +870,6 @@ class CleanEsportsHub {
           body: JSON.stringify({ data: this.data })
         }).catch(() => {});
       } catch (e) {}
-
-      // Switch to the Active Lineup & Roster tab immediately so the newly added/edited roster is visible
-      const screen = document.getElementById(`screen-${teamKey}`);
-      if (screen) {
-        const targetSub = `${teamKey === "godlike" ? "godl" : "s8ul"}-roster-view`;
-        screen.querySelectorAll(".sub-tab-btn").forEach(b => {
-          b.classList.toggle("active", b.dataset.sub === targetSub);
-        });
-        screen.querySelectorAll(".sub-tab-content").forEach(c => {
-          c.classList.toggle("active", c.id === targetSub);
-        });
-      }
     } else {
       // Normal User Edit Request -> Sent to Admin for Review
       const pData = this.editingPlayerId ? this.findPlayer(this.currentModalTeam, this.editingPlayerId) : null;
@@ -931,18 +919,6 @@ class CleanEsportsHub {
           body: JSON.stringify({ data: this.data })
         }).catch(() => {});
       } catch (e) {}
-
-      // Switch to the Active Lineup & Roster tab immediately so the newly added/edited roster is visible
-      const screen = document.getElementById(`screen-${teamKey}`);
-      if (screen) {
-        const targetSub = `${teamKey === "godlike" ? "godl" : "s8ul"}-roster-view`;
-        screen.querySelectorAll(".sub-tab-btn").forEach(b => {
-          b.classList.toggle("active", b.dataset.sub === targetSub);
-        });
-        screen.querySelectorAll(".sub-tab-content").forEach(c => {
-          c.classList.toggle("active", c.id === targetSub);
-        });
-      }
       this.showToast(`🗑️ Player "${pData.player.ign}" permanently deleted.`);
     }
   }
@@ -962,18 +938,6 @@ class CleanEsportsHub {
           body: JSON.stringify({ data: this.data })
         }).catch(() => {});
       } catch (e) {}
-
-      // Switch to the Active Lineup & Roster tab immediately so the newly added/edited roster is visible
-      const screen = document.getElementById(`screen-${teamKey}`);
-      if (screen) {
-        const targetSub = `${teamKey === "godlike" ? "godl" : "s8ul"}-roster-view`;
-        screen.querySelectorAll(".sub-tab-btn").forEach(b => {
-          b.classList.toggle("active", b.dataset.sub === targetSub);
-        });
-        screen.querySelectorAll(".sub-tab-content").forEach(c => {
-          c.classList.toggle("active", c.id === targetSub);
-        });
-      }
       this.showToast(`🗑️ Lineup "${div.name}" permanently deleted.`);
     }
   }
