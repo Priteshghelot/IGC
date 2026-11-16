@@ -570,8 +570,13 @@ class CleanEsportsHub {
     const title = document.getElementById("game-modal-title");
     const submitBtn = document.getElementById("game-modal-submit-btn");
 
-    if (title) title.textContent = `✏️ Edit Line-UP: ${game.title}`;
-    if (submitBtn) submitBtn.textContent = "💾 Save & Update Line-UP";
+    if (this.isAdmin) {
+      if (title) title.textContent = `✏️ Edit Line-UP: ${game.title} (Admin)`;
+      if (submitBtn) submitBtn.textContent = "💾 Save & Apply Live";
+    } else {
+      if (title) title.textContent = `📝 Suggest Edit: ${game.title}`;
+      if (submitBtn) submitBtn.textContent = "📩 Submit for Admin Approval";
+    }
 
     document.getElementById("game-team-select").value = teamKey;
     document.getElementById("game-no-input").value     = game.no || 1;
@@ -601,31 +606,33 @@ class CleanEsportsHub {
 
     const updaterInput = document.getElementById("game-updater-input");
     const updatedBy = (updaterInput ? updaterInput.value.trim() : "") || localStorage.getItem("last_updater_name") || "Community Member";
+    if (!updatedBy) { alert("Please enter your name in the 'Edited By' field."); return; }
     localStorage.setItem("last_updater_name", updatedBy);
     const updatedAt = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 
     if (!title) { alert("Please enter the game title."); return; }
 
-    // Direct update so changes reflect immediately for the editor
-    if (this.editingGameId) {
-      if (this.currentGameTeam !== teamKey) {
-        this.data[this.currentGameTeam].ewcGames = this.data[this.currentGameTeam].ewcGames.filter(g => g.id !== this.editingGameId);
-        this.data[teamKey].ewcGames.push({ id: this.editingGameId, no, title, genre, roster, status, highlight, updatedBy, updatedAt });
+    if (this.isAdmin) {
+      // ── ADMIN: Apply changes directly and live ──────────────────────────
+      if (this.editingGameId) {
+        if (this.currentGameTeam !== teamKey) {
+          this.data[this.currentGameTeam].ewcGames = this.data[this.currentGameTeam].ewcGames.filter(g => g.id !== this.editingGameId);
+          this.data[teamKey].ewcGames.push({ id: this.editingGameId, no, title, genre, roster, status, highlight, updatedBy, updatedAt });
+        } else {
+          const game = this.data[teamKey].ewcGames.find(g => g.id === this.editingGameId);
+          if (game) Object.assign(game, { no, title, genre, roster, status, highlight, updatedBy, updatedAt });
+        }
+        this.showToast(`✅ "${title}" updated live by ${updatedBy}!`);
       } else {
-        const game = this.data[teamKey].ewcGames.find(g => g.id === this.editingGameId);
-        if (game) Object.assign(game, { no, title, genre, roster, status, highlight, updatedBy, updatedAt });
+        this.data[teamKey].ewcGames.push({ id: "game-" + Date.now(), no, title, genre, roster, status, highlight, updatedBy, updatedAt });
+        this.showToast(`✅ "${title}" added live by ${updatedBy}!`);
       }
-      this.showToast(`✅ "${title}" updated by ${updatedBy}!`);
-    } else {
-      this.data[teamKey].ewcGames.push({ id: "game-" + Date.now(), no, title, genre, roster, status, highlight, updatedBy, updatedAt });
-      this.showToast(`✅ "${title}" added by ${updatedBy}!`);
-    }
-    this.data[teamKey].ewcGames.sort((a, b) => (a.no || 0) - (b.no || 0));
-    this.saveData();
-    this.renderAll();
+      this.data[teamKey].ewcGames.sort((a, b) => (a.no || 0) - (b.no || 0));
+      this.saveData();
+      this.renderAll();
 
-    // Log update into pending requests for Admin audit
-    if (!this.isAdmin) {
+    } else {
+      // ── NORMAL USER: Send to Admin approval queue ───────────────────────
       const origGame = (this.data[this.currentGameTeam]?.ewcGames || []).find(g => g.id === this.editingGameId);
       const req = {
         id: "req-" + Date.now(),
@@ -635,13 +642,14 @@ class CleanEsportsHub {
         targetName: origGame ? origGame.title : title,
         submittedBy: updatedBy,
         submittedAt: new Date().toLocaleString(),
-        status: "approved",
+        status: "pending",
         originalData: origGame ? { ...origGame } : null,
         data: { no, title, genre, roster, status, highlight, updatedBy, updatedAt }
       };
       this.pending.push(req);
       this.savePending();
       this.updateAdminUI();
+      this.showToast(`📩 Edit by "${updatedBy}" sent to Admin for approval! Changes will appear once approved.`);
     }
 
     this.closeModal("game-modal");
