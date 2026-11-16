@@ -214,6 +214,10 @@
         </div>
 
         <div class="detail-top-actions">
+          <!-- Regular Users: Submit Post / Request / Delete -->
+          <button class="btn-user-submit-request btn-team-req-godl" onclick="window.cleanHub.openRequestModal('godlike')">
+            📩 Submit / Request Update
+          </button>
           <!-- Admin Only -->
           <button class="btn-team-add-action btn-team-add-godl admin-only-btn" style="display:none;" onclick="window.cleanHub.openAddPlayerModal('godlike')">
             ➕ Add Lineup / Player
@@ -251,6 +255,16 @@
         </h1>
       </div>
 
+      <!-- Sub-Tabs Bar -->
+      <div class="sub-tabs-bar">
+        <button class="sub-tab-btn active" data-sub="godl-ewc-view">
+          🎮 EWC 2026 Games Table
+        </button>
+        <button class="sub-tab-btn" data-sub="godl-roster-view">
+          🛡️ Active Lineups & Rosters
+        </button>
+      </div>
+
       <!-- Sub-View 1: GodLike EWC 2026 Games (Table) -->
       <div class="sub-tab-content active" id="godl-ewc-view">
         <div class="clean-table-box">
@@ -269,6 +283,13 @@
               <!-- Rendered dynamically by app.js -->
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Sub-View 2: GodLike Active Lineups & Rosters -->
+      <div class="sub-tab-content" id="godl-roster-view">
+        <div id="godl-roster-container">
+          <!-- Rendered dynamically by app.js -->
         </div>
       </div>
 
@@ -304,6 +325,10 @@
         </div>
 
         <div class="detail-top-actions">
+          <!-- Regular Users: Submit Post / Request / Delete -->
+          <button class="btn-user-submit-request btn-team-req-s8ul" onclick="window.cleanHub.openRequestModal('s8ul')">
+            📩 Submit / Request Update
+          </button>
           <!-- Admin Only -->
           <button class="btn-team-add-action btn-team-add-s8ul admin-only-btn" style="display:none;" onclick="window.cleanHub.openAddPlayerModal('s8ul')">
             ➕ Add Lineup / Player
@@ -341,6 +366,16 @@
         </h1>
       </div>
 
+      <!-- Sub-Tabs Bar -->
+      <div class="sub-tabs-bar">
+        <button class="sub-tab-btn active" data-sub="s8ul-ewc-view">
+          🎮 EWC Campaign (12 Titles & Rosters)
+        </button>
+        <button class="sub-tab-btn" data-sub="s8ul-roster-view">
+          🛡️ Team SouL BGMI & Active Lineups
+        </button>
+      </div>
+
       <!-- Sub-View 1: S8UL EWC Games (Table) -->
       <div class="sub-tab-content active" id="s8ul-ewc-view">
         <div class="clean-table-box">
@@ -359,6 +394,13 @@
               <!-- Rendered dynamically by app.js -->
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Sub-View 2: S8UL Active Lineups & Rosters -->
+      <div class="sub-tab-content" id="s8ul-roster-view">
+        <div id="s8ul-roster-container">
+          <!-- Rendered dynamically by app.js -->
         </div>
       </div>
 
@@ -662,12 +704,28 @@
             <select id="request-type-select" class="form-input">
               <option value="player">👤 Player / Athlete Suggestion</option>
               <option value="game">🎮 EWC Game Title Suggestion</option>
+              <option value="delete_player">🗑️ Delete Player / Athlete</option>
+              <option value="delete_lineup">🗑️ Delete Lineup / Division</option>
+              <option value="delete_game">🗑️ Delete Game Title</option>
             </select>
           </div>
 
           <div class="form-group form-col-full">
             <label>Your Name / Handle</label>
             <input type="text" id="req-name-input" class="form-input" placeholder="e.g. EsportsFan99">
+          </div>
+
+          <div id="req-delete-fields" class="form-col-full" style="display:none;">
+            <div class="form-grid">
+              <div class="form-group form-col-full">
+                <label>Target Name to Delete (Player IGN, Lineup, or Game Title) *</label>
+                <input type="text" id="req-delete-target" class="form-input" placeholder="e.g. Manya, GodLike BGMI Division, or Fire fire">
+              </div>
+              <div class="form-group form-col-full">
+                <label>Reason / Details for Deletion</label>
+                <textarea id="req-delete-reason" class="form-input form-textarea" rows="2" placeholder="Explain why this player, lineup, or game should be removed."></textarea>
+              </div>
+            </div>
           </div>
 
           <!-- Dynamic Player Request Fields -->

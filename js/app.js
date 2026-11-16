@@ -61,7 +61,6 @@ class CleanEsportsHub {
         if (json.ok && json.data) {
           this.data = json.data;
           this.saveData();
-          this.reconcileApprovedRequests();
           this.renderAll();
         }
       }
@@ -79,7 +78,6 @@ class CleanEsportsHub {
           json.requests.forEach(r => map.set(r.id, r));
           this.pending = Array.from(map.values());
           this.savePending();
-          this.reconcileApprovedRequests();
           this.updateAdminUI();
         }
       }
@@ -865,6 +863,25 @@ class CleanEsportsHub {
       }
       this.saveData();
       this.renderAll();
+      try {
+        fetch('/api/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: this.data })
+        }).catch(() => {});
+      } catch (e) {}
+
+      // Switch to the Active Lineup & Roster tab immediately so the newly added/edited roster is visible
+      const screen = document.getElementById(`screen-${teamKey}`);
+      if (screen) {
+        const targetSub = `${teamKey === "godlike" ? "godl" : "s8ul"}-roster-view`;
+        screen.querySelectorAll(".sub-tab-btn").forEach(b => {
+          b.classList.toggle("active", b.dataset.sub === targetSub);
+        });
+        screen.querySelectorAll(".sub-tab-content").forEach(c => {
+          c.classList.toggle("active", c.id === targetSub);
+        });
+      }
     } else {
       // Normal User Edit Request -> Sent to Admin for Review
       const pData = this.editingPlayerId ? this.findPlayer(this.currentModalTeam, this.editingPlayerId) : null;
@@ -884,6 +901,13 @@ class CleanEsportsHub {
       };
       this.pending.push(req);
       this.savePending();
+      try {
+        fetch('/api/requests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'add', request: req })
+        }).catch(() => {});
+      } catch (e) {}
       this.updateAdminUI();
       this.showToast(`📩 Edit request for "${ign}" submitted! It will reflect once approved by Admin.`);
     }
@@ -898,7 +922,27 @@ class CleanEsportsHub {
     if (!pData) return;
     if (confirm(`⚠️ [ADMIN CONFIRMATION]\nAre you sure you want to permanently delete player "${pData.player.ign}" from ${pData.division.name}?`)) {
       pData.division.players = pData.division.players.filter(p => p.id !== playerId);
-      this.saveData(); this.renderAll();
+      this.saveData();
+      this.renderAll();
+      try {
+        fetch('/api/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: this.data })
+        }).catch(() => {});
+      } catch (e) {}
+
+      // Switch to the Active Lineup & Roster tab immediately so the newly added/edited roster is visible
+      const screen = document.getElementById(`screen-${teamKey}`);
+      if (screen) {
+        const targetSub = `${teamKey === "godlike" ? "godl" : "s8ul"}-roster-view`;
+        screen.querySelectorAll(".sub-tab-btn").forEach(b => {
+          b.classList.toggle("active", b.dataset.sub === targetSub);
+        });
+        screen.querySelectorAll(".sub-tab-content").forEach(c => {
+          c.classList.toggle("active", c.id === targetSub);
+        });
+      }
       this.showToast(`🗑️ Player "${pData.player.ign}" permanently deleted.`);
     }
   }
@@ -909,7 +953,27 @@ class CleanEsportsHub {
     if (!div) return;
     if (confirm(`⚠️ [ADMIN CONFIRMATION]\nAre you sure you want to permanently delete lineup "${div.name}" and all its players?`)) {
       this.data[teamKey].divisions = this.data[teamKey].divisions.filter(d => d.id !== divisionId);
-      this.saveData(); this.renderAll();
+      this.saveData();
+      this.renderAll();
+      try {
+        fetch('/api/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: this.data })
+        }).catch(() => {});
+      } catch (e) {}
+
+      // Switch to the Active Lineup & Roster tab immediately so the newly added/edited roster is visible
+      const screen = document.getElementById(`screen-${teamKey}`);
+      if (screen) {
+        const targetSub = `${teamKey === "godlike" ? "godl" : "s8ul"}-roster-view`;
+        screen.querySelectorAll(".sub-tab-btn").forEach(b => {
+          b.classList.toggle("active", b.dataset.sub === targetSub);
+        });
+        screen.querySelectorAll(".sub-tab-content").forEach(c => {
+          c.classList.toggle("active", c.id === targetSub);
+        });
+      }
       this.showToast(`🗑️ Lineup "${div.name}" permanently deleted.`);
     }
   }
@@ -1092,7 +1156,15 @@ class CleanEsportsHub {
     if (!game) return;
     if (confirm(`⚠️ [ADMIN CONFIRMATION]\nAre you sure you want to permanently delete "${game.title}"?`)) {
       this.data[teamKey].ewcGames = this.data[teamKey].ewcGames.filter(g => g.id !== gameId);
-      this.saveData(); this.renderAll();
+      this.saveData();
+      this.renderAll();
+      try {
+        fetch('/api/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: this.data })
+        }).catch(() => {});
+      } catch (e) {}
       this.showToast(`🗑️ Game "${game.title}" permanently deleted.`);
     }
   }
@@ -1108,7 +1180,8 @@ class CleanEsportsHub {
     document.getElementById("request-type-select").value = "player";
     document.getElementById("req-player-fields").style.display = "block";
     document.getElementById("req-game-fields").style.display   = "none";
-    ["req-ign","req-realname","req-role","req-game","req-desc","req-game-title","req-game-genre","req-game-roster"].forEach(id => {
+    document.getElementById("req-delete-fields").style.display  = "none";
+    ["req-ign","req-realname","req-role","req-game","req-desc","req-game-title","req-game-genre","req-game-roster","req-delete-target","req-delete-reason"].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = "";
     });
@@ -1116,8 +1189,12 @@ class CleanEsportsHub {
     modal.classList.add("active");
 
     document.getElementById("request-type-select").onchange = function() {
-      document.getElementById("req-player-fields").style.display = this.value === "player" ? "block" : "none";
-      document.getElementById("req-game-fields").style.display   = this.value === "game"   ? "block" : "none";
+      const isPlayer = this.value === "player";
+      const isGame = this.value === "game";
+      const isDelete = this.value === "delete_player" || this.value === "delete_lineup" || this.value === "delete_game";
+      document.getElementById("req-player-fields").style.display = isPlayer ? "block" : "none";
+      document.getElementById("req-game-fields").style.display   = isGame ? "block" : "none";
+      document.getElementById("req-delete-fields").style.display = isDelete ? "block" : "none";
     };
   }
 
@@ -1134,12 +1211,21 @@ class CleanEsportsHub {
       const desc = document.getElementById("req-desc").value.trim();
       if (!ign || !role) { alert("Please fill in Player IGN and Role."); return; }
       reqData = { ign, name, role, game, desc };
-    } else {
+    } else if (type === "game") {
       const title  = document.getElementById("req-game-title").value.trim();
       const genre  = document.getElementById("req-game-genre").value.trim();
       const roster = document.getElementById("req-game-roster").value.trim();
       if (!title) { alert("Please enter the game title."); return; }
       reqData = { title, genre, roster };
+    } else {
+      const target = document.getElementById("req-delete-target").value.trim();
+      const reason = document.getElementById("req-delete-reason").value.trim();
+      if (!target) { alert("Please enter the player, lineup, or game title to delete."); return; }
+      reqData = {
+        target,
+        reason,
+        targetType: type === "delete_player" ? "player" : (type === "delete_lineup" ? "lineup" : "game")
+      };
     }
 
     const request = {
@@ -1157,6 +1243,14 @@ class CleanEsportsHub {
     this.closeModal("request-modal");
     this.showToast("📨 Request submitted! An admin will review and accept it.");
     this.updateAdminUI();
+
+    try {
+      fetch('/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'add', request })
+      }).catch(() => {});
+    } catch (e) {}
   }
 
   // =========================================================================
@@ -1333,6 +1427,24 @@ class CleanEsportsHub {
           <div class="approval-detail"><strong>Proposed Stats:</strong> ${this.escapeHtml(req.data.stat1Label)}: ${this.escapeHtml(req.data.stat1Val)}</div>
           <div class="approval-detail"><strong>Notes / Bio:</strong> ${this.escapeHtml(req.data.desc || "-")}</div>
         `;
+      } else if (req.type === "delete_player") {
+        typeLabel = "🗑️ Delete Player Request";
+        details = `
+          <div class="approval-detail"><strong>Target Player:</strong> ${this.escapeHtml(req.data.target || "-")}</div>
+          <div class="approval-detail"><strong>Reason:</strong> ${this.escapeHtml(req.data.reason || "-")}</div>
+        `;
+      } else if (req.type === "delete_lineup") {
+        typeLabel = "🗑️ Delete Lineup Request";
+        details = `
+          <div class="approval-detail"><strong>Target Lineup:</strong> ${this.escapeHtml(req.data.target || "-")}</div>
+          <div class="approval-detail"><strong>Reason:</strong> ${this.escapeHtml(req.data.reason || "-")}</div>
+        `;
+      } else if (req.type === "delete_game") {
+        typeLabel = "🗑️ Delete Game Request";
+        details = `
+          <div class="approval-detail"><strong>Target Game:</strong> ${this.escapeHtml(req.data.target || "-")}</div>
+          <div class="approval-detail"><strong>Reason:</strong> ${this.escapeHtml(req.data.reason || "-")}</div>
+        `;
       } else if (req.type === "edit_game") {
         typeLabel = "✏️ Proposed Game Edit";
         details = `
@@ -1370,9 +1482,11 @@ class CleanEsportsHub {
           </div>
           ${details}
           <div class="approval-actions">
-            <button class="btn-approve" onclick="window.cleanHub.approveRequest('${req.id}')">✅ Accept & Reflect Live</button>
+            ${req.type.startsWith("delete_") ? `
+              <button class="btn-approve btn-approve-delete" style="background:#dc2626; border-color:#ef4444; color:#fff; font-weight:800;" onclick="window.cleanHub.approveRequest('${req.id}')">🗑️ Accept Deletion Live</button>` : `
+              <button class="btn-approve" onclick="window.cleanHub.approveRequest('${req.id}')">✅ Accept & Reflect Live</button>`}
             <button class="btn-reject"  onclick="window.cleanHub.rejectRequest('${req.id}')">❌ Reject</button>
-            <button class="btn-delete-req" onclick="window.cleanHub.deleteRequest('${req.id}')">🗑️ Delete</button>
+            <button class="btn-delete-req" onclick="window.cleanHub.deleteRequest('${req.id}')">🗑️ Delete Request</button>
           </div>
         </div>`;
     }).join("");
@@ -1475,6 +1589,56 @@ class CleanEsportsHub {
         });
         games.sort((a, b) => (a.no || 0) - (b.no || 0));
         this.showToast(`✅ Game "${req.data.title}" approved & added at the bottom!`);
+      }
+    } else if (req.type === "delete_player") {
+      const target = req.data.target || "";
+      const matches = this.findPlayer(req.teamKey, req.data.targetId || null);
+      let playerToDelete = matches ? matches.player : null;
+      if (!playerToDelete) {
+        for (const div of (this.data[req.teamKey]?.divisions || [])) {
+          const found = div.players.find(p => p.ign.toLowerCase() === target.toLowerCase() || (p.name && p.name.toLowerCase() === target.toLowerCase()));
+          if (found) {
+            playerToDelete = found;
+            break;
+          }
+        }
+      }
+      if (playerToDelete) {
+        for (const div of (this.data[req.teamKey]?.divisions || [])) {
+          const before = div.players.length;
+          div.players = div.players.filter(p => p.id !== playerToDelete.id);
+          if (div.players.length !== before) {
+            this.showToast(`✅ Player "${playerToDelete.ign}" was deleted live after admin approval.`);
+            break;
+          }
+        }
+      } else {
+        this.showToast(`⚠️ No matching player found for deletion request: "${target}"`);
+      }
+    } else if (req.type === "delete_lineup") {
+      const target = (req.data.target || "").trim();
+      const targetDiv = (this.data[req.teamKey]?.divisions || []).find(d => d.name.toLowerCase() === target.toLowerCase() || d.id === (req.data.targetId || ""));
+      if (targetDiv) {
+        this.data[req.teamKey].divisions = this.data[req.teamKey].divisions.filter(d => d.id !== targetDiv.id);
+        this.showToast(`✅ Lineup "${targetDiv.name}" was deleted live after admin approval.`);
+      } else {
+        this.showToast(`⚠️ No matching lineup found for deletion request: "${target}"`);
+      }
+    } else if (req.type === "delete_game") {
+      const target = (req.data?.target || req.targetName || "").trim().toLowerCase();
+      if (!this.data[req.teamKey]) this.data[req.teamKey] = {};
+      if (!Array.isArray(this.data[req.teamKey].ewcGames)) this.data[req.teamKey].ewcGames = [];
+      const games = this.data[req.teamKey].ewcGames;
+      const before = games.length;
+      this.data[req.teamKey].ewcGames = games.filter(g => {
+        if (req.targetId && g.id === req.targetId) return false;
+        if (g.title && g.title.toLowerCase().trim() === target) return false;
+        return true;
+      });
+      if (this.data[req.teamKey].ewcGames.length !== before) {
+        this.showToast(`🗑️ Game "${req.data?.target || req.targetName}" was permanently deleted live.`);
+      } else {
+        this.showToast(`⚠️ No matching game found for deletion: "${req.data?.target || req.targetName}"`);
       }
     } else if (req.type === "player") {
       let targetDiv = this.data[req.teamKey].divisions.find(d => d.name === "Community Submissions")

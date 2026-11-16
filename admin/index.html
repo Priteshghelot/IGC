@@ -419,6 +419,24 @@
               <div class="approval-detail"><strong>Uploaded By:</strong> <span style="color:var(--godl-gold); font-weight:700;">👤 ${this.escape(req.submittedBy || "-")}</span></div>
               <div class="approval-detail"><strong>Submitted:</strong> ${this.escape(req.submittedAt || "-")}</div>
             `;
+          } else if (req.type === "delete_player") {
+            typeLabel = "🗑️ Delete Player Request";
+            details = `
+              <div class="approval-detail"><strong>Target Player:</strong> ${this.escape(req.data.target || "-")}</div>
+              <div class="approval-detail"><strong>Reason:</strong> ${this.escape(req.data.reason || "-")}</div>
+            `;
+          } else if (req.type === "delete_lineup") {
+            typeLabel = "🗑️ Delete Lineup Request";
+            details = `
+              <div class="approval-detail"><strong>Target Lineup:</strong> ${this.escape(req.data.target || "-")}</div>
+              <div class="approval-detail"><strong>Reason:</strong> ${this.escape(req.data.reason || "-")}</div>
+            `;
+          } else if (req.type === "delete_game") {
+            typeLabel = "🗑️ Delete Game Request";
+            details = `
+              <div class="approval-detail"><strong>Target Game:</strong> ${this.escape(req.data.target || "-")}</div>
+              <div class="approval-detail"><strong>Reason:</strong> ${this.escape(req.data.reason || "-")}</div>
+            `;
           } else if (req.type === "edit_player") {
             typeLabel = "✏️ Proposed Player Edit";
             details = `
@@ -467,7 +485,9 @@
               </div>
               ${details}
               <div class="approval-actions">
-                <button class="btn-approve" onclick="window.adminPortal.approve('${req.id}')">✅ Accept & Reflect Live</button>
+                ${req.type.startsWith("delete_") ? `
+                  <button class="btn-approve btn-approve-delete" style="background:#dc2626; border-color:#ef4444; color:#fff; font-weight:800;" onclick="window.adminPortal.approve('${req.id}')">🗑️ Accept Deletion Live</button>` : `
+                  <button class="btn-approve" onclick="window.adminPortal.approve('${req.id}')">✅ Accept & Reflect Live</button>`}
                 <button class="btn-reject"  onclick="window.adminPortal.reject('${req.id}')">❌ Reject</button>
                 <button class="btn-delete-req" onclick="window.adminPortal.deleteReq('${req.id}')">🗑️ Delete</button>
               </div>
@@ -558,6 +578,103 @@
           } catch(e) {}
 
           alert("✅ Daily post approved! It is now live in the Daily Updates feed.");
+          return;
+        }
+
+        if (req.type === "delete_player") {
+          const target = (req.data?.target || req.targetName || "").trim().toLowerCase();
+          let deleted = false;
+          for (const div of (this.data[req.teamKey]?.divisions || [])) {
+            const before = div.players.length;
+            div.players = div.players.filter(p => {
+              if (req.targetId && p.id === req.targetId) return false;
+              if (p.ign && p.ign.toLowerCase().trim() === target) return false;
+              if (p.name && p.name.toLowerCase().trim() === target) return false;
+              return true;
+            });
+            if (div.players.length !== before) deleted = true;
+          }
+          req.status = "approved";
+          this.saveData();
+          this.savePending();
+          this.renderList();
+          try {
+            fetch('/api/requests', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'approve', id: reqId })
+            }).catch(() => {});
+            fetch('/api/data', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ data: this.data })
+            }).catch(() => {});
+          } catch(e) {}
+          alert(deleted ? `🗑️ Player "${req.data?.target || req.targetName}" was permanently deleted live.` : `⚠️ No player matching "${req.data?.target || req.targetName}" found.`);
+          return;
+        }
+
+        if (req.type === "delete_lineup") {
+          const target = (req.data?.target || req.targetName || "").trim().toLowerCase();
+          let deleted = false;
+          if (this.data[req.teamKey]?.divisions) {
+            const before = this.data[req.teamKey].divisions.length;
+            this.data[req.teamKey].divisions = this.data[req.teamKey].divisions.filter(d => {
+              if (req.targetId && d.id === req.targetId) return false;
+              if (d.name && d.name.toLowerCase().trim() === target) return false;
+              return true;
+            });
+            if (this.data[req.teamKey].divisions.length !== before) deleted = true;
+          }
+          req.status = "approved";
+          this.saveData();
+          this.savePending();
+          this.renderList();
+          try {
+            fetch('/api/requests', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'approve', id: reqId })
+            }).catch(() => {});
+            fetch('/api/data', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ data: this.data })
+            }).catch(() => {});
+          } catch(e) {}
+          alert(deleted ? `🗑️ Lineup "${req.data?.target || req.targetName}" was permanently deleted live.` : `⚠️ No lineup matching "${req.data?.target || req.targetName}" found.`);
+          return;
+        }
+
+        if (req.type === "delete_game") {
+          const target = (req.data?.target || req.targetName || "").trim().toLowerCase();
+          let deleted = false;
+          if (this.data[req.teamKey]?.ewcGames) {
+            const before = this.data[req.teamKey].ewcGames.length;
+            this.data[req.teamKey].ewcGames = this.data[req.teamKey].ewcGames.filter(g => {
+              if (req.targetId && g.id === req.targetId) return false;
+              if (g.title && g.title.toLowerCase().trim() === target) return false;
+              return true;
+            });
+            if (this.data[req.teamKey].ewcGames.length !== before) deleted = true;
+          }
+          req.status = "approved";
+          this.saveData();
+          this.savePending();
+          this.renderList();
+          try {
+            fetch('/api/requests', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'approve', id: reqId })
+            }).catch(() => {});
+            fetch('/api/data', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ data: this.data })
+            }).catch(() => {});
+          } catch(e) {}
+          alert(deleted ? `🗑️ Game "${req.data?.target || req.targetName}" was permanently deleted live.` : `⚠️ No game matching "${req.data?.target || req.targetName}" found.`);
           return;
         }
 

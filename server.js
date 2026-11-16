@@ -20,15 +20,73 @@ const MIME_TYPES = {
   '.woff2': 'font/woff2'
 };
 
-const server = http.createServer((req, res) => {
+const handlerMap = {
+  data: require('./api/data'),
+  requests: require('./api/requests')
+};
+
+const parseRequestBody = (req) => new Promise((resolve) => {
+  const contentType = (req.headers && req.headers['content-type']) || '';
+  if (req.method === 'GET' || req.method === 'HEAD') {
+    resolve(undefined);
+    return;
+  }
+
+  let body = '';
+  req.on('data', (chunk) => {
+    body += chunk;
+  });
+  req.on('end', () => {
+    if (!body) {
+      resolve(undefined);
+      return;
+    }
+
+    if (contentType.includes('application/json')) {
+      try {
+        req.body = JSON.parse(body);
+      } catch (err) {
+        req.body = body;
+      }
+    } else {
+      req.body = body;
+    }
+
+    resolve(req.body);
+  });
+});
+
+const server = http.createServer(async (req, res) => {
   // CORS & Security headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
+    return;
+  }
+
+  const apiPath = (req.url || '').split('?')[0];
+  if (apiPath.startsWith('/api/')) {
+    const route = apiPath.replace(/^\/api\/+/, '').split('/')[0];
+    const handler = handlerMap[route];
+
+    if (!handler) {
+      res.writeHead(404, { 'Content-Type': 'application/json; charset=UTF-8' });
+      res.end(JSON.stringify({ ok: false, error: 'API route not found' }));
+      return;
+    }
+
+    try {
+      await parseRequestBody(req);
+      await handler(req, res);
+    } catch (error) {
+      console.error(`API route error for ${apiPath}:`, error);
+      res.writeHead(500, { 'Content-Type': 'application/json; charset=UTF-8' });
+      res.end(JSON.stringify({ ok: false, error: error.message }));
+    }
     return;
   }
 
