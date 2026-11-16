@@ -793,6 +793,39 @@ button {
   letter-spacing: 0.01em;
 }
 
+.col-edited-by {
+  min-width: 180px;
+}
+
+.edited-by-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-action-edit {
+  background: rgba(59, 130, 246, 0.16);
+  border: 1px solid rgba(59, 130, 246, 0.45);
+  color: #93c5fd;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-action-edit:hover, .btn-action-edit:active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
 /* Clean Roster Cards (No fake photos) */
 .roster-grid-clean {
   display: grid;

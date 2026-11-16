@@ -193,6 +193,26 @@
     font-weight: 600;
   }
 
+  .clean-table td[data-label="Edited By"] {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  }
+
+  .clean-table td[data-label="Edited By"] .edited-by-cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .clean-table td[data-label="Edited By"] .btn-action-edit {
+    padding: 6px 14px;
+    font-size: 0.85rem;
+  }
+
   /* ── Roster grid ── */
   .roster-grid-clean {
     grid-template-columns: 1fr;
