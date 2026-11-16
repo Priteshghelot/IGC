@@ -546,7 +546,9 @@ class CleanEsportsHub {
       html += `
         <tr ${rowStyle}>
           <td class="col-num" style="color:${themeColor};" data-label="#">${g.no || index + 1}</td>
-          <td class="col-title" data-label="Game">${this.escapeHtml(g.title)}</td>
+          <td class="col-title" data-label="Game">
+            <span class="game-title-highlight" style="--team-accent:${themeColor};">${this.escapeHtml(g.title)}</span>
+          </td>
           <td data-label="Category">${this.escapeHtml(g.genre || g.category || "")}</td>
           <td data-label="Roster">${this.escapeHtml(g.roster)}</td>
           <td ${statusStyle} data-label="Status">${this.escapeHtml(g.status)}</td>
@@ -624,7 +626,9 @@ class CleanEsportsHub {
                   <button class="btn-card-delete" title="Delete Player (Admin)" onclick="window.cleanHub.deletePlayer('${teamKey}','${p.id}')">🗑️</button>
                 </div>` : ""}
               <div class="player-header">
-                <span class="player-ign-text">${this.escapeHtml(p.ign)}</span>
+                <span class="player-ign-text">
+                  <span class="player-ign-highlight" style="--team-accent:${themeColor};">${this.escapeHtml(p.ign)}</span>
+                </span>
                 <span class="player-role-tag" style="color:${themeColor};">${this.escapeHtml(p.role)}</span>
               </div>
               <div class="player-sub-name">${this.escapeHtml(p.name)}</div>

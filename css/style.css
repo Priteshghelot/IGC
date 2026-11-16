@@ -759,8 +759,33 @@ button {
 }
 
 .col-title {
-  font-weight: 700;
+  font-weight: 800;
   color: #fff;
+  vertical-align: middle;
+}
+
+.game-title-highlight {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  padding: 6px 14px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border-left: 4px solid var(--team-accent, var(--godl-gold));
+  border-radius: 4px 8px 8px 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.25);
+  transition: all 0.2s ease;
+}
+
+.clean-table tr:hover .game-title-highlight {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
+  border-left-width: 6px;
+  border-left-color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 16px rgba(255, 255, 255, 0.15);
+  transform: translateX(4px);
 }
 
 .updater-pill {
@@ -848,24 +873,49 @@ button {
 }
 
 .player-ign-text {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: #fff;
+  font-size: 1.55rem;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: 0.015em;
+  display: flex;
+  align-items: center;
+}
+
+.player-ign-highlight {
+  display: inline-block;
+  color: #ffffff;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-left: 3.5px solid var(--team-accent, var(--godl-gold));
+  border-radius: 3px 6px 6px 3px;
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.35);
+  transition: all 0.2s ease;
+}
+
+.player-box:hover .player-ign-highlight {
+  background: rgba(255, 255, 255, 0.12);
+  border-left-color: #ffffff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+  transform: translateX(2px);
 }
 
 .player-role-tag {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.08);
   color: var(--text-sub);
+  letter-spacing: 0.04em;
 }
 
 .player-sub-name {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-bottom: 10px;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  letter-spacing: 0.01em;
 }
 
 .player-stats-bar {

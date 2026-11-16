@@ -193,6 +193,25 @@
     font-weight: 600;
   }
 
+  .clean-table td.col-title {
+    padding: 6px 0;
+  }
+
+  .clean-table td.col-title .game-title-highlight {
+    font-size: 1.15rem;
+    padding: 5px 12px;
+    display: inline-block;
+    margin-top: 3px;
+  }
+
+  .player-ign-text {
+    font-size: 1.38rem;
+  }
+
+  .player-sub-name {
+    font-size: 0.98rem;
+  }
+
   .clean-table td[data-label="Edited By"] {
     margin-top: 6px;
     padding-top: 6px;
