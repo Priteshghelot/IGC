@@ -221,13 +221,13 @@ class CleanEsportsHub {
 
       html += `
         <tr ${rowStyle}>
-          <td class="col-num" style="color:${themeColor};">${g.no || index + 1}</td>
-          <td class="col-title">${this.escapeHtml(g.title)}</td>
-          <td>${this.escapeHtml(g.genre)}</td>
-          <td>${this.escapeHtml(g.roster)}</td>
-          <td ${statusStyle}>${this.escapeHtml(g.status)}</td>
+          <td class="col-num" style="color:${themeColor};" data-label="#">${g.no || index + 1}</td>
+          <td class="col-title" data-label="Game">${this.escapeHtml(g.title)}</td>
+          <td data-label="Genre">${this.escapeHtml(g.genre)}</td>
+          <td data-label="Roster">${this.escapeHtml(g.roster)}</td>
+          <td ${statusStyle} data-label="Status">${this.escapeHtml(g.status)}</td>
           ${this.isAdmin ? `
-            <td class="admin-td-actions">
+            <td class="admin-td-actions" data-label="Actions">
               <button class="btn-action-edit" title="Edit Game" onclick="window.cleanHub.openEditGameModal('${teamKey}', '${g.id}')">✏️ Edit</button>
               <button class="btn-action-delete" title="Delete Game" onclick="window.cleanHub.deleteGame('${teamKey}', '${g.id}')">🗑️</button>
             </td>

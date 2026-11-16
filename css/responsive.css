@@ -68,21 +68,134 @@
     margin-bottom: 1rem;
   }
 
-  /* Team Screen Nav */
-  .team-top-nav {
-    flex-wrap: wrap;
+  /* ── Detail / Team Screen Nav ── */
+  .detail-top-nav {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 0.6rem;
     padding: 0.75rem 1rem;
-    gap: 0.5rem;
   }
 
-  .team-top-nav .nav-back-btn {
-    font-size: 0.8rem;
-    padding: 6px 12px;
+  .detail-top-nav > div {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .btn-back-home {
+    font-size: 0.82rem;
+    padding: 7px 14px;
   }
 
   .btn-team-add-action {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     padding: 6px 12px;
+  }
+
+  .creator-inline-link {
+    font-size: 0.78rem;
+  }
+
+  /* ── Detail Header Card ── */
+  .detail-header-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .detail-brand {
+    gap: 0.75rem;
+  }
+
+  .detail-logo-small {
+    width: 60px;
+    height: 60px;
+  }
+
+  .detail-brand-info h2 {
+    font-size: 1.4rem;
+  }
+
+  .detail-brand-info p {
+    font-size: 0.82rem;
+  }
+
+  .detail-social-links {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .social-pill {
+    font-size: 0.78rem;
+    padding: 5px 11px;
+  }
+
+  /* ── Sub-tabs ── */
+  .sub-tabs-bar {
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .sub-tab-btn {
+    font-size: 0.8rem;
+    padding: 7px 12px;
+    flex: 1;
+    text-align: center;
+  }
+
+  /* ── EWC Table → card view on mobile ── */
+  .clean-table-box {
+    overflow-x: hidden;
+    border-radius: 10px;
+  }
+
+  .clean-table thead {
+    display: none;
+  }
+
+  .clean-table,
+  .clean-table tbody,
+  .clean-table tr,
+  .clean-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .clean-table tr {
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.9rem 1rem;
+  }
+
+  .clean-table tr:last-child {
+    border-bottom: none;
+  }
+
+  .clean-table td {
+    padding: 2px 0;
+    border: none;
+    font-size: 0.85rem;
+  }
+
+  .clean-table td[data-label]::before {
+    content: attr(data-label) ": ";
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .clean-table td.col-num {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-align: left;
+    font-weight: 600;
+  }
+
+  /* ── Roster grid ── */
+  .roster-grid-clean {
+    grid-template-columns: 1fr;
   }
 
   /* Game tabs */
@@ -198,7 +311,113 @@
     font-size: 0.85rem;
   }
 
-  /* Team screen top nav — stack on small mobile */
+  /* ── Team screen top nav — stack on small mobile ── */
+  .detail-top-nav {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 0.6rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .detail-top-nav > div {
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .btn-back-home {
+    font-size: 0.78rem;
+    padding: 6px 12px;
+  }
+
+  .btn-team-add-action {
+    font-size: 0.72rem;
+    padding: 5px 10px;
+  }
+
+  .creator-inline-link {
+    font-size: 0.72rem;
+    gap: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .mini-creator-avatar {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  /* ── Detail Header Card ── */
+  .detail-header-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem;
+    padding: 0.9rem 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .detail-brand {
+    gap: 0.6rem;
+  }
+
+  .detail-logo-small {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  .detail-brand-info h2 {
+    font-size: 1.2rem !important;
+  }
+
+  .detail-brand-info p {
+    font-size: 0.75rem;
+  }
+
+  .detail-social-links {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .social-pill {
+    font-size: 0.72rem;
+    padding: 4px 9px;
+  }
+
+  /* ── Sub-tabs ── */
+  .sub-tabs-bar {
+    gap: 5px;
+    margin-bottom: 0.75rem;
+  }
+
+  .sub-tab-btn {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    flex: 1;
+    text-align: center;
+  }
+
+  /* ── Roster cards ── */
+  .roster-grid-clean {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem;
+  }
+
+  .player-box {
+    padding: 0.9rem;
+  }
+
+  .player-ign-text {
+    font-size: 1.05rem;
+  }
+
+  .player-stats-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* Team screen top nav — legacy classes */
   .team-top-nav {
     flex-direction: column;
     align-items: flex-start;
@@ -211,13 +430,6 @@
     flex-wrap: wrap;
     gap: 0.4rem;
     width: 100%;
-  }
-
-  .btn-team-add-action {
-    font-size: 0.72rem;
-    padding: 5px 10px;
-    flex: 1;
-    justify-content: center;
   }
 
   /* Game tabs scroll horizontally */
