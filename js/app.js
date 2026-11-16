@@ -257,17 +257,35 @@ class CleanEsportsHub {
           <td data-label="Genre">${this.escapeHtml(g.genre)}</td>
           <td data-label="Roster">${this.escapeHtml(g.roster)}</td>
           <td ${statusStyle} data-label="Status">${this.escapeHtml(g.status)}</td>
-          <td class="admin-td-actions" data-label="Actions">
-            <button class="btn-action-edit" title="${this.isAdmin ? 'Edit Game' : 'Suggest Edit (Sends to Admin)'}" onclick="window.cleanHub.openEditGameModal('${teamKey}','${g.id}')">✏️ Edit</button>
-            ${this.isAdmin ? `<button class="btn-action-delete" title="Delete Game (Admin Only)" onclick="window.cleanHub.deleteGame('${teamKey}','${g.id}')">🗑️</button>` : ""}
-          </td>
+          ${this.isAdmin ? `
+            <td class="admin-td-actions" data-label="Actions">
+              <button class="btn-action-edit" onclick="window.cleanHub.openEditGameModal('${teamKey}','${g.id}')">✏️ Edit</button>
+              <button class="btn-action-delete" onclick="window.cleanHub.deleteGame('${teamKey}','${g.id}')">🗑️</button>
+            </td>` : ""}
         </tr>`;
     });
 
     if (games.length === 0) {
-      html = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No EWC games listed yet.</td></tr>`;
+      html = `<tr><td colspan="${this.isAdmin ? 6 : 5}" style="text-align:center;padding:2rem;color:var(--text-muted);">No EWC games listed yet.</td></tr>`;
     }
     tbody.innerHTML = html;
+
+    // Header actions sync
+    const table = tbody.closest("table");
+    if (table) {
+      const headerRow = table.querySelector("thead tr");
+      let actionTh = headerRow ? headerRow.querySelector(".th-admin-actions") : null;
+      if (this.isAdmin) {
+        if (!actionTh && headerRow) {
+          actionTh = document.createElement("th");
+          actionTh.className = "th-admin-actions";
+          actionTh.textContent = "Actions";
+          headerRow.appendChild(actionTh);
+        }
+      } else if (actionTh) {
+        actionTh.remove();
+      }
+    }
 
     // Admin direct Add Game button below table
     const container = tbody.closest(".sub-tab-content");
@@ -314,10 +332,11 @@ class CleanEsportsHub {
         div.players.forEach(p => {
           html += `
             <div class="player-box" style="border-top:2px solid ${themeColor};">
-              <div class="player-card-admin-bar">
-                <button class="btn-card-edit" title="${this.isAdmin ? 'Edit Player' : 'Suggest Edit (Sends to Admin)'}" onclick="window.cleanHub.openEditPlayerModal('${teamKey}','${p.id}')">✏️ Edit</button>
-                ${this.isAdmin ? `<button class="btn-card-delete" title="Delete Player (Admin Only)" onclick="window.cleanHub.deletePlayer('${teamKey}','${p.id}')">🗑️</button>` : ""}
-              </div>
+              ${this.isAdmin ? `
+                <div class="player-card-admin-bar">
+                  <button class="btn-card-edit" title="Edit Player (Admin)" onclick="window.cleanHub.openEditPlayerModal('${teamKey}','${p.id}')">✏️ Edit</button>
+                  <button class="btn-card-delete" title="Delete Player (Admin)" onclick="window.cleanHub.deletePlayer('${teamKey}','${p.id}')">🗑️</button>
+                </div>` : ""}
               <div class="player-header">
                 <span class="player-ign-text">${this.escapeHtml(p.ign)}</span>
                 <span class="player-role-tag" style="color:${themeColor};">${this.escapeHtml(p.role)}</span>
@@ -384,6 +403,7 @@ class CleanEsportsHub {
   }
 
   openEditPlayerModal(teamKey, playerId) {
+    if (!this.checkAdminAuth()) return;
     const pData = this.findPlayer(teamKey, playerId);
     if (!pData) return;
     this.editingPlayerId = playerId;
@@ -392,13 +412,8 @@ class CleanEsportsHub {
     const title = document.getElementById("player-modal-title");
     const submitBtn = document.getElementById("player-modal-submit-btn");
 
-    if (this.isAdmin) {
-      if (title) title.textContent = `✏️ Edit Player: ${pData.player.ign} (Admin Mode)`;
-      if (submitBtn) submitBtn.textContent = "💾 Save & Update Immediately";
-    } else {
-      if (title) title.textContent = `✏️ Suggest Edit: ${pData.player.ign}`;
-      if (submitBtn) submitBtn.textContent = "📩 Submit Edit for Admin Approval";
-    }
+    if (title) title.textContent = `✏️ Edit Player: ${pData.player.ign} (Admin)`;
+    if (submitBtn) submitBtn.textContent = "💾 Save & Update Live";
 
     document.getElementById("player-team-select").value = teamKey;
     this.populateDivisionSelect(teamKey, pData.division.id);
@@ -551,6 +566,7 @@ class CleanEsportsHub {
   }
 
   openEditGameModal(teamKey, gameId) {
+    if (!this.checkAdminAuth()) return;
     const game = (this.data[teamKey]?.ewcGames || []).find(g => g.id === gameId);
     if (!game) return;
     this.editingGameId = gameId;
@@ -559,13 +575,8 @@ class CleanEsportsHub {
     const title = document.getElementById("game-modal-title");
     const submitBtn = document.getElementById("game-modal-submit-btn");
 
-    if (this.isAdmin) {
-      if (title) title.textContent = `✏️ Edit: ${game.title} (Admin Mode)`;
-      if (submitBtn) submitBtn.textContent = "💾 Save & Update Immediately";
-    } else {
-      if (title) title.textContent = `✏️ Suggest Edit: ${game.title}`;
-      if (submitBtn) submitBtn.textContent = "📩 Submit Edit for Admin Approval";
-    }
+    if (title) title.textContent = `✏️ Edit: ${game.title} (Admin)`;
+    if (submitBtn) submitBtn.textContent = "💾 Save & Update Live";
 
     document.getElementById("game-team-select").value = teamKey;
     document.getElementById("game-no-input").value     = game.no || 1;
