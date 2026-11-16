@@ -599,12 +599,30 @@ button {
 }
 
 .detail-top-nav {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   margin-bottom: 2rem;
   padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--border-color);
+  gap: 1.25rem;
+}
+
+.detail-top-center-brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.detail-top-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+
+.creator-brand-pill-center {
+  margin-bottom: 0 !important;
 }
 
 .btn-back-home {
@@ -701,9 +719,11 @@ button {
    ACTIVE LINE HEADING WITH GREEN RADIO BUTTON
    ============================================================================= */
 .active-line-header-wrap {
-  margin: 1.75rem 0 1.25rem 0;
+  margin: 2.25rem 0 1.5rem 0;
   display: flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .active-line-h1 {
