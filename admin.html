@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal | India EWC Hub</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <style>
+    .admin-portal-wrap {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+    .admin-login-box {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(20, 24, 34, 0.95);
+      border: 1.5px solid #8b5cf6;
+      border-radius: 20px;
+      padding: 2.25rem 1.75rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(139, 92, 246, 0.2);
+      backdrop-filter: blur(16px);
+      text-align: center;
+    }
+    .admin-avatar-lg {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 2px solid #8b5cf6;
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+      margin-bottom: 1rem;
+      object-fit: cover;
+    }
+    .admin-dashboard-view {
+      width: 100%;
+      max-width: 950px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      display: none;
+    }
+    .admin-dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: rgba(20, 24, 34, 0.85);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.25rem 1.75rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(12px);
+    }
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .dash-card {
+      background: rgba(20, 24, 34, 0.85);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.75rem;
+      backdrop-filter: blur(12px);
+    }
+    .dash-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .dash-card-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dash-btn-primary {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .dash-btn-primary:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+    .dash-btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .dash-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+    .dash-btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .dash-btn-danger:hover {
+      background: #dc2626;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Ambience -->
+  <div class="ewc-india-ambient-fx" aria-hidden="true">
+    <div class="fx-glow-saffron"></div>
+    <div class="fx-glow-green"></div>
+    <div class="fx-glow-cyber"></div>
+    <div class="fx-grid-overlay"></div>
+  </div>
+
+  <!-- =========================================================================
+       1. LOGIN VIEW (Unlimited Attempts, Zero Lockouts)
+       ========================================================================= -->
+  <main id="portal-login-screen" class="admin-portal-wrap">
+    <div class="admin-login-box">
+      <img src="/images/pritesh_avatar.jpg" alt="Pritesh Gehlot" class="admin-avatar-lg">
+      <h2 style="font-size:1.4rem; font-weight:900; color:#fff; margin-bottom:4px;">PRITESH GEHLOT</h2>
+      <p style="font-size:0.8rem; color:#8b5cf6; font-weight:800; letter-spacing:0.05em; margin-bottom:1.5rem; text-transform:uppercase;">
+        Official Admin Management Portal
+      </p>
+
+      <div style="text-align:left; margin-bottom:1.25rem;">
+        <label style="font-size:0.8rem; color:var(--text-sub); font-weight:700; display:block; margin-bottom:6px;">
+          Enter Admin Password / PIN:
+        </label>
+        <input type="password" id="portal-pin-input" class="form-input" placeholder="Enter PIN (admin)" autofocus onkeydown="if(event.key==='Enter') window.adminPortal.login()">
+        <div id="portal-pin-err" style="color:#ef4444; font-size:0.8rem; margin-top:6px; display:none;">
+          ⚠️ Incorrect password. Try again (unlimited attempts allowed).
+        </div>
+      </div>
+
+      <button type="button" class="btn-modal-primary" style="width:100%; padding:12px;" onclick="window.adminPortal.login()">
+        🔓 Unlock Admin Control Panel
+      </button>
+
+      <div style="margin-top:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;">
+        <a href="/" style="font-size:0.8rem; color:var(--text-muted); text-decoration:none;">
+          ← Back to Public Website
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       2. DASHBOARD VIEW (Shown once authenticated)
+       ========================================================================= -->
+  <main id="portal-dashboard-screen" class="admin-dashboard-view">
+    
+    <!-- Top Header -->
+    <header class="admin-dash-header">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <img src="/images/pritesh_avatar.jpg" alt="Pritesh Gehlot" style="width:48px; height:48px; border-radius:50%; border:2px solid var(--godl-gold);">
+        <div>
+          <div style="font-size:0.75rem; color:#10B981; font-weight:800; letter-spacing:0.05em; text-transform:uppercase;">
+            ● Authenticated Session Active
+          </div>
+          <h1 style="font-size:1.35rem; font-weight:900; color:#fff;">Pritesh Gehlot Admin Center</h1>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <a href="/?admin=true" class="dash-btn-primary" target="_blank">
+          🌐 Open Live Site with Full Admin Controls ↗
+        </a>
+        <button class="dash-btn-secondary" onclick="window.adminPortal.logout()">
+          🚪 Logout
+        </button>
+      </div>
+    </header>
+
+    <div class="dash-grid">
+
+      <!-- Section: Pending Community Requests -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-title">
+            <span>📋 Community Requests & Proposed Edits</span>
+            <span id="portal-pending-badge" style="background:#ef4444; color:#fff; font-size:0.72rem; padding:2px 8px; border-radius:12px; font-weight:800; display:none;"></span>
+          </div>
+          <button class="dash-btn-secondary" onclick="window.adminPortal.refreshRequests()">
+            🔄 Refresh List
+          </button>
+        </div>
+
+        <p style="font-size:0.85rem; color:var(--text-sub); margin-bottom:1rem;">
+          Submissions and proposed edits sent by normal website visitors. Click "Accept & Reflect Live" to immediately apply the changes to the live tracker!
+        </p>
+
+        <div id="portal-requests-list" class="approvals-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Section: Quick Actions for Teams -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-title">
+            <span>⚡ Quick Club Content Actions</span>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem;">
+          
+          <!-- GodLike Quick Actions -->
+          <div style="background:rgba(255, 184, 0, 0.05); border:1.5px solid var(--godl-gold); border-radius:12px; padding:1.25rem;">
+            <h3 style="color:var(--godl-gold); font-size:1.1rem; margin-bottom:6px;">GodLike Esports</h3>
+            <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom:1rem;">Golden Yellow • PMWC Grand Finalists</p>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <a href="/?admin=true" class="dash-btn-secondary" style="text-align:center;">
+                ➕ Manage GodLike Roster & Lineups
+              </a>
+            </div>
+          </div>
+
+          <!-- S8UL Quick Actions -->
+          <div style="background:rgba(0, 168, 255, 0.05); border:1.5px solid var(--s8ul-blue); border-radius:12px; padding:1.25rem;">
+            <h3 style="color:var(--s8ul-blue); font-size:1.1rem; margin-bottom:6px;">S8UL Esports</h3>
+            <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom:1rem;">Sky Blue • 12 EWC Campaign Titles</p>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <a href="/?admin=true" class="dash-btn-secondary" style="text-align:center;">
+                ➕ Manage S8UL Roster & Lineups
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="/js/data.js"></script>
+  <script>
+    class AdminPortal {
+      constructor() {
+        this.storageKey = "ewc_hub_data_v2";
+        this.adminKey   = "ewc_admin_session";
+        this.pendingKey = "ewc_pending_requests";
+        this.adminPin   = "admin";
+
+        this.loginScreen = document.getElementById("portal-login-screen");
+        this.dashScreen  = document.getElementById("portal-dashboard-screen");
+
+        if (sessionStorage.getItem(this.adminKey) === "true") {
+          this.showDashboard();
+        }
+      }
+
+      login() {
+        const pin = document.getElementById("portal-pin-input").value.trim();
+        if (pin === "admin" || pin === "admin123" || pin === this.adminPin) {
+          sessionStorage.setItem(this.adminKey, "true");
+          document.getElementById("portal-pin-err").style.display = "none";
+          this.showDashboard();
+        } else {
+          document.getElementById("portal-pin-err").style.display = "block";
+          document.getElementById("portal-pin-input").value = "";
+          document.getElementById("portal-pin-input").focus();
+        }
+      }
+
+      logout() {
+        sessionStorage.removeItem(this.adminKey);
+        this.dashScreen.style.display = "none";
+        this.loginScreen.style.display = "flex";
+        document.getElementById("portal-pin-input").value = "";
+      }
+
+      showDashboard() {
+        this.loginScreen.style.display = "none";
+        this.dashScreen.style.display = "block";
+        this.loadData();
+        this.refreshRequests();
+      }
+
+      loadData() {
+        try {
+          const raw = localStorage.getItem(this.storageKey);
+          this.data = raw ? JSON.parse(raw) : INITIAL_HUB_DATA;
+        } catch(e) { this.data = INITIAL_HUB_DATA; }
+      }
+
+      saveData() {
+        try { localStorage.setItem(this.storageKey, JSON.stringify(this.data)); } catch(e) {}
+      }
+
+      loadPending() {
+        try {
+          const raw = localStorage.getItem(this.pendingKey);
+          this.pending = raw ? JSON.parse(raw) : [];
+        } catch(e) { this.pending = []; }
+      }
+
+      savePending() {
+        try { localStorage.setItem(this.pendingKey, JSON.stringify(this.pending)); } catch(e) {}
+      }
+
+      refreshRequests() {
+        this.loadPending();
+        this.loadData();
+        const list = document.getElementById("portal-requests-list");
+        const badge = document.getElementById("portal-pending-badge");
+        const pending = this.pending.filter(r => r.status === "pending");
+
+        if (badge) {
+          badge.textContent = pending.length > 0 ? `${pending.length} New` : "";
+          badge.style.display = pending.length > 0 ? "inline-block" : "none";
+        }
+
+        if (pending.length === 0) {
+          list.innerHTML = `<div class="approvals-empty" style="text-align:center; padding:3rem; color:var(--text-muted);">
+            ✅ No pending user requests. All community submissions have been reviewed!
+          </div>`;
+          return;
+        }
+
+        list.innerHTML = pending.map(req => {
+          const teamLabel = req.teamKey === "godlike" ? "GodLike" : "S8UL";
+          const themeColor = req.teamKey === "godlike" ? "var(--godl-gold)" : "var(--s8ul-blue)";
+          let typeLabel = "👤 New Player";
+          let details = "";
+
+          if (req.type === "edit_player") {
+            typeLabel = "✏️ Proposed Player Edit";
+            details = `
+              <div class="approval-detail"><strong>Target Player:</strong> ${this.escape(req.targetName || req.data.ign)}</div>
+              <div class="approval-detail"><strong>Proposed IGN:</strong> ${this.escape(req.data.ign)}</div>
+              <div class="approval-detail"><strong>Proposed Role:</strong> ${this.escape(req.data.role)}</div>
+              <div class="approval-detail"><strong>Proposed Name:</strong> ${this.escape(req.data.name || "-")}</div>
+              <div class="approval-detail"><strong>Stats:</strong> ${this.escape(req.data.stat1Label)}: ${this.escape(req.data.stat1Val)}</div>
+              <div class="approval-detail"><strong>Bio/Notes:</strong> ${this.escape(req.data.desc || "-")}</div>
+            `;
+          } else if (req.type === "edit_game") {
+            typeLabel = "✏️ Proposed Game Edit";
+            details = `
+              <div class="approval-detail"><strong>Target Game:</strong> ${this.escape(req.targetName || req.data.title)}</div>
+              <div class="approval-detail"><strong>Proposed Title:</strong> ${this.escape(req.data.title)}</div>
+              <div class="approval-detail"><strong>Proposed Genre:</strong> ${this.escape(req.data.genre || "-")}</div>
+              <div class="approval-detail"><strong>Proposed Roster:</strong> ${this.escape(req.data.roster || "-")}</div>
+            `;
+          } else if (req.type === "player") {
+            typeLabel = "👤 New Player Suggestion";
+            details = `
+              <div class="approval-detail"><strong>IGN:</strong> ${this.escape(req.data.ign)}</div>
+              <div class="approval-detail"><strong>Real Name:</strong> ${this.escape(req.data.name || "-")}</div>
+              <div class="approval-detail"><strong>Role:</strong> ${this.escape(req.data.role)}</div>
+              <div class="approval-detail"><strong>Game:</strong> ${this.escape(req.data.game || "-")}</div>
+              <div class="approval-detail"><strong>Note:</strong> ${this.escape(req.data.desc || "-")}</div>
+            `;
+          } else {
+            typeLabel = "🎮 New Game Suggestion";
+            details = `
+              <div class="approval-detail"><strong>Title:</strong> ${this.escape(req.data.title)}</div>
+              <div class="approval-detail"><strong>Genre:</strong> ${this.escape(req.data.genre || "-")}</div>
+              <div class="approval-detail"><strong>Roster:</strong> ${this.escape(req.data.roster || "-")}</div>
+            `;
+          }
+
+          return `
+            <div class="approval-card" style="margin-bottom:12px;">
+              <div class="approval-header">
+                <span class="approval-type-badge" style="border-color:${themeColor}; color:${themeColor}; font-weight:800;">
+                  ${typeLabel} · ${teamLabel}
+                </span>
+                <span class="approval-meta">By ${this.escape(req.submittedBy)} · ${req.submittedAt}</span>
+              </div>
+              ${details}
+              <div class="approval-actions">
+                <button class="btn-approve" onclick="window.adminPortal.approve('${req.id}')">✅ Accept & Reflect Live</button>
+                <button class="btn-reject"  onclick="window.adminPortal.reject('${req.id}')">❌ Reject</button>
+                <button class="btn-delete-req" onclick="window.adminPortal.deleteReq('${req.id}')">🗑️ Delete</button>
+              </div>
+            </div>`;
+        }).join("");
+      }
+
+      approve(reqId) {
+        const req = this.pending.find(r => r.id === reqId);
+        if (!req) return;
+
+        if (req.type === "edit_player") {
+          for (const div of (this.data[req.teamKey]?.divisions || [])) {
+            const p = div.players.find(x => x.id === req.targetId);
+            if (p) {
+              Object.assign(p, {
+                ign: req.data.ign,
+                name: req.data.name || "",
+                role: req.data.role,
+                stat1Label: req.data.stat1Label,
+                stat1Val: req.data.stat1Val,
+                desc: req.data.desc || ""
+              });
+              break;
+            }
+          }
+        } else if (req.type === "edit_game") {
+          const g = (this.data[req.teamKey]?.ewcGames || []).find(x => x.id === req.targetId);
+          if (g) {
+            Object.assign(g, {
+              title: req.data.title,
+              genre: req.data.genre,
+              roster: req.data.roster
+            });
+          }
+        } else if (req.type === "player") {
+          let targetDiv = this.data[req.teamKey].divisions.find(d => d.name === "Community Submissions")
+                       || this.data[req.teamKey].divisions[0];
+          if (!targetDiv) {
+            targetDiv = { id: "div-subs-" + Date.now(), name: "Community Submissions", players: [] };
+            this.data[req.teamKey].divisions.push(targetDiv);
+          }
+          targetDiv.players.push({
+            id: "p-" + Date.now(),
+            ign: req.data.ign,
+            name: req.data.name || "",
+            role: req.data.role,
+            stat1Label: "GAME",
+            stat1Val: req.data.game || "-",
+            stat2Label: "STATUS",
+            stat2Val: "Active",
+            desc: req.data.desc || ""
+          });
+        } else {
+          const count = (this.data[req.teamKey].ewcGames || []).length + 1;
+          this.data[req.teamKey].ewcGames.push({
+            id: "game-" + Date.now(),
+            no: count,
+            title: req.data.title,
+            genre: req.data.genre || "",
+            roster: req.data.roster || "",
+            status: "EWC 2026 Official Title",
+            highlight: false
+          });
+        }
+
+        req.status = "approved";
+        this.saveData();
+        this.savePending();
+        this.refreshRequests();
+        alert(`✅ Accepted! Changes have been updated in the database and will reflect live on the website.`);
+      }
+
+      reject(reqId) {
+        const req = this.pending.find(r => r.id === reqId);
+        if (!req) return;
+        req.status = "rejected";
+        this.savePending();
+        this.refreshRequests();
+      }
+
+      deleteReq(reqId) {
+        if (confirm("Delete this submission permanently?")) {
+          this.pending = this.pending.filter(r => r.id !== reqId);
+          this.savePending();
+          this.refreshRequests();
+        }
+      }
+
+      escape(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      window.adminPortal = new AdminPortal();
+    });
+  </script>
+</body>
+</html>

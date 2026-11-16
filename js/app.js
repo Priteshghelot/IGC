@@ -21,9 +21,10 @@ class CleanEsportsHub {
     this.cardGodlike   = document.getElementById("card-godlike-select");
     this.cardS8ul      = document.getElementById("card-s8ul-select");
 
-    // Restore active admin session if already authenticated in this tab
-    if (sessionStorage.getItem(this.adminKey) === "true") {
+    // Restore active admin session if already authenticated in this tab or from /admin
+    if (sessionStorage.getItem(this.adminKey) === "true" || window.location.search.includes("admin=true")) {
       this.isAdmin = true;
+      sessionStorage.setItem(this.adminKey, "true");
     }
 
     this.loadData();
@@ -31,7 +32,6 @@ class CleanEsportsHub {
     this.initEvents();
     this.renderAll();
     this.updateAdminUI();
-    this.injectAdminLoginBtn();
   }
 
   // ─── Deep Clone ───────────────────────────────────────────────────────────
@@ -144,20 +144,8 @@ class CleanEsportsHub {
   }
 
   // =========================================================================
-  // ADMIN AUTH (UNLIMITED ATTEMPTS - NEVER LOCKS OUT OR BLOCKS)
+  // ADMIN AUTH (ACCESSIBLE VIA /admin - UNLIMITED ATTEMPTS, NEVER LOCKED OUT)
   // =========================================================================
-  injectAdminLoginBtn() {
-    const existing = document.getElementById("admin-login-fab");
-    if (existing) return;
-    const fab = document.createElement("button");
-    fab.id = "admin-login-fab";
-    fab.className = "admin-login-fab";
-    fab.title = this.isAdmin ? "Exit Admin Mode" : "Admin Login";
-    fab.innerHTML = this.isAdmin ? "👑 Admin: ON (Exit)" : "🔑 Admin Login";
-    fab.onclick = () => this.toggleAdminMode();
-    document.body.appendChild(fab);
-  }
-
   toggleAdminMode() {
     if (this.isAdmin) {
       if (confirm("Exit Admin Mode?")) {
@@ -166,13 +154,11 @@ class CleanEsportsHub {
         this.updateAdminUI();
         this.renderAll();
         this.showToast("🔒 Logged out of admin mode.");
-        const fab = document.getElementById("admin-login-fab");
-        if (fab) {
-          fab.innerHTML = "🔑 Admin Login";
-          fab.title = "Admin Login";
-        }
       }
     } else {
+      window.location.href = "/admin";
+    }
+  }
       this.openAdminLoginModal();
     }
   }

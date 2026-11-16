@@ -1394,33 +1394,13 @@ button {
   transform: translateY(-1px);
 }
 
-/* Floating Admin Access Pill (FAB) */
+/* Floating Admin Access Pill (FAB - HIDDEN ON PUBLIC WEBSITE) */
 .admin-login-fab {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(30, 27, 75, 0.85);
-  backdrop-filter: blur(8px);
-  border: 1.5px solid #8b5cf6;
-  color: #c4b5fd;
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  z-index: 9999;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: none !important;
 }
 
-.admin-login-fab:hover {
-  background: #8b5cf6;
-  color: #fff;
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
-  transform: translateY(-2px);
+.footer-admin-btn {
+  display: none !important;
 }
 
 /* Pending Badge on Admin Banner */
