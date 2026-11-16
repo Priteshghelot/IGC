@@ -729,32 +729,44 @@ button {
 }
 
 .clean-table th {
-  background: rgba(0, 0, 0, 0.25);
-  padding: 14px 18px;
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 16px 20px;
+  font-size: 0.95rem;
+  color: #cbd5e1;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.12);
 }
 
 .clean-table td {
-  padding: 14px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 1.15rem;
+  color: #f1f5f9;
+  vertical-align: middle;
 }
 
 .clean-table tr:last-child td {
   border-bottom: none;
 }
 
-.clean-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+.table-row-highlight {
+  transition: all 0.25s ease;
+}
+
+.table-row-highlight:hover td {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.table-row-highlight.row-spotlight td {
+  background: rgba(255, 184, 0, 0.04);
 }
 
 .col-num {
-  font-weight: 800;
-  width: 50px;
+  font-size: 1.25rem;
+  font-weight: 900;
+  width: 55px;
   text-align: center;
 }
 
@@ -767,12 +779,12 @@ button {
 .game-title-highlight {
   display: inline-flex;
   align-items: center;
-  font-size: 1.25rem;
+  font-size: 1.28rem;
   font-weight: 900;
   color: #ffffff;
   letter-spacing: 0.02em;
   padding: 6px 14px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.02));
   border-left: 4px solid var(--team-accent, var(--godl-gold));
   border-radius: 4px 8px 8px 4px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
@@ -780,7 +792,7 @@ button {
   transition: all 0.2s ease;
 }
 
-.clean-table tr:hover .game-title-highlight {
+.table-row-highlight:hover .game-title-highlight {
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
   border-left-width: 6px;
   border-left-color: #ffffff;
@@ -788,55 +800,95 @@ button {
   transform: translateX(4px);
 }
 
+.col-category {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.col-roster {
+  min-width: 240px;
+}
+
+.roster-athletes-highlight {
+  display: inline-block;
+  font-size: 1.22rem;
+  font-weight: 850;
+  color: #ffffff;
+  letter-spacing: 0.015em;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  border-left: 4px solid var(--team-accent, var(--godl-gold));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+  line-height: 1.45;
+  transition: all 0.2s ease;
+}
+
+.table-row-highlight:hover .roster-athletes-highlight {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
+  border-color: rgba(255, 255, 255, 0.35);
+  border-left-color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), 0 0 16px rgba(255, 255, 255, 0.2);
+  transform: translateX(3px);
+}
+
+.col-status {
+  white-space: nowrap;
+}
+
+.status-badge-highlight {
+  display: inline-block;
+  font-size: 1.05rem;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid;
+  letter-spacing: 0.02em;
+}
+
 .updater-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 5px 12px;
   border-radius: 999px;
-  font-size: 0.82rem;
-  color: #cbd5e1;
+  font-size: 0.9rem;
+  color: #f1f5f9;
   white-space: nowrap;
   transition: all 0.2s ease;
 }
 
 .updater-pill:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .updater-icon {
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   opacity: 0.9;
 }
 
 .updater-pill .updater-name {
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.92rem;
   letter-spacing: 0.01em;
 }
 
-.col-edited-by {
-  min-width: 180px;
-}
-
-.edited-by-cell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
 .btn-action-edit {
-  background: rgba(59, 130, 246, 0.16);
-  border: 1px solid rgba(59, 130, 246, 0.45);
+  background: rgba(59, 130, 246, 0.2);
+  border: 1.5px solid rgba(59, 130, 246, 0.55);
   color: #93c5fd;
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 6px;
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 0.85rem;
+  font-weight: 800;
   cursor: pointer;
   display: inline-flex;
   align-items: center;

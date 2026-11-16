@@ -540,18 +540,20 @@ class CleanEsportsHub {
     let html = "";
 
     games.forEach((g, index) => {
-      const rowStyle = g.highlight ? `style="background:rgba(255,255,255,0.05);"` : "";
-      const statusStyle = `style="color:${themeColor}; font-weight:700;"`;
       const updaterName = g.updatedBy || "Pritesh Gehlot";
       html += `
-        <tr ${rowStyle}>
+        <tr class="table-row-highlight ${g.highlight ? 'row-spotlight' : ''}">
           <td class="col-num" style="color:${themeColor};" data-label="#">${g.no || index + 1}</td>
           <td class="col-title" data-label="Game">
             <span class="game-title-highlight" style="--team-accent:${themeColor};">${this.escapeHtml(g.title)}</span>
           </td>
-          <td data-label="Category">${this.escapeHtml(g.genre || g.category || "")}</td>
-          <td data-label="Roster">${this.escapeHtml(g.roster)}</td>
-          <td ${statusStyle} data-label="Status">${this.escapeHtml(g.status)}</td>
+          <td class="col-category" data-label="Category">${this.escapeHtml(g.genre || g.category || "")}</td>
+          <td class="col-roster" data-label="Official Roster / Athletes">
+            <span class="roster-athletes-highlight" style="--team-accent:${themeColor};">${this.escapeHtml(g.roster)}</span>
+          </td>
+          <td class="col-status" data-label="Status">
+            <span class="status-badge-highlight" style="color:${themeColor}; border-color:${themeColor};">${this.escapeHtml(g.status)}</span>
+          </td>
           <td data-label="Edited By" class="col-edited-by">
             <div class="edited-by-cell">
               <span class="updater-pill" title="${g.updatedAt ? `Last edited: ${this.escapeHtml(g.updatedAt)}` : 'Verified updater'}">

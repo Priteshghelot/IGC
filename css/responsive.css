@@ -171,15 +171,15 @@
   }
 
   .clean-table td {
-    padding: 2px 0;
+    padding: 4px 0;
     border: none;
-    font-size: 0.85rem;
+    font-size: 1.05rem;
   }
 
   .clean-table td[data-label]::before {
     content: attr(data-label) ": ";
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 0.78rem;
+    font-weight: 800;
     text-transform: uppercase;
     color: var(--text-muted);
     display: block;
@@ -187,10 +187,10 @@
   }
 
   .clean-table td.col-num {
-    font-size: 0.72rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
     text-align: left;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .clean-table td.col-title {
@@ -202,6 +202,29 @@
     padding: 5px 12px;
     display: inline-block;
     margin-top: 3px;
+  }
+
+  .clean-table td.col-roster {
+    padding: 6px 0;
+  }
+
+  .clean-table td.col-roster .roster-athletes-highlight {
+    font-size: 1.12rem;
+    padding: 6px 12px;
+    display: inline-block;
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  .clean-table td.col-category {
+    font-size: 1.02rem;
+    font-weight: 700;
+  }
+
+  .clean-table td.col-status .status-badge-highlight {
+    font-size: 0.95rem;
+    display: inline-block;
+    margin-top: 2px;
   }
 
   .player-ign-text {
