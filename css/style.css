@@ -372,24 +372,30 @@ button {
   background: var(--card-hover);
 }
 
-/* GodLike: Golden Yellow Card with Saffron Energy Accent */
+/* GodLike: Golden Yellow Card with Saffron & Warm Amber Ambience */
 .portal-card.card-godlike {
-  border-top: 3px solid var(--godl-gold);
+  background: radial-gradient(130% 120% at 50% 0%, rgba(255, 184, 0, 0.22) 0%, rgba(38, 28, 8, 0.92) 48%, rgba(18, 14, 6, 0.98) 100%);
+  border: 2px solid rgba(255, 184, 0, 0.45);
+  box-shadow: 0 14px 40px rgba(255, 184, 0, 0.16), 0 6px 22px rgba(0, 0, 0, 0.6);
 }
 
 .portal-card.card-godlike:hover {
+  background: radial-gradient(130% 120% at 50% 0%, rgba(255, 184, 0, 0.32) 0%, rgba(52, 38, 10, 0.95) 48%, rgba(24, 18, 8, 0.99) 100%);
   border-color: var(--godl-gold);
-  box-shadow: 0 16px 45px var(--godl-glow), 0 0 30px rgba(255, 153, 51, 0.25);
+  box-shadow: 0 22px 55px rgba(255, 184, 0, 0.38), 0 0 35px rgba(255, 184, 0, 0.28);
 }
 
-/* S8UL: Sky Blue Card with Cyber Ashoka Blue Energy Accent */
+/* S8UL: Sky Blue Card with Radiant Cyan & Deep Azure Ambience */
 .portal-card.card-s8ul {
-  border-top: 3px solid var(--s8ul-blue);
+  background: radial-gradient(130% 120% at 50% 0%, rgba(0, 168, 255, 0.22) 0%, rgba(12, 28, 54, 0.92) 48%, rgba(6, 14, 28, 0.98) 100%);
+  border: 2px solid rgba(0, 168, 255, 0.45);
+  box-shadow: 0 14px 40px rgba(0, 168, 255, 0.16), 0 6px 22px rgba(0, 0, 0, 0.6);
 }
 
 .portal-card.card-s8ul:hover {
+  background: radial-gradient(130% 120% at 50% 0%, rgba(0, 168, 255, 0.32) 0%, rgba(16, 38, 72, 0.95) 48%, rgba(8, 18, 36, 0.99) 100%);
   border-color: var(--s8ul-blue);
-  box-shadow: 0 16px 45px var(--s8ul-glow), 0 0 30px rgba(0, 229, 255, 0.25);
+  box-shadow: 0 22px 55px rgba(0, 168, 255, 0.38), 0 0 35px rgba(0, 200, 255, 0.28);
 }
 
 /* Real Logo Image Container */
@@ -503,10 +509,81 @@ button {
 .detail-screen {
   display: none;
   padding: 2rem 0 4rem;
+  border-radius: 24px;
 }
 
 .detail-screen.active {
   display: block;
+}
+
+/* ── Dedicated GodLike Hub (Golden Yellow Atmosphere) ── */
+#screen-godlike {
+  background: radial-gradient(90% 55% at 50% 0%, rgba(255, 184, 0, 0.16) 0%, rgba(36, 26, 8, 0.45) 45%, transparent 90%);
+  border-radius: 24px;
+}
+
+#screen-godlike .detail-header-card {
+  background: linear-gradient(135deg, rgba(42, 32, 10, 0.92) 0%, rgba(24, 18, 8, 0.96) 100%);
+  border: 1.5px solid rgba(255, 184, 0, 0.4);
+  box-shadow: 0 16px 45px rgba(255, 184, 0, 0.16);
+}
+
+#screen-godlike .sub-tabs-bar {
+  background: rgba(38, 28, 10, 0.85);
+  border: 1px solid rgba(255, 184, 0, 0.35);
+  padding: 6px;
+  border-radius: 12px;
+}
+
+#screen-godlike .clean-table-box {
+  background: rgba(30, 22, 8, 0.75);
+  border: 1.5px solid rgba(255, 184, 0, 0.3);
+  box-shadow: 0 12px 35px rgba(255, 184, 0, 0.1);
+}
+
+#screen-godlike .player-card {
+  background: linear-gradient(145deg, rgba(40, 30, 10, 0.88) 0%, rgba(20, 15, 6, 0.94) 100%);
+  border: 1.5px solid rgba(255, 184, 0, 0.28);
+}
+
+#screen-godlike .player-card:hover {
+  border-color: var(--godl-gold);
+  box-shadow: 0 14px 35px rgba(255, 184, 0, 0.25);
+}
+
+/* ── Dedicated S8UL Hub (Sky Blue Atmosphere) ── */
+#screen-s8ul {
+  background: radial-gradient(90% 55% at 50% 0%, rgba(0, 168, 255, 0.16) 0%, rgba(10, 24, 46, 0.45) 45%, transparent 90%);
+  border-radius: 24px;
+}
+
+#screen-s8ul .detail-header-card {
+  background: linear-gradient(135deg, rgba(12, 32, 60, 0.92) 0%, rgba(8, 20, 38, 0.96) 100%);
+  border: 1.5px solid rgba(0, 168, 255, 0.4);
+  box-shadow: 0 16px 45px rgba(0, 168, 255, 0.16);
+}
+
+#screen-s8ul .sub-tabs-bar {
+  background: rgba(10, 24, 46, 0.85);
+  border: 1px solid rgba(0, 168, 255, 0.35);
+  padding: 6px;
+  border-radius: 12px;
+}
+
+#screen-s8ul .clean-table-box {
+  background: rgba(10, 24, 48, 0.75);
+  border: 1.5px solid rgba(0, 168, 255, 0.3);
+  box-shadow: 0 12px 35px rgba(0, 168, 255, 0.1);
+}
+
+#screen-s8ul .player-card {
+  background: linear-gradient(145deg, rgba(12, 30, 56, 0.88) 0%, rgba(8, 18, 36, 0.94) 100%);
+  border: 1.5px solid rgba(0, 168, 255, 0.28);
+}
+
+#screen-s8ul .player-card:hover {
+  border-color: var(--s8ul-blue);
+  box-shadow: 0 14px 35px rgba(0, 168, 255, 0.25);
 }
 
 .detail-top-nav {

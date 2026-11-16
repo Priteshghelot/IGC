@@ -54,18 +54,20 @@
 
   .portal-grid {
     grid-template-columns: 1fr;
-    gap: 1.25rem;
-    padding: 0 1rem 2rem;
+    gap: 1.5rem;
+    padding: 0 0.5rem 2.5rem;
+    width: 100%;
   }
 
   .portal-card {
-    padding: 1.75rem 1.25rem;
+    padding: 2.25rem 1.5rem 1.75rem;
+    border-radius: 20px;
   }
 
   .portal-logo-wrap {
-    width: 90px;
-    height: 90px;
-    margin-bottom: 1rem;
+    width: 140px;
+    height: 140px;
+    margin-bottom: 1.25rem;
   }
 
   /* ── Detail / Team Screen Nav ── */

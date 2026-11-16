@@ -520,6 +520,10 @@ class CleanEsportsHub {
     document.querySelectorAll(".btn-user-submit-request").forEach(btn => {
       btn.style.display = this.isAdmin ? "none" : "inline-flex";
     });
+
+    // EWC27 admin-only action buttons (Add Game / Edit Text)
+    const ewc27Actions = document.getElementById("ewc27-admin-actions");
+    if (ewc27Actions) ewc27Actions.style.display = this.isAdmin ? "flex" : "none";
   }
 
   // =========================================================================
@@ -568,9 +572,7 @@ class CleanEsportsHub {
             ${g.sub ? `<span class="ewc27-game-sub">${this.escapeHtml(g.sub)}</span>` : ""}
             ${g.genre ? `<span class="ewc27-game-genre">${this.escapeHtml(g.genre)}</span>` : ""}
           </div>
-          <button class="ewc27-card-edit-btn" onclick="window.cleanHub.openEditEwc27GameModal('${g.id}')" title="Suggest Edit for this game">
-            ✏️
-          </button>
+          ${this.isAdmin ? `<button class="ewc27-card-edit-btn" onclick="window.cleanHub.openEditEwc27GameModal('${g.id}')" title="Edit Game">✏️</button>` : ""}
         </div>
       `;
     }).join("");
@@ -1064,12 +1066,15 @@ class CleanEsportsHub {
   openAddEwc27GameModal() {
     this.editingEwc27GameId = null;
     const titleModal = document.getElementById("ewc27-game-modal-title");
-    if (titleModal) titleModal.textContent = "🎮 Propose / Add EWC27 Game";
-    document.getElementById("ewc27-modal-game-title").value = "";
-    document.getElementById("ewc27-modal-game-genre").value = "";
-    document.getElementById("ewc27-modal-game-sub").value = "";
-    document.getElementById("ewc27-modal-game-submitter").value = "";
-    document.getElementById("ewc27-modal-game-notes").value = "";
+    if (titleModal) titleModal.textContent = "🎮 Add EWC27 Game";
+    const titleInput = document.getElementById("ewc27-modal-game-title");
+    const genreInput = document.getElementById("ewc27-modal-game-genre");
+    const subInput = document.getElementById("ewc27-modal-game-sub");
+    const notesInput = document.getElementById("ewc27-modal-game-notes");
+    if (titleInput) titleInput.value = "";
+    if (genreInput) genreInput.value = "";
+    if (subInput) subInput.value = "";
+    if (notesInput) notesInput.value = "";
     this.openModal("ewc27-game-modal");
   }
 
@@ -1077,12 +1082,15 @@ class CleanEsportsHub {
     this.editingEwc27GameId = gameId;
     const game = (this.data.ewc27Games || []).find(g => g.id === gameId);
     const titleModal = document.getElementById("ewc27-game-modal-title");
-    if (titleModal) titleModal.textContent = `✏️ Propose Edit: ${game ? game.title : "Game"}`;
-    document.getElementById("ewc27-modal-game-title").value = game ? game.title : "";
-    document.getElementById("ewc27-modal-game-genre").value = game ? (game.genre || "") : "";
-    document.getElementById("ewc27-modal-game-sub").value = game ? (game.sub || "") : "";
-    document.getElementById("ewc27-modal-game-submitter").value = "";
-    document.getElementById("ewc27-modal-game-notes").value = "";
+    if (titleModal) titleModal.textContent = `✏️ Edit EWC27 Game: ${game ? game.title : "Game"}`;
+    const titleInput = document.getElementById("ewc27-modal-game-title");
+    const genreInput = document.getElementById("ewc27-modal-game-genre");
+    const subInput = document.getElementById("ewc27-modal-game-sub");
+    const notesInput = document.getElementById("ewc27-modal-game-notes");
+    if (titleInput) titleInput.value = game ? game.title : "";
+    if (genreInput) genreInput.value = game ? (game.genre || "") : "";
+    if (subInput) subInput.value = game ? (game.sub || "") : "";
+    if (notesInput) notesInput.value = "";
     this.openModal("ewc27-game-modal");
   }
 
@@ -1091,136 +1099,88 @@ class CleanEsportsHub {
       title: "EWC27 Games",
       subtitle: "Every game brings a new battle to the global stage. Keep watch here as we reveal the games that will set the stage for our next chapter."
     };
-    document.getElementById("ewc27-modal-text-title").value = meta.title || "EWC27 Games";
-    document.getElementById("ewc27-modal-text-sub").value = meta.subtitle || "";
-    document.getElementById("ewc27-modal-text-submitter").value = "";
+    const titleInput = document.getElementById("ewc27-modal-text-title");
+    const subInput = document.getElementById("ewc27-modal-text-sub");
+    if (titleInput) titleInput.value = meta.title || "EWC27 Games";
+    if (subInput) subInput.value = meta.subtitle || "";
     this.openModal("ewc27-text-modal");
   }
 
   async handleEwc27GameSubmit(e) {
     e.preventDefault();
-    const title     = document.getElementById("ewc27-modal-game-title").value.trim();
-    const genre     = document.getElementById("ewc27-modal-game-genre").value.trim();
-    const sub       = document.getElementById("ewc27-modal-game-sub").value.trim();
-    const submitter = document.getElementById("ewc27-modal-game-submitter").value.trim();
-    const notes     = document.getElementById("ewc27-modal-game-notes").value.trim();
-
-    if (!title || !submitter) {
-      this.showToast("⚠️ Please provide both the Game Title and Your Name.");
+    if (!this.isAdmin) {
+      this.showToast("⚠️ Admin access required to manage EWC27 games.");
       return;
     }
 
-    if (this.isAdmin) {
-      if (!Array.isArray(this.data.ewc27Games)) this.data.ewc27Games = [];
-      if (this.editingEwc27GameId) {
-        const item = this.data.ewc27Games.find(g => g.id === this.editingEwc27GameId);
-        if (item) {
-          item.title = title;
-          item.genre = genre;
-          item.sub = sub;
-          item.isNewlyAdded = true;
-        }
-      } else {
-        this.data.ewc27Games.push({
-          id: "e27-" + Date.now(),
-          title,
-          genre,
-          sub,
-          isNewlyAdded: true
-        });
+    const titleEl = document.getElementById("ewc27-modal-game-title");
+    const genreEl = document.getElementById("ewc27-modal-game-genre");
+    const subEl   = document.getElementById("ewc27-modal-game-sub");
+    const title = titleEl ? titleEl.value.trim() : "";
+    const genre = genreEl ? genreEl.value.trim() : "";
+    const sub   = subEl ? subEl.value.trim() : "";
+
+    if (!title) {
+      this.showToast("⚠️ Please enter a Game Title.");
+      return;
+    }
+
+    if (!Array.isArray(this.data.ewc27Games)) this.data.ewc27Games = [];
+    if (this.editingEwc27GameId) {
+      const item = this.data.ewc27Games.find(g => g.id === this.editingEwc27GameId);
+      if (item) {
+        item.title = title;
+        item.genre = genre;
+        item.sub = sub;
+        item.isNewlyAdded = true;
       }
-      this.saveData();
-      this.renderAll();
-      this.closeModal("ewc27-game-modal");
-      this.showToast(`✅ EWC27 Game "${title}" added & highlighted live!`);
-      try {
-        fetch("/api/data", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ data: this.data })
-        });
-      } catch(err) {}
-      return;
-    }
-
-    // Normal Visitor proposal -> Admin approval queue
-    const request = {
-      id: "req_e27_" + Date.now(),
-      type: "ewc27_game",
-      targetId: this.editingEwc27GameId || null,
-      submittedBy: submitter,
-      submittedAt: new Date().toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }),
-      status: "pending",
-      data: {
+    } else {
+      this.data.ewc27Games.push({
+        id: "e27-" + Date.now(),
         title,
         genre,
         sub,
-        notes
-      }
-    };
+        isNewlyAdded: true
+      });
+    }
 
-    this.pending.unshift(request);
-    this.savePending();
-    this.updateAdminUI();
+    this.saveData();
+    this.renderAll();
     this.closeModal("ewc27-game-modal");
-    this.showToast(`📩 Proposal for "${title}" sent to Admin! It will appear highlighted once approved.`);
+    this.showToast(`✅ EWC27 Game "${title}" saved and live!`);
 
     try {
-      await fetch("/api/requests", {
+      fetch("/api/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "add", request })
+        body: JSON.stringify({ data: this.data })
       });
     } catch(err) {}
   }
 
   async handleEwc27TextSubmit(e) {
     e.preventDefault();
-    const title     = document.getElementById("ewc27-modal-text-title").value.trim();
-    const subtitle  = document.getElementById("ewc27-modal-text-sub").value.trim();
-    const submitter = document.getElementById("ewc27-modal-text-submitter").value.trim();
-
-    if (!title || !subtitle || !submitter) {
-      this.showToast("⚠️ Please fill in all fields.");
+    if (!this.isAdmin) {
+      this.showToast("⚠️ Admin access required to edit EWC27 text.");
       return;
     }
 
-    if (this.isAdmin) {
-      this.data.ewc27Meta = { title, subtitle };
-      this.saveData();
-      this.renderAll();
-      this.closeModal("ewc27-text-modal");
-      this.showToast("✅ EWC27 text updated live!");
-      try {
-        fetch("/api/data", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ data: this.data })
-        });
-      } catch(err) {}
-      return;
-    }
+    const titleEl = document.getElementById("ewc27-modal-text-title");
+    const subEl   = document.getElementById("ewc27-modal-text-sub");
+    const title    = titleEl ? titleEl.value.trim() : "EWC27 Games";
+    const subtitle = subEl ? subEl.value.trim() : "";
 
-    const request = {
-      id: "req_e27txt_" + Date.now(),
-      type: "ewc27_text",
-      submittedBy: submitter,
-      submittedAt: new Date().toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }),
-      status: "pending",
-      data: { title, subtitle }
-    };
-
-    this.pending.unshift(request);
-    this.savePending();
-    this.updateAdminUI();
+    this.data.ewc27Meta = { title, subtitle };
+    this.saveData();
+    this.renderAll();
     this.closeModal("ewc27-text-modal");
-    this.showToast("📩 EWC27 text proposal sent to Admin for review!");
+    this.showToast("✅ EWC27 header text updated live!");
 
     try {
-      await fetch("/api/requests", {
+      fetch("/api/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "add", request })
+        body: JSON.stringify({ data: this.data })
       });
     } catch(err) {}
   }
@@ -1496,6 +1456,11 @@ class CleanEsportsHub {
   // =========================================================================
   // UTILITIES
   // =========================================================================
+  openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.add("active");
+  }
+
   closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) modal.classList.remove("active");
