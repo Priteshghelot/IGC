@@ -244,8 +244,176 @@ class CleanEsportsHub {
     }
 
     this.renderApprovedPosts();
+    this.renderUpcomingTournaments();
     try { window.location.hash = "daily-updates"; } catch(e) {}
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  switchDailyTab(tabName = "updates") {
+    const updatesView = document.getElementById("daily-updates-tab-view");
+    const tournView   = document.getElementById("daily-tournaments-tab-view");
+    const btnUpdates  = document.getElementById("btn-daily-tab-updates");
+    const btnTourn    = document.getElementById("btn-daily-tab-tournaments");
+
+    const showTourn = tabName === "tournaments";
+    if (updatesView) updatesView.style.display = showTourn ? "none" : "block";
+    if (tournView)   tournView.style.display   = showTourn ? "block" : "none";
+    if (btnUpdates)  btnUpdates.classList.toggle("active", !showTourn);
+    if (btnTourn)    btnTourn.classList.toggle("active", showTourn);
+
+    if (showTourn) this.renderUpcomingTournaments();
+  }
+
+  renderUpcomingTournaments() {
+    const container = document.getElementById("upcoming-tournaments-list");
+    if (!container) return;
+
+    // Curated schedule calendar for the Indian Gaming Community.
+    // Automatically filters out completed events and displays the next Top 5 in chronological order.
+    const schedule = [
+      {
+        title: "BGMI India Pro Series (BMPS) Winter Cup",
+        game: "BGMI",
+        startDate: "2026-11-20",
+        endDate: "2026-12-06",
+        prize: "₹1,00,00,000+",
+        teams: "Top 32 Invited & Open Indian Squads (GodLike, Team SouL, Revenant)",
+        location: "India (LAN Finals)"
+      },
+      {
+        title: "Valorant Challengers South Asia: Split 1",
+        game: "Valorant",
+        startDate: "2026-11-28",
+        endDate: "2026-12-18",
+        prize: "$50,000 USD",
+        teams: "GodLike, Global Esports Academy, Orangutan, Velocity",
+        location: "South Asia / Mumbai"
+      },
+      {
+        title: "Free Fire MAX India Winter Championship",
+        game: "Free Fire MAX",
+        startDate: "2026-12-05",
+        endDate: "2026-12-22",
+        prize: "₹50,00,000",
+        teams: "Top 18 Indian Mobile Rosters (GodLike, S8UL, TSG)",
+        location: "Online + Delhi LAN"
+      },
+      {
+        title: "CODM India National Qualifiers 2026",
+        game: "Call of Duty: Mobile",
+        startDate: "2026-12-12",
+        endDate: "2026-12-29",
+        prize: "$40,000 USD",
+        teams: "GodLike CODM, S8UL & Top Indian Mobile Squads",
+        location: "India Regional"
+      },
+      {
+        title: "Pokemon UNITE India Winter Invitational",
+        game: "Pokemon UNITE",
+        startDate: "2026-12-19",
+        endDate: "2027-01-04",
+        prize: "$25,000 USD",
+        teams: "S8UL Pokemon Unite & India Top 16",
+        location: "India / APAC"
+      },
+      {
+        title: "BGMI India Series (BGIS) 2027",
+        game: "BGMI",
+        startDate: "2027-01-10",
+        endDate: "2027-02-15",
+        prize: "₹2,00,00,000+",
+        teams: "All Indian Pro & Underdog Squads",
+        location: "Pan-India + LAN Grand Finals"
+      },
+      {
+        title: "VCT Pacific Kickoff 2027",
+        game: "Valorant",
+        startDate: "2027-01-18",
+        endDate: "2027-02-08",
+        prize: "Masters Qualification",
+        teams: "Global Esports (India Rep) & Top APAC Clubs",
+        location: "Seoul, South Korea"
+      },
+      {
+        title: "EWC 2027 India & South Asia Qualifiers",
+        game: "Multi-Title (Tekken 8, Chess, FC, MLBB)",
+        startDate: "2027-02-20",
+        endDate: "2027-03-25",
+        prize: "Riyadh EWC27 Slots",
+        teams: "GodLike Esports, S8UL Esports & Indian Athletes",
+        location: "India / Riyadh Road"
+      }
+    ];
+
+    const customList = Array.isArray(this.data?.upcomingTournaments) && this.data.upcomingTournaments.length > 0
+      ? this.data.upcomingTournaments
+      : schedule;
+
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const dayMs = 86400000;
+
+    const parseLocal = (iso) => {
+      const [y, m, d] = String(iso).split("-").map(Number);
+      return new Date(y, (m || 1) - 1, d || 1).getTime();
+    };
+
+    const formatRange = (s, e) => {
+      const opts = { day: "numeric", month: "short", year: "numeric" };
+      const sStr = new Date(parseLocal(s)).toLocaleDateString("en-IN", opts);
+      const eStr = new Date(parseLocal(e)).toLocaleDateString("en-IN", opts);
+      return `${sStr} – ${eStr}`;
+    };
+
+    const top5 = customList
+      .filter(t => parseLocal(t.endDate || t.startDate) >= todayStart)
+      .sort((a, b) => parseLocal(a.startDate) - parseLocal(b.startDate))
+      .slice(0, 5);
+
+    if (top5.length === 0) {
+      container.innerHTML = `<div class="daily-empty-feed-card"><h3>📅 No Upcoming Tournaments Scheduled</h3><p style="color:#94a3b8;">Check back soon for the next Indian Gaming Community schedule.</p></div>`;
+      return;
+    }
+
+    container.innerHTML = top5.map((t, idx) => {
+      const sMs = parseLocal(t.startDate);
+      const eMs = parseLocal(t.endDate || t.startDate);
+      const daysUntil = Math.round((sMs - todayStart) / dayMs);
+
+      let statusText = "";
+      let statusCls = "status-scheduled";
+      if (todayStart >= sMs && todayStart <= eMs) {
+        statusText = "🔴 LIVE NOW";
+        statusCls = "status-live";
+      } else if (daysUntil === 0) {
+        statusText = "🔥 Starting Today";
+        statusCls = "status-soon";
+      } else if (daysUntil === 1) {
+        statusText = "⚡ Starts Tomorrow";
+        statusCls = "status-soon";
+      } else {
+        statusText = `⏳ Starts in ${daysUntil} days`;
+      }
+
+      return `
+        <article class="tournament-card">
+          <div class="tournament-card-top">
+            <div class="tournament-rank-wrap">
+              <span class="tournament-rank-badge">#${idx + 1}</span>
+              <span class="tournament-game-pill">${this.escapeHtml(t.game)}</span>
+            </div>
+            <span class="tournament-countdown-pill ${statusCls}">${statusText}</span>
+          </div>
+          <h3 class="tournament-title">${this.escapeHtml(t.title)}</h3>
+          <div class="tournament-meta-grid">
+            <div class="tournament-meta-item"><span>📅 Schedule</span><strong>${formatRange(t.startDate, t.endDate || t.startDate)}</strong></div>
+            <div class="tournament-meta-item"><span>💰 Prize / Stakes</span><strong>${this.escapeHtml(t.prize || "TBA")}</strong></div>
+            <div class="tournament-meta-item"><span>📍 Region</span><strong>${this.escapeHtml(t.location || "India")}</strong></div>
+            <div class="tournament-meta-item"><span>🛡️ Featured</span><strong>${this.escapeHtml(t.teams || "Indian Pro Clubs")}</strong></div>
+          </div>
+        </article>
+      `;
+    }).join("");
   }
 
   // ── Image preview handling for post upload ──────────────────────────────

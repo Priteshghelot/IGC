@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>India EWC Hub | Developed by Pritesh Gehlot</title>
   <meta name="description" content="Official tracker for India's EWC Club Partners (GodLike Esports in Golden Yellow & S8UL Esports in Sky Blue) developed by Pritesh Gehlot.">
-  <link rel="stylesheet" href="css/style.css?v=12">
-  <link rel="stylesheet" href="css/responsive.css?v=12">
+  <link rel="stylesheet" href="css/style.css?v=13">
+  <link rel="stylesheet" href="css/responsive.css?v=13">
 </head>
 <body>
 
@@ -459,6 +459,19 @@
         <p class="daily-simple-sub">Community & official updates. Every post upload is reviewed & approved by Admin before appearing.</p>
       </div>
 
+      <!-- ── MODE SWITCHER: DAILY UPDATES & UPCOMING TOURNAMENTS ───────── -->
+      <div class="daily-mode-tabs">
+        <button type="button" class="daily-mode-btn active" id="btn-daily-tab-updates" onclick="window.cleanHub && window.cleanHub.switchDailyTab('updates')">
+          📰 Daily Updates
+        </button>
+        <button type="button" class="daily-mode-btn" id="btn-daily-tab-tournaments" onclick="window.cleanHub && window.cleanHub.switchDailyTab('tournaments')">
+          🏆 Upcoming Tournaments <span class="daily-mode-count">Top 5</span>
+        </button>
+      </div>
+
+      <!-- ── TAB 1: DAILY UPDATES (UPLOAD + FEED) ─────────────────────── -->
+      <div id="daily-updates-tab-view" class="daily-tab-panel active">
+
       <!-- ── TOP SECTION: UPLOAD / SUBMIT POST ───────────────────────── -->
       <div class="daily-upload-box">
         <div class="daily-upload-header">
@@ -520,6 +533,22 @@
 
         <div class="daily-posts-feed-container" id="daily-posts-feed-container">
           <!-- Rendered dynamically via CleanEsportsHub.renderApprovedPosts() -->
+        </div>
+      </div>
+
+      </div><!-- /#daily-updates-tab-view -->
+
+      <!-- ── TAB 2: TOP 5 UPCOMING TOURNAMENTS (AUTO-UPDATED BY SCHEDULE) ── -->
+      <div id="daily-tournaments-tab-view" class="daily-tab-panel" style="display:none;">
+        <div class="tournaments-header-card">
+          <div>
+            <h2 class="tournaments-section-title">🏆 Top 5 Upcoming Tournaments (India Gaming Community)</h2>
+            <p class="tournaments-section-sub">Automatically sorted & updated by live schedule date. Completed events drop off and the next 5 upcoming tournaments appear automatically.</p>
+          </div>
+          <span class="tournaments-auto-pill">🔄 Auto-Schedule Live</span>
+        </div>
+        <div id="upcoming-tournaments-list" class="upcoming-tournaments-grid">
+          <!-- Rendered dynamically by app.js -->
         </div>
       </div>
 
@@ -928,6 +957,6 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=4"></script>
+  <script src="js/app.js?v=5"></script>
 </body>
 </html>

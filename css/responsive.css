@@ -1057,6 +1057,38 @@ html, body {
     font-size: 1.85rem;
   }
 
+  .daily-mode-tabs {
+    gap: 6px;
+    padding: 5px;
+    margin-bottom: 1.25rem;
+  }
+
+  .daily-mode-btn {
+    font-size: 0.82rem;
+    padding: 9px 10px;
+  }
+
+  .tournaments-header-card {
+    padding: 1rem;
+  }
+
+  .tournaments-section-title {
+    font-size: 1.12rem;
+  }
+
+  .tournament-card {
+    padding: 1rem;
+  }
+
+  .tournament-title {
+    font-size: 1.08rem;
+  }
+
+  .tournament-meta-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
   .daily-upload-box {
     padding: 1.25rem 1rem;
     border-radius: 14px;
