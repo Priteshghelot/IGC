@@ -9,7 +9,7 @@
 
 class CleanEsportsHub {
   constructor() {
-    this.storageKey    = "ewc_hub_data_v2";
+    this.storageKey    = "ewc_hub_data_v3"; // v3: old stale browser caches are ignored
     this.adminKey      = "ewc_admin_session";
     this.pendingKey    = "ewc_pending_requests";
     this.adminPin      = "admin";   // Primary Admin PIN (also accepts admin123)
@@ -53,9 +53,42 @@ class CleanEsportsHub {
     });
   }
 
+  // ─── Server-side atomic change (the ONLY way data is modified) ────────────
+  // The browser sends just the single change; the server applies it to the
+  // latest database copy and returns the fresh data. Stale tabs can no longer
+  // overwrite the database or bring deleted rows back.
+  async cloudOp(op, successMsg) {
+    try {
+      const res = await fetch('/api/data', {
+        method: 'POST',
+        cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(op)
+      });
+      const json = await res.json().catch(() => ({}));
+      if (json.data) this.applyServerData(json.data);
+      if (!res.ok || !json.ok) {
+        alert("⚠️ " + (json.error || "Save failed. Please refresh and try again."));
+        return false;
+      }
+      if (successMsg) this.showToast(successMsg);
+      return true;
+    } catch (e) {
+      alert("⚠️ Network error. Nothing was saved. Please check your connection and try again.");
+      return false;
+    }
+  }
+
+  applyServerData(data) {
+    if (!data || typeof data !== "object") return;
+    this.data = data;
+    this.saveData();
+    this.renderAll();
+  }
+
   async syncCloudData() {
     try {
-      const res = await fetch('/api/data');
+      const res = await fetch('/api/data', { cache: 'no-store' });
       if (res.ok) {
         const json = await res.json();
         if (json.ok && json.data) {
@@ -69,14 +102,12 @@ class CleanEsportsHub {
 
   async syncCloudPending() {
     try {
-      const res = await fetch('/api/requests');
+      const res = await fetch('/api/requests', { cache: 'no-store' });
       if (res.ok) {
         const json = await res.json();
         if (json.ok && Array.isArray(json.requests)) {
-          const map = new Map();
-          this.pending.forEach(r => map.set(r.id, r));
-          json.requests.forEach(r => map.set(r.id, r));
-          this.pending = Array.from(map.values());
+          // Server is the single source of truth for requests
+          this.pending = json.requests;
           this.savePending();
           this.updateAdminUI();
         }
@@ -609,10 +640,9 @@ class CleanEsportsHub {
               <button class="btn-action-edit" onclick="window.cleanHub.openEditGameModal('${teamKey}','${g.id}')" title="Edit this line-up">
                 ✏️ Edit
               </button>
-              ${this.isAdmin ? `
-                <button class="btn-action-delete" onclick="window.cleanHub.deleteGame('${teamKey}','${g.id}')" title="Delete (Admin)">
-                  🗑️
-                </button>` : ""}
+              <button class="btn-action-delete" onclick="window.cleanHub.deleteGame('${teamKey}','${g.id}')" title="${this.isAdmin ? 'Delete Game Live (Admin)' : 'Request Delete Game'}">
+                🗑️
+              </button>
             </div>
           </td>
         </tr>`;
@@ -793,43 +823,21 @@ class CleanEsportsHub {
     if (!ign) { alert("Please enter the player IGN."); return; }
 
     if (this.isAdmin) {
-      // Direct Admin Update
+      // Direct Admin Update -> applied atomically on the server
+      const op = {
+        op: "savePlayer",
+        teamKey,
+        divisionId: divVal,
+        player: { id: this.editingPlayerId || null, ign, name, role, stat1Label, stat1Val, stat2Val, desc }
+      };
       if (divVal === "__NEW__") {
         const customName = document.getElementById("player-custom-division-input").value.trim();
         if (!customName) { alert("Please enter a lineup name."); return; }
-        const newDivId = "div-" + Date.now();
-        this.data[teamKey].divisions.push({ id: newDivId, name: customName, players: [] });
-        divVal = newDivId;
+        op.newDivisionName = customName;
       }
-
-      if (this.editingPlayerId) {
-        const pData = this.findPlayer(this.currentModalTeam, this.editingPlayerId);
-        if (pData) {
-          if (this.currentModalTeam !== teamKey || pData.division.id !== divVal) {
-            pData.division.players = pData.division.players.filter(p => p.id !== this.editingPlayerId);
-            const target = this.data[teamKey].divisions.find(d => d.id === divVal);
-            if (target) target.players.push({ id: this.editingPlayerId, ign, name, role, stat1Label, stat1Val, stat2Label: "STATUS", stat2Val, desc });
-          } else {
-            Object.assign(pData.player, { ign, name, role, stat1Label, stat1Val, stat2Label: "STATUS", stat2Val, desc });
-          }
-        }
-        this.showToast(`✅ Player "${ign}" updated live!`);
-      } else {
-        const target = this.data[teamKey].divisions.find(d => d.id === divVal);
-        if (target) {
-          target.players.push({ id: "p-" + Date.now(), ign, name, role, stat1Label, stat1Val, stat2Label: "STATUS", stat2Val, desc });
-          this.showToast(`✅ Player "${ign}" added!`);
-        }
-      }
-      this.saveData();
-      this.renderAll();
-      try {
-        fetch('/api/data', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: this.data })
-        }).catch(() => {});
-      } catch (e) {}
+      this.closeModal("player-modal");
+      this.cloudOp(op, this.editingPlayerId ? `✅ Player "${ign}" updated live!` : `✅ Player "${ign}" added!`);
+      return;
     } else {
       // Normal User Edit Request -> Sent to Admin for Review
       const pData = this.editingPlayerId ? this.findPlayer(this.currentModalTeam, this.editingPlayerId) : null;
@@ -869,17 +877,7 @@ class CleanEsportsHub {
     const pData = this.findPlayer(teamKey, playerId);
     if (!pData) return;
     if (confirm(`⚠️ [ADMIN CONFIRMATION]\nAre you sure you want to permanently delete player "${pData.player.ign}" from ${pData.division.name}?`)) {
-      pData.division.players = pData.division.players.filter(p => p.id !== playerId);
-      this.saveData();
-      this.renderAll();
-      try {
-        fetch('/api/data', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: this.data })
-        }).catch(() => {});
-      } catch (e) {}
-      this.showToast(`🗑️ Player "${pData.player.ign}" permanently deleted.`);
+      this.cloudOp({ op: "deletePlayer", teamKey, id: playerId }, `🗑️ Player "${pData.player.ign}" permanently deleted.`);
     }
   }
 
@@ -888,17 +886,7 @@ class CleanEsportsHub {
     const div = this.data[teamKey]?.divisions.find(d => d.id === divisionId);
     if (!div) return;
     if (confirm(`⚠️ [ADMIN CONFIRMATION]\nAre you sure you want to permanently delete lineup "${div.name}" and all its players?`)) {
-      this.data[teamKey].divisions = this.data[teamKey].divisions.filter(d => d.id !== divisionId);
-      this.saveData();
-      this.renderAll();
-      try {
-        fetch('/api/data', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: this.data })
-        }).catch(() => {});
-      } catch (e) {}
-      this.showToast(`🗑️ Lineup "${div.name}" permanently deleted.`);
+      this.cloudOp({ op: "deleteDivision", teamKey, id: divisionId }, `🗑️ Lineup "${div.name}" permanently deleted.`);
     }
   }
 
@@ -919,8 +907,10 @@ class CleanEsportsHub {
     this.currentGameTeam = teamKey;
     const title = document.getElementById("game-modal-title");
     const submitBtn = document.getElementById("game-modal-submit-btn");
+    const delBtn = document.getElementById("game-modal-delete-btn");
     if (title) title.textContent = "➕ Add EWC Game Title (Admin)";
     if (submitBtn) submitBtn.textContent = "💾 Save EWC Game Live";
+    if (delBtn) delBtn.style.display = "none";
 
     document.getElementById("game-team-select").value = teamKey;
     const count = (this.data[teamKey]?.ewcGames || []).length;
@@ -946,9 +936,14 @@ class CleanEsportsHub {
     const modal = document.getElementById("game-modal");
     const title = document.getElementById("game-modal-title");
     const submitBtn = document.getElementById("game-modal-submit-btn");
+    const delBtn = document.getElementById("game-modal-delete-btn");
 
-    if (title) title.textContent = `📝 Suggest Edit: ${game.title}`;
-    if (submitBtn) submitBtn.textContent = "📩 Submit for Admin Approval";
+    if (title) title.textContent = this.isAdmin ? `✏️ Edit Game (Admin): ${game.title}` : `📝 Suggest Edit: ${game.title}`;
+    if (submitBtn) submitBtn.textContent = this.isAdmin ? "💾 Save Changes Live" : "📩 Submit for Admin Approval";
+    if (delBtn) {
+      delBtn.style.display = "inline-flex";
+      delBtn.textContent = this.isAdmin ? "🗑️ Delete Game Live" : "🗑️ Request Delete";
+    }
 
     document.getElementById("game-team-select").value = teamKey;
     document.getElementById("game-no-input").value     = game.no || 1;
@@ -987,57 +982,14 @@ class CleanEsportsHub {
     const isNew = !this.editingGameId;
 
     if (this.isAdmin) {
-      if (!this.data[teamKey]) this.data[teamKey] = {};
-      if (!Array.isArray(this.data[teamKey].ewcGames)) this.data[teamKey].ewcGames = [];
-      const games = this.data[teamKey].ewcGames;
-
+      // Applied atomically on the server (no full-database upload)
+      const game = { no, title, genre, roster, status, highlight: !!highlight, updatedBy, updatedAt };
+      this.closeModal("game-modal");
       if (isNew) {
-        const nextNo = games.length > 0 ? Math.max(...games.map(g => g.no || 0)) + 1 : 1;
-        games.push({
-          id: "game-" + Date.now(),
-          no: no || nextNo,
-          title,
-          genre,
-          roster,
-          status,
-          highlight: !!highlight,
-          updatedBy,
-          updatedAt
-        });
-        games.sort((a, b) => (a.no || 0) - (b.no || 0));
-        this.saveData();
-        this.renderAll();
-        this.closeModal("game-modal");
-        this.showToast(`✅ Game "${title}" added to ${teamKey === "godlike" ? "GodLike" : "S8UL"} at bottom!`);
+        this.cloudOp({ op: "addGame", teamKey, game }, `✅ Game "${title}" added to ${teamKey === "godlike" ? "GodLike" : "S8UL"}!`);
       } else {
-        const game = games.find(g => g.id === this.editingGameId);
-        if (game) {
-          Object.assign(game, {
-            no: no !== undefined ? no : game.no,
-            title,
-            genre,
-            roster,
-            status,
-            highlight: !!highlight,
-            updatedBy,
-            updatedAt
-          });
-          games.sort((a, b) => (a.no || 0) - (b.no || 0));
-          this.saveData();
-          this.renderAll();
-          this.closeModal("game-modal");
-          this.showToast(`✅ Game "${title}" updated live!`);
-        }
+        this.cloudOp({ op: "updateGame", teamKey, id: this.editingGameId, game }, `✅ Game "${title}" updated live!`);
       }
-
-      // Sync data to Cloud Redis
-      try {
-        fetch('/api/data', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: this.data })
-        }).catch(() => {});
-      } catch(e) {}
       return;
     }
 
@@ -1074,22 +1026,63 @@ class CleanEsportsHub {
     this.closeModal("game-modal");
   }
 
-  deleteGame(teamKey, gameId) {
-    if (!this.checkAdminAuth()) return;
+  handleDeleteFromGameModal() {
+    if (!this.editingGameId || !this.currentGameTeam) return;
+    const teamKey = this.currentGameTeam;
+    const gameId = this.editingGameId;
+    this.closeModal("game-modal");
+    this.deleteGame(teamKey, gameId);
+  }
+
+  async deleteGame(teamKey, gameId) {
     const game = (this.data[teamKey]?.ewcGames || []).find(g => g.id === gameId);
     if (!game) return;
-    if (confirm(`⚠️ [ADMIN CONFIRMATION]\nAre you sure you want to permanently delete "${game.title}"?`)) {
-      this.data[teamKey].ewcGames = this.data[teamKey].ewcGames.filter(g => g.id !== gameId);
-      this.saveData();
-      this.renderAll();
-      try {
-        fetch('/api/data', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: this.data })
-        }).catch(() => {});
-      } catch (e) {}
-      this.showToast(`🗑️ Game "${game.title}" permanently deleted.`);
+
+    if (this.isAdmin) {
+      if (confirm(`⚠️ [ADMIN CONFIRMATION]\nAre you sure you want to permanently delete "${game.title}"?`)) {
+        await this.cloudOp({ op: "deleteGame", teamKey, id: gameId }, `🗑️ Game "${game.title}" permanently deleted.`);
+      }
+      return;
+    }
+
+    // Visitor / non-admin -> send a Delete Game Request directly to the Admin Portal (/admin)
+    const defaultName = localStorage.getItem("last_updater_name") || "Pritesh Gehlot";
+    const nameInput = prompt(`🗑️ Request Deletion of "${game.title}"\n\nEnter your name to send this delete request to the Admin Portal:`, defaultName);
+    if (nameInput === null) return; // cancelled
+    const submittedBy = nameInput.trim() || defaultName;
+    localStorage.setItem("last_updater_name", submittedBy);
+
+    const req = {
+      id: "req-" + Date.now(),
+      type: "delete_game",
+      teamKey,
+      targetId: game.id,
+      targetName: game.title,
+      submittedBy,
+      submittedAt: new Date().toLocaleString(),
+      status: "pending",
+      data: {
+        target: game.title,
+        reason: `Delete requested for "${game.title}" (Roster: ${game.roster || "-"})`,
+        targetType: "game"
+      }
+    };
+
+    this.pending.unshift(req);
+    this.savePending();
+    this.updateAdminUI();
+
+    try {
+      const res = await fetch('/api/requests', {
+        method: 'POST',
+        cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'add', request: req })
+      });
+      if (!res.ok) throw new Error('Request failed');
+      this.showToast(`🗑️ Delete request for "${game.title}" sent to Admin Portal!`);
+    } catch (e) {
+      alert("⚠️ Could not send delete request to server. Please check connection and try again.");
     }
   }
 
@@ -1242,37 +1235,11 @@ class CleanEsportsHub {
       return;
     }
 
-    if (!Array.isArray(this.data.ewc27Games)) this.data.ewc27Games = [];
-    if (this.editingEwc27GameId) {
-      const item = this.data.ewc27Games.find(g => g.id === this.editingEwc27GameId);
-      if (item) {
-        item.title = title;
-        item.genre = genre;
-        item.sub = sub;
-        item.isNewlyAdded = true;
-      }
-    } else {
-      this.data.ewc27Games.push({
-        id: "e27-" + Date.now(),
-        title,
-        genre,
-        sub,
-        isNewlyAdded: true
-      });
-    }
-
-    this.saveData();
-    this.renderAll();
     this.closeModal("ewc27-game-modal");
-    this.showToast(`✅ EWC27 Game "${title}" saved and live!`);
-
-    try {
-      fetch("/api/data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: this.data })
-      });
-    } catch(err) {}
+    await this.cloudOp({
+      op: "saveEwc27Game",
+      game: { id: this.editingEwc27GameId || null, title, genre, sub, isNewlyAdded: true }
+    }, `✅ EWC27 Game "${title}" saved and live!`);
   }
 
   async handleEwc27TextSubmit(e) {
@@ -1287,19 +1254,11 @@ class CleanEsportsHub {
     const title    = titleEl ? titleEl.value.trim() : "EWC27 Games";
     const subtitle = subEl ? subEl.value.trim() : "";
 
-    this.data.ewc27Meta = { title, subtitle };
-    this.saveData();
-    this.renderAll();
     this.closeModal("ewc27-text-modal");
-    this.showToast("✅ EWC27 header text updated live!");
-
-    try {
-      fetch("/api/data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: this.data })
-      });
-    } catch(err) {}
+    await this.cloudOp({
+      op: "setEwc27Meta",
+      meta: { title, subtitle }
+    }, "✅ EWC27 header text updated live!");
   }
 
   // =========================================================================
@@ -1416,214 +1375,38 @@ class CleanEsportsHub {
     }).join("");
   }
 
-  // ─── Approve / Accept Request (IMMEDIATELY REFLECTS LIVE) ──────────────────
-  approveRequest(reqId) {
+  // ─── Approve / Accept Request (APPLIED ATOMICALLY ON SERVER) ───────────────
+  async approveRequest(reqId) {
     if (!this.checkAdminAuth()) return;
     const req = this.pending.find(r => r.id === reqId);
     if (!req) return;
 
-    if (req.type === "ewc27_game") {
-      if (!Array.isArray(this.data.ewc27Games)) this.data.ewc27Games = [];
-      if (req.targetId) {
-        const item = this.data.ewc27Games.find(g => g.id === req.targetId);
-        if (item) {
-          item.title = req.data.title;
-          item.genre = req.data.genre;
-          item.sub = req.data.sub;
-          item.isNewlyAdded = true;
-        }
-      } else {
-        this.data.ewc27Games.push({
-          id: "e27-" + Date.now(),
-          title: req.data.title,
-          genre: req.data.genre || "",
-          sub: req.data.sub || "",
-          isNewlyAdded: true
-        });
-      }
-      this.showToast(`✅ EWC27 Game "${req.data.title}" approved & highlighted live!`);
-    } else if (req.type === "ewc27_text") {
-      this.data.ewc27Meta = {
-        title: req.data.title,
-        subtitle: req.data.subtitle
-      };
-      this.showToast("✅ EWC27 text update approved & live!");
-    } else if (req.type === "edit_player") {
-      const pData = this.findPlayer(req.teamKey, req.targetId);
-      if (pData) {
-        if (req.data.divisionId && pData.division.id !== req.data.divisionId) {
-          pData.division.players = pData.division.players.filter(p => p.id !== req.targetId);
-          const targetDiv = this.data[req.teamKey].divisions.find(d => d.id === req.data.divisionId) || pData.division;
-          targetDiv.players.push({
-            id: req.targetId,
-            ign: req.data.ign,
-            name: req.data.name || "",
-            role: req.data.role,
-            stat1Label: req.data.stat1Label,
-            stat1Val: req.data.stat1Val,
-            stat2Label: req.data.stat2Label || "STATUS",
-            stat2Val: req.data.stat2Val || "Active",
-            desc: req.data.desc || ""
-          });
-        } else {
-          Object.assign(pData.player, {
-            ign: req.data.ign,
-            name: req.data.name || "",
-            role: req.data.role,
-            stat1Label: req.data.stat1Label,
-            stat1Val: req.data.stat1Val,
-            stat2Label: req.data.stat2Label || "STATUS",
-            stat2Val: req.data.stat2Val || "Active",
-            desc: req.data.desc || ""
-          });
-        }
-        this.showToast(`✅ Edit accepted! "${req.data.ign}" is now updated live.`);
-      }
-    } else if (req.type === "edit_game") {
-      if (!this.data[req.teamKey]) this.data[req.teamKey] = {};
-      if (!Array.isArray(this.data[req.teamKey].ewcGames)) this.data[req.teamKey].ewcGames = [];
-      const games = this.data[req.teamKey].ewcGames;
-      const game = req.targetId ? games.find(g => g.id === req.targetId) : null;
-      if (game) {
-        Object.assign(game, {
-          no: req.data.no !== undefined ? req.data.no : game.no,
-          title: req.data.title,
-          genre: req.data.genre || "",
-          roster: req.data.roster || "",
-          status: req.data.status || game.status || "EWC 2026 Official Title",
-          highlight: req.data.highlight !== undefined ? !!req.data.highlight : game.highlight,
-          updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
-          updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
-        });
-        games.sort((a, b) => (a.no || 0) - (b.no || 0));
-        this.showToast(`✅ Edit accepted! "${req.data.title}" is now updated live by ${game.updatedBy}.`);
-      } else {
-        // Target game not found or new game submitted as edit_game -> Add at bottom
-        const nextNo = games.length > 0 ? Math.max(...games.map(g => g.no || 0)) + 1 : 1;
-        games.push({
-          id:        "game-" + Date.now(),
-          no:        req.data.no || nextNo,
-          title:     req.data.title,
-          genre:     req.data.genre || req.data.category || "",
-          roster:    req.data.roster || "",
-          status:    req.data.status || "EWC 2026 Official Title",
-          highlight: !!req.data.highlight,
-          updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
-          updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
-        });
-        games.sort((a, b) => (a.no || 0) - (b.no || 0));
-        this.showToast(`✅ Game "${req.data.title}" approved & added at the bottom!`);
-      }
-    } else if (req.type === "delete_player") {
-      const target = req.data.target || "";
-      const matches = this.findPlayer(req.teamKey, req.data.targetId || null);
-      let playerToDelete = matches ? matches.player : null;
-      if (!playerToDelete) {
-        for (const div of (this.data[req.teamKey]?.divisions || [])) {
-          const found = div.players.find(p => p.ign.toLowerCase() === target.toLowerCase() || (p.name && p.name.toLowerCase() === target.toLowerCase()));
-          if (found) {
-            playerToDelete = found;
-            break;
-          }
-        }
-      }
-      if (playerToDelete) {
-        for (const div of (this.data[req.teamKey]?.divisions || [])) {
-          const before = div.players.length;
-          div.players = div.players.filter(p => p.id !== playerToDelete.id);
-          if (div.players.length !== before) {
-            this.showToast(`✅ Player "${playerToDelete.ign}" was deleted live after admin approval.`);
-            break;
-          }
-        }
-      } else {
-        this.showToast(`⚠️ No matching player found for deletion request: "${target}"`);
-      }
-    } else if (req.type === "delete_lineup") {
-      const target = (req.data.target || "").trim();
-      const targetDiv = (this.data[req.teamKey]?.divisions || []).find(d => d.name.toLowerCase() === target.toLowerCase() || d.id === (req.data.targetId || ""));
-      if (targetDiv) {
-        this.data[req.teamKey].divisions = this.data[req.teamKey].divisions.filter(d => d.id !== targetDiv.id);
-        this.showToast(`✅ Lineup "${targetDiv.name}" was deleted live after admin approval.`);
-      } else {
-        this.showToast(`⚠️ No matching lineup found for deletion request: "${target}"`);
-      }
-    } else if (req.type === "delete_game") {
-      const target = (req.data?.target || req.targetName || "").trim().toLowerCase();
-      if (!this.data[req.teamKey]) this.data[req.teamKey] = {};
-      if (!Array.isArray(this.data[req.teamKey].ewcGames)) this.data[req.teamKey].ewcGames = [];
-      const games = this.data[req.teamKey].ewcGames;
-      const before = games.length;
-      this.data[req.teamKey].ewcGames = games.filter(g => {
-        if (req.targetId && g.id === req.targetId) return false;
-        if (g.title && g.title.toLowerCase().trim() === target) return false;
-        return true;
-      });
-      if (this.data[req.teamKey].ewcGames.length !== before) {
-        this.showToast(`🗑️ Game "${req.data?.target || req.targetName}" was permanently deleted live.`);
-      } else {
-        this.showToast(`⚠️ No matching game found for deletion: "${req.data?.target || req.targetName}"`);
-      }
-    } else if (req.type === "player") {
-      let targetDiv = this.data[req.teamKey].divisions.find(d => d.name === "Community Submissions")
-                   || this.data[req.teamKey].divisions[0];
-      if (!targetDiv) {
-        targetDiv = { id: "div-subs-" + Date.now(), name: "Community Submissions", players: [] };
-        this.data[req.teamKey].divisions.push(targetDiv);
-      }
-      targetDiv.players.push({
-        id:          "p-" + Date.now(),
-        ign:         req.data.ign,
-        name:        req.data.name || "",
-        role:        req.data.role,
-        stat1Label:  "GAME",
-        stat1Val:    req.data.game || "-",
-        stat2Label:  "STATUS",
-        stat2Val:    "Active",
-        desc:        req.data.desc || ""
-      });
-      this.showToast(`✅ Player "${req.data.ign}" approved & added live!`);
-    } else {
-      // req.type === "game" or any other game title request
-      if (!this.data[req.teamKey]) this.data[req.teamKey] = {};
-      if (!Array.isArray(this.data[req.teamKey].ewcGames)) this.data[req.teamKey].ewcGames = [];
-      const games = this.data[req.teamKey].ewcGames;
-      const nextNo = games.length > 0 ? Math.max(...games.map(g => g.no || 0)) + 1 : 1;
-      games.push({
-        id:        "game-" + Date.now(),
-        no:        req.data.no || nextNo,
-        title:     req.data.title,
-        genre:     req.data.genre || req.data.category || "",
-        roster:    req.data.roster || "",
-        status:    req.data.status || "EWC 2026 Official Title",
-        highlight: !!req.data.highlight,
-        updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
-        updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
-      });
-      games.sort((a, b) => (a.no || 0) - (b.no || 0));
-      this.showToast(`✅ Game "${req.data.title}" approved & added at the bottom!`);
-    }
-
-    req.status = "approved";
-    this.saveData();
-    this.savePending();
-    this.renderAll();
-    this.renderApprovals();
-    this.updateAdminUI();
-
-    // Sync to Cloud Redis API
     try {
-      fetch('/api/requests', {
+      const res = await fetch('/api/requests', {
         method: 'POST',
+        cache: 'no-store',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'approve', id: req.id })
-      }).catch(() => {});
-      fetch('/api/data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: this.data })
-      }).catch(() => {});
-    } catch(e) {}
+      });
+      const json = await res.json().catch(() => ({}));
+      if (json.data) this.applyServerData(json.data);
+      if (Array.isArray(json.requests)) {
+        this.pending = json.requests;
+        this.savePending();
+      }
+      if (!res.ok || !json.ok) {
+        alert("⚠️ " + (json.error || "Could not approve request."));
+        await this.syncCloudPending();
+        this.renderApprovals();
+        this.updateAdminUI();
+        return;
+      }
+      this.renderApprovals();
+      this.updateAdminUI();
+      this.showToast(`✅ ${json.message || 'Approved & reflected live!'}`);
+    } catch (e) {
+      alert("⚠️ Network error while approving request. Please try again.");
+    }
   }
 
   rejectRequest(reqId) {

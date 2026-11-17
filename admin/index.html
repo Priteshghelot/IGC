@@ -240,22 +240,24 @@
           <div style="background:rgba(255, 184, 0, 0.05); border:1.5px solid var(--godl-gold); border-radius:12px; padding:1.25rem;">
             <h3 style="color:var(--godl-gold); font-size:1.1rem; margin-bottom:6px;">GodLike Esports</h3>
             <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom:1rem;">Golden Yellow • PMWC Grand Finalists</p>
-            <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:1rem;">
               <a href="/?admin=true" class="dash-btn-secondary" style="text-align:center;">
                 ➕ Manage GodLike Roster & Lineups
               </a>
             </div>
+            <div id="portal-godl-games-list" style="display:flex; flex-direction:column; gap:6px; max-height:380px; overflow-y:auto;"></div>
           </div>
 
           <!-- S8UL Quick Actions -->
           <div style="background:rgba(0, 168, 255, 0.05); border:1.5px solid var(--s8ul-blue); border-radius:12px; padding:1.25rem;">
             <h3 style="color:var(--s8ul-blue); font-size:1.1rem; margin-bottom:6px;">S8UL Esports</h3>
             <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom:1rem;">Sky Blue • 12 EWC Campaign Titles</p>
-            <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:1rem;">
               <a href="/?admin=true" class="dash-btn-secondary" style="text-align:center;">
                 ➕ Manage S8UL Roster & Lineups
               </a>
             </div>
+            <div id="portal-s8ul-games-list" style="display:flex; flex-direction:column; gap:6px; max-height:380px; overflow-y:auto;"></div>
           </div>
 
         </div>
@@ -265,11 +267,11 @@
 
   </main>
 
-  <script src="/js/data.js"></script>
+  <script src="/js/data.js?v=3"></script>
   <script>
     class AdminPortal {
       constructor() {
-        this.storageKey = "ewc_hub_data_v2";
+        this.storageKey = "ewc_hub_data_v3";
         this.adminKey   = "ewc_admin_session";
         this.pendingKey = "ewc_pending_requests";
         this.adminPin   = "admin";
@@ -336,12 +338,13 @@
         this.loadPending();
         this.loadData();
         this.renderList();
+        this.renderLiveGames();
 
-        // Fetch latest from Cloud Redis API
+        // Fetch latest from Cloud Redis API (no-store so browser cache never returns stale data)
         try {
           const [reqRes, dataRes] = await Promise.all([
-            fetch('/api/requests'),
-            fetch('/api/data')
+            fetch('/api/requests', { cache: 'no-store' }),
+            fetch('/api/data', { cache: 'no-store' })
           ]);
 
           if (dataRes && dataRes.ok) {
@@ -349,21 +352,69 @@
             if (dataJson.ok && dataJson.data) {
               this.data = dataJson.data;
               this.saveData();
+              this.renderLiveGames();
             }
           }
 
           if (reqRes && reqRes.ok) {
             const json = await reqRes.json();
             if (json.ok && Array.isArray(json.requests)) {
-              const map = new Map();
-              this.pending.forEach(r => map.set(r.id, r));
-              json.requests.forEach(r => map.set(r.id, r));
-              this.pending = Array.from(map.values());
+              this.pending = json.requests;
               this.savePending();
               this.renderList();
             }
           }
         } catch(e) {}
+      }
+
+      renderLiveGames() {
+        const renderTeamList = (teamKey, containerId) => {
+          const el = document.getElementById(containerId);
+          if (!el) return;
+          const games = this.data?.[teamKey]?.ewcGames || [];
+          if (games.length === 0) {
+            el.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem;">No games listed.</div>`;
+            return;
+          }
+          el.innerHTML = games.map((g, i) => `
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:7px 10px; background:rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.08); border-radius:8px; font-size:0.82rem;">
+              <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                <strong style="color:#fff;">#${g.no || i + 1} ${this.escape(g.title)}</strong>
+                <span style="color:var(--text-sub); margin-left:6px;">${this.escape(g.roster || "-")}</span>
+              </div>
+              <button onclick="window.adminPortal.directDeleteGame('${teamKey}','${g.id}')" style="background:#dc2626; border:none; color:#fff; padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:800; cursor:pointer; flex-shrink:0;" title="Permanently delete this game row">🗑️ Delete</button>
+            </div>
+          `).join("");
+        };
+        renderTeamList("godlike", "portal-godl-games-list");
+        renderTeamList("s8ul", "portal-s8ul-games-list");
+      }
+
+      async directDeleteGame(teamKey, gameId) {
+        const game = (this.data?.[teamKey]?.ewcGames || []).find(g => g.id === gameId);
+        if (!game) return;
+        if (!confirm(`⚠️ Permanently delete "${game.title}" (${game.roster || "-"}) from ${teamKey === "godlike" ? "GodLike" : "S8UL"}?`)) return;
+        try {
+          const res = await fetch('/api/data', {
+            method: 'POST',
+            cache: 'no-store',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ op: 'deleteGame', teamKey, id: gameId })
+          });
+          const json = await res.json().catch(() => ({}));
+          if (json.data) {
+            this.data = json.data;
+            this.saveData();
+            this.renderLiveGames();
+          }
+          if (!res.ok || !json.ok) {
+            alert("⚠️ " + (json.error || "Delete failed."));
+            return;
+          }
+          alert(`🗑️ "${game.title}" permanently deleted from the live website!`);
+        } catch (e) {
+          alert("⚠️ Network error while deleting. Please try again.");
+        }
       }
 
       renderList() {
@@ -490,295 +541,42 @@
         }).join("");
       }
 
-      approve(reqId) {
+      async approve(reqId) {
         const req = this.pending.find(r => r.id === reqId);
         if (!req) return;
 
-        if (req.type === "ewc27_game") {
-          if (!Array.isArray(this.data.ewc27Games)) this.data.ewc27Games = [];
-          if (req.targetId) {
-            const item = this.data.ewc27Games.find(g => g.id === req.targetId);
-            if (item) {
-              item.title = req.data.title;
-              item.genre = req.data.genre;
-              item.sub = req.data.sub;
-              item.isNewlyAdded = true;
-            }
-          } else {
-            this.data.ewc27Games.push({
-              id: "e27-" + Date.now(),
-              title: req.data.title,
-              genre: req.data.genre || "",
-              sub: req.data.sub || "",
-              isNewlyAdded: true
-            });
-          }
-          req.status = "approved";
-          this.saveData();
-          this.savePending();
-          this.renderList();
-          try {
-            fetch('/api/requests', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ action: 'approve', id: reqId })
-            }).catch(() => {});
-            fetch('/api/data', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ data: this.data })
-            }).catch(() => {});
-          } catch(e) {}
-          alert(`✅ Accepted! Game "${req.data.title}" has been added & highlighted in the EWC27 Games section.`);
-          return;
-        }
-
-        if (req.type === "ewc27_text") {
-          this.data.ewc27Meta = {
-            title: req.data.title,
-            subtitle: req.data.subtitle
-          };
-          req.status = "approved";
-          this.saveData();
-          this.savePending();
-          this.renderList();
-          try {
-            fetch('/api/requests', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ action: 'approve', id: reqId })
-            }).catch(() => {});
-            fetch('/api/data', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ data: this.data })
-            }).catch(() => {});
-          } catch(e) {}
-          alert(`✅ Accepted! EWC27 text has been updated.`);
-          return;
-        }
-
-        if (req.type === "daily_post") {
-          req.status = "approved";
-          this.savePending();
-          this.renderList();
-
-          // Sync approve to Cloud Redis
-          try {
-            fetch('/api/requests', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ action: 'approve', id: reqId })
-            }).catch(() => {});
-          } catch(e) {}
-
-          alert("✅ Daily post approved! It is now live in the Daily Updates feed.");
-          return;
-        }
-
-        if (req.type === "delete_player") {
-          const target = (req.data?.target || req.targetName || "").trim().toLowerCase();
-          let deleted = false;
-          for (const div of (this.data[req.teamKey]?.divisions || [])) {
-            const before = div.players.length;
-            div.players = div.players.filter(p => {
-              if (req.targetId && p.id === req.targetId) return false;
-              if (p.ign && p.ign.toLowerCase().trim() === target) return false;
-              if (p.name && p.name.toLowerCase().trim() === target) return false;
-              return true;
-            });
-            if (div.players.length !== before) deleted = true;
-          }
-          req.status = "approved";
-          this.saveData();
-          this.savePending();
-          this.renderList();
-          try {
-            fetch('/api/requests', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ action: 'approve', id: reqId })
-            }).catch(() => {});
-            fetch('/api/data', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ data: this.data })
-            }).catch(() => {});
-          } catch(e) {}
-          alert(deleted ? `🗑️ Player "${req.data?.target || req.targetName}" was permanently deleted live.` : `⚠️ No player matching "${req.data?.target || req.targetName}" found.`);
-          return;
-        }
-
-        if (req.type === "delete_lineup") {
-          const target = (req.data?.target || req.targetName || "").trim().toLowerCase();
-          let deleted = false;
-          if (this.data[req.teamKey]?.divisions) {
-            const before = this.data[req.teamKey].divisions.length;
-            this.data[req.teamKey].divisions = this.data[req.teamKey].divisions.filter(d => {
-              if (req.targetId && d.id === req.targetId) return false;
-              if (d.name && d.name.toLowerCase().trim() === target) return false;
-              return true;
-            });
-            if (this.data[req.teamKey].divisions.length !== before) deleted = true;
-          }
-          req.status = "approved";
-          this.saveData();
-          this.savePending();
-          this.renderList();
-          try {
-            fetch('/api/requests', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ action: 'approve', id: reqId })
-            }).catch(() => {});
-            fetch('/api/data', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ data: this.data })
-            }).catch(() => {});
-          } catch(e) {}
-          alert(deleted ? `🗑️ Lineup "${req.data?.target || req.targetName}" was permanently deleted live.` : `⚠️ No lineup matching "${req.data?.target || req.targetName}" found.`);
-          return;
-        }
-
-        if (req.type === "delete_game") {
-          const target = (req.data?.target || req.targetName || "").trim().toLowerCase();
-          let deleted = false;
-          if (this.data[req.teamKey]?.ewcGames) {
-            const before = this.data[req.teamKey].ewcGames.length;
-            this.data[req.teamKey].ewcGames = this.data[req.teamKey].ewcGames.filter(g => {
-              if (req.targetId && g.id === req.targetId) return false;
-              if (g.title && g.title.toLowerCase().trim() === target) return false;
-              return true;
-            });
-            if (this.data[req.teamKey].ewcGames.length !== before) deleted = true;
-          }
-          req.status = "approved";
-          this.saveData();
-          this.savePending();
-          this.renderList();
-          try {
-            fetch('/api/requests', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ action: 'approve', id: reqId })
-            }).catch(() => {});
-            fetch('/api/data', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ data: this.data })
-            }).catch(() => {});
-          } catch(e) {}
-          alert(deleted ? `🗑️ Game "${req.data?.target || req.targetName}" was permanently deleted live.` : `⚠️ No game matching "${req.data?.target || req.targetName}" found.`);
-          return;
-        }
-
-        if (req.type === "edit_player") {
-          for (const div of (this.data[req.teamKey]?.divisions || [])) {
-            const p = div.players.find(x => x.id === req.targetId);
-            if (p) {
-              Object.assign(p, {
-                ign: req.data.ign,
-                name: req.data.name || "",
-                role: req.data.role,
-                stat1Label: req.data.stat1Label,
-                stat1Val: req.data.stat1Val,
-                desc: req.data.desc || ""
-              });
-              break;
-            }
-          }
-        } else if (req.type === "edit_game") {
-          if (!this.data[req.teamKey]) this.data[req.teamKey] = {};
-          if (!Array.isArray(this.data[req.teamKey].ewcGames)) this.data[req.teamKey].ewcGames = [];
-          const games = this.data[req.teamKey].ewcGames;
-          const g = req.targetId ? games.find(x => x.id === req.targetId) : null;
-          if (g) {
-            Object.assign(g, {
-              no: req.data.no !== undefined ? req.data.no : g.no,
-              title: req.data.title,
-              genre: req.data.genre || "",
-              roster: req.data.roster || "",
-              status: req.data.status || g.status,
-              highlight: req.data.highlight !== undefined ? req.data.highlight : g.highlight,
-              updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
-              updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
-            });
-            games.sort((a, b) => (a.no || 0) - (b.no || 0));
-          } else {
-            // Target game not found or new game submitted as edit_game -> Add at bottom
-            const nextNo = games.length > 0 ? Math.max(...games.map(x => x.no || 0)) + 1 : 1;
-            games.push({
-              id: "game-" + Date.now(),
-              no: req.data.no || nextNo,
-              title: req.data.title,
-              genre: req.data.genre || req.data.category || "",
-              roster: req.data.roster || "",
-              status: req.data.status || "EWC 2026 Official Title",
-              highlight: !!req.data.highlight,
-              updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
-              updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
-            });
-            games.sort((a, b) => (a.no || 0) - (b.no || 0));
-          }
-        } else if (req.type === "player") {
-          let targetDiv = this.data[req.teamKey].divisions.find(d => d.name === "Community Submissions")
-                       || this.data[req.teamKey].divisions[0];
-          if (!targetDiv) {
-            targetDiv = { id: "div-subs-" + Date.now(), name: "Community Submissions", players: [] };
-            this.data[req.teamKey].divisions.push(targetDiv);
-          }
-          targetDiv.players.push({
-            id: "p-" + Date.now(),
-            ign: req.data.ign,
-            name: req.data.name || "",
-            role: req.data.role,
-            stat1Label: "GAME",
-            stat1Val: req.data.game || "-",
-            stat2Label: "STATUS",
-            stat2Val: "Active",
-            desc: req.data.desc || ""
-          });
-        } else {
-          // req.type === "game" or other game add request
-          if (!this.data[req.teamKey]) this.data[req.teamKey] = {};
-          if (!Array.isArray(this.data[req.teamKey].ewcGames)) this.data[req.teamKey].ewcGames = [];
-          const games = this.data[req.teamKey].ewcGames;
-          const nextNo = games.length > 0 ? Math.max(...games.map(x => x.no || 0)) + 1 : 1;
-          games.push({
-            id: "game-" + Date.now(),
-            no: req.data.no || nextNo,
-            title: req.data.title,
-            genre: req.data.genre || req.data.category || "",
-            roster: req.data.roster || "",
-            status: req.data.status || "EWC 2026 Official Title",
-            highlight: !!req.data.highlight,
-            updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
-            updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
-          });
-          games.sort((a, b) => (a.no || 0) - (b.no || 0));
-        }
-
-        req.status = "approved";
-        this.saveData();
-        this.savePending();
-        this.renderList();
-
-        // Sync approve & new data to Cloud Redis
+        // Applied atomically on the server so this tab can never overwrite
+        // unrelated GodLike / S8UL data with stale localStorage state.
         try {
-          fetch('/api/requests', {
+          const res = await fetch('/api/requests', {
             method: 'POST',
+            cache: 'no-store',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'approve', id: reqId })
-          }).catch(() => {});
-          fetch('/api/data', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ data: this.data })
-          }).catch(() => {});
-        } catch(e) {}
-
-        alert(`✅ Accepted! Changes have been updated in the database and will reflect live on the website.`);
+          });
+          const json = await res.json().catch(() => ({}));
+          if (json.data) {
+            this.data = json.data;
+            this.saveData();
+            this.renderLiveGames();
+          }
+          if (Array.isArray(json.requests)) {
+            this.pending = json.requests;
+            this.savePending();
+          } else {
+            req.status = "approved";
+            this.savePending();
+          }
+          this.renderList();
+          if (!res.ok || !json.ok) {
+            alert("⚠️ " + (json.error || "Could not approve request."));
+            await this.refreshRequests();
+            return;
+          }
+          alert(`✅ ${json.message || "Accepted! Changes are now live on the website."}`);
+        } catch (e) {
+          alert("⚠️ Network error while approving request. Please try again.");
+        }
       }
 
       reject(reqId) {

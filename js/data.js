@@ -1,7 +1,6 @@
 // =============================================================================
 // DEFAULT ESPORTS DATASET (GodLike Esports & S8UL Esports)
 // Official EWC Games & Active Rosters
-// Zero Fake Profile Pictures - Pure Verified Information
 // =============================================================================
 
 const INITIAL_HUB_DATA = {
@@ -129,28 +128,6 @@ const INITIAL_HUB_DATA = {
         "updatedAt": "16 Nov 2026"
       },
       {
-        "id": "game-1794850044601",
-        "no": 11,
-        "title": "Apex Legend",
-        "genre": "Mobile Games",
-        "roster": "Test",
-        "status": "NOT in EWC",
-        "highlight": false,
-        "updatedBy": "Pritesh Gehlot",
-        "updatedAt": "16 Nov 2026"
-      },
-      {
-        "id": "game-1794848600847",
-        "no": 11,
-        "title": "Codm",
-        "genre": "Mobile Games",
-        "roster": "Test",
-        "status": "NOT in EWC",
-        "highlight": false,
-        "updatedBy": "Pritesh Gehlot",
-        "updatedAt": "16 Nov 2026"
-      },
-      {
         "id": "game-1794848637677",
         "no": 12,
         "title": "MLBB Women",
@@ -173,17 +150,6 @@ const INITIAL_HUB_DATA = {
         "updatedAt": "17 Nov 2026"
       },
       {
-        "id": "game-1794850050663",
-        "no": 13,
-        "title": "PUBG",
-        "genre": "Pc Games",
-        "roster": "Test",
-        "status": "Indian Circuit only",
-        "highlight": false,
-        "updatedBy": "Pritesh Gehlot",
-        "updatedAt": "16 Nov 2026"
-      },
-      {
         "id": "game-1794848771681",
         "no": 14,
         "title": "Valorant",
@@ -199,7 +165,7 @@ const INITIAL_HUB_DATA = {
         "no": 15,
         "title": "Fortnite",
         "genre": "Pc Games",
-        "roster": "Test",
+        "roster": "Chap (Nicolas H.) and Flickzy (Felix G.)",
         "status": "EWC 2026 Official Title",
         "highlight": false,
         "updatedBy": "Pritesh Gehlot",
@@ -210,7 +176,7 @@ const INITIAL_HUB_DATA = {
         "no": 16,
         "title": "Honor of Kings",
         "genre": "MOBA",
-        "roster": "Test",
+        "roster": "• Top Lane: FiL! • Jungler: HOBIN • Middle: FridayKiss • Bottom Lane: Eeto • Roamer: ZtaDD • Bottom Lane / Sub: Kweempai",
         "status": "EWC 2026 Official Title",
         "highlight": false,
         "updatedBy": "Pritesh Gehlot",
@@ -512,30 +478,33 @@ const INITIAL_HUB_DATA = {
         "no": 7,
         "title": "Fortnite",
         "genre": "Battle Royale",
-        "roster": "Faded (David Ciubotariu), Kaan (Kaan Tafli)",
+        "roster": "Kaan (Kaan Tafli)",
         "status": "EWC Official Title",
-        "highlight": false,
-        "updatedBy": "Pritesh Gehlot"
+        "highlight": true,
+        "updatedBy": "Pritesh Gehlot",
+        "updatedAt": "17 Nov 2026"
       },
       {
         "id": "s8-g8",
         "no": 8,
         "title": "Honor of Kings",
         "genre": "MOBA",
-        "roster": "Darkness, Meruem, Xtreme, Kyurem, Kong",
+        "roster": "Kyoung9, Nev, Ch1pz, TTranquil, Kaeltzy ,  Pluto",
         "status": "EWC Official Title",
-        "highlight": false,
-        "updatedBy": "Pritesh Gehlot"
+        "highlight": true,
+        "updatedBy": "RHUGVED SOLASKAR",
+        "updatedAt": "17 Nov 2026"
       },
       {
         "id": "s8-g9",
         "no": 9,
         "title": "MOBA Legends 5v5 (MLBB)",
         "genre": "MOBA",
-        "roster": "Bobe (Bikash Tamang), Radium, Anti, J, Apex",
+        "roster": "Apex, Romcom, Abhi, Fighting McQueen, J.",
         "status": "EWC Official Title",
         "highlight": false,
-        "updatedBy": "Pritesh Gehlot"
+        "updatedBy": "Debjeet Roy",
+        "updatedAt": "17 Nov 2026"
       },
       {
         "id": "s8-g10",
@@ -775,4 +744,3 @@ const INITIAL_HUB_DATA = {
 };
 
 const INITIAL_DAILY_UPDATES = [];
-

@@ -640,9 +640,12 @@
 
         </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn-modal-secondary" onclick="window.cleanHub.closeModal('game-modal')">Cancel</button>
-          <button type="submit" class="btn-modal-primary" id="game-modal-submit-btn">💾 Save EWC Game</button>
+        <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+          <button type="button" id="game-modal-delete-btn" style="display:none; background:#dc2626; border:1px solid #ef4444; color:#fff; padding:9px 14px; border-radius:8px; font-weight:800; cursor:pointer;" onclick="window.cleanHub.handleDeleteFromGameModal()">🗑️ Delete Game</button>
+          <div style="display:flex; gap:10px; margin-left:auto;">
+            <button type="button" class="btn-modal-secondary" onclick="window.cleanHub.closeModal('game-modal')">Cancel</button>
+            <button type="submit" class="btn-modal-primary" id="game-modal-submit-btn">💾 Save EWC Game</button>
+          </div>
         </div>
       </form>
     </div>
@@ -878,7 +881,7 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/data.js?v=3"></script>
+  <script src="js/app.js?v=3"></script>
 </body>
 </html>
