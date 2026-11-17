@@ -47,6 +47,9 @@ module.exports = async (req, res) => {
     // ── Add new community request ──
     if (action === 'add' || (!action && request)) {
       const newReq = { ...(request || body), status: 'pending' };
+      if (String(newReq.type || '').startsWith('delete_')) {
+        return res.status(403).json({ ok: false, error: 'Delete requests are restricted to Admin only.' });
+      }
       if (!newReq.id) newReq.id = 'req-' + Date.now();
       if (redis) {
         await atomicUpdate(redis, [REQ_KEY], (list) => {

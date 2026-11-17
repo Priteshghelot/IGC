@@ -863,50 +863,18 @@ class CleanEsportsHub {
   }
 
   async deleteThirdPartyTournament(id) {
+    if (!this.checkAdminAuth()) return;
     const item = this.getActiveThirdPartyList().find(t => t.id === id);
     if (!item) return;
     const seedList = this.getDefaultThirdPartyTournaments();
 
-    if (this.isAdmin) {
-      if (confirm(`⚠️ Permanently delete tournament "${item.title}"?`)) {
-        const ok = await this.cloudOp({ op: "deleteThirdPartyTournament", id, seedList }, `🗑️ Tournament "${item.title}" deleted.`);
-        if (ok) {
-          this.renderThirdPartyTournaments();
-          this.renderDailyMarquee();
-        }
+    if (confirm(`⚠️ Permanently delete tournament "${item.title}"?`)) {
+      const ok = await this.cloudOp({ op: "deleteThirdPartyTournament", id, seedList }, `🗑️ Tournament "${item.title}" deleted.`);
+      if (ok) {
+        this.renderThirdPartyTournaments();
+        this.renderDailyMarquee();
       }
-      return;
     }
-
-    const defaultName = localStorage.getItem("last_updater_name") || "Community Member";
-    const nameInput = prompt(`🗑️ Request Deletion of "${item.title}"\nEnter your name:`, defaultName);
-    if (nameInput === null) return;
-    const submittedBy = nameInput.trim() || defaultName;
-
-    const req = {
-      id: "req-" + Date.now(),
-      type: "delete_thirdparty_tournament",
-      teamKey: "godlike",
-      targetId: item.id,
-      targetName: item.title,
-      submittedBy,
-      submittedAt: new Date().toLocaleString(),
-      status: "pending",
-      seedList,
-      data: { target: item.title, reason: `Delete requested for "${item.title}"` }
-    };
-    this.pending.unshift(req);
-    this.savePending();
-    this.updateAdminUI();
-    try {
-      await fetch('/api/requests', {
-        method: 'POST',
-        cache: 'no-store',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'add', request: req })
-      });
-      this.showToast(`🗑️ Delete request for "${item.title}" sent to Admin!`);
-    } catch (e) {}
   }
 
   renderTournamentCards(container, list, limit, emptyTitle, editable = false) {
@@ -978,7 +946,7 @@ class CleanEsportsHub {
             <span class="tournament-updated-by">${t.updatedBy ? `👤 Added/Edited by ${this.escapeHtml(t.updatedBy)}` : "📅 Auto-sorted by Start Date"}</span>
             <div class="row-action-btns">
               <button type="button" class="btn-action-edit" onclick="window.cleanHub.openEditTournamentModal('${this.escapeHtml(t.id)}')">✏️ Edit</button>
-              <button type="button" class="btn-action-delete" onclick="window.cleanHub.deleteThirdPartyTournament('${this.escapeHtml(t.id)}')" title="Delete Tournament">🗑️</button>
+              ${this.isAdmin ? `<button type="button" class="btn-action-delete" onclick="window.cleanHub.deleteThirdPartyTournament('${this.escapeHtml(t.id)}')" title="Delete Tournament (Admin)">🗑️</button>` : ""}
             </div>
           </div>` : (editable === "major" && this.isAdmin ? `
           <div class="tournament-card-actions">
@@ -1571,9 +1539,7 @@ class CleanEsportsHub {
                 <button class="btn-action-edit" onclick="window.cleanHub.openEditGameModal('${teamKey}','${g.id}')" title="Edit this line-up">
                   ✏️ Edit
                 </button>
-                <button class="btn-action-delete" onclick="window.cleanHub.deleteGame('${teamKey}','${g.id}')" title="${this.isAdmin ? 'Delete Game Live (Admin)' : 'Request Delete Game'}">
-                  🗑️
-                </button>
+                ${this.isAdmin ? `<button class="btn-action-delete" onclick="window.cleanHub.deleteGame('${teamKey}','${g.id}')" title="Delete Game Live (Admin)">🗑️</button>` : ""}
               </div>
             </div>
           </td>
@@ -1875,8 +1841,8 @@ class CleanEsportsHub {
     if (title) title.textContent = this.isAdmin ? `✏️ Edit Game (Admin): ${game.title}` : `📝 Suggest Edit: ${game.title}`;
     if (submitBtn) submitBtn.textContent = this.isAdmin ? "💾 Save Changes Live" : "📩 Submit for Admin Approval";
     if (delBtn) {
-      delBtn.style.display = "inline-flex";
-      delBtn.textContent = this.isAdmin ? "🗑️ Delete Game Live" : "🗑️ Request Delete";
+      delBtn.style.display = this.isAdmin ? "inline-flex" : "none";
+      delBtn.textContent = "🗑️ Delete Game Live";
     }
 
     document.getElementById("game-team-select").value = teamKey;
@@ -1973,54 +1939,12 @@ class CleanEsportsHub {
   }
 
   async deleteGame(teamKey, gameId) {
+    if (!this.checkAdminAuth()) return;
     const game = (this.data[teamKey]?.ewcGames || []).find(g => g.id === gameId);
     if (!game) return;
 
-    if (this.isAdmin) {
-      if (confirm(`⚠️ [ADMIN CONFIRMATION]\nAre you sure you want to permanently delete "${game.title}"?`)) {
-        await this.cloudOp({ op: "deleteGame", teamKey, id: gameId }, `🗑️ Game "${game.title}" permanently deleted.`);
-      }
-      return;
-    }
-
-    // Visitor / non-admin -> send a Delete Game Request directly to the Admin Portal (/admin)
-    const defaultName = localStorage.getItem("last_updater_name") || "Pritesh Gehlot";
-    const nameInput = prompt(`🗑️ Request Deletion of "${game.title}"\n\nEnter your name to send this delete request to the Admin Portal:`, defaultName);
-    if (nameInput === null) return; // cancelled
-    const submittedBy = nameInput.trim() || defaultName;
-    localStorage.setItem("last_updater_name", submittedBy);
-
-    const req = {
-      id: "req-" + Date.now(),
-      type: "delete_game",
-      teamKey,
-      targetId: game.id,
-      targetName: game.title,
-      submittedBy,
-      submittedAt: new Date().toLocaleString(),
-      status: "pending",
-      data: {
-        target: game.title,
-        reason: `Delete requested for "${game.title}" (Roster: ${game.roster || "-"})`,
-        targetType: "game"
-      }
-    };
-
-    this.pending.unshift(req);
-    this.savePending();
-    this.updateAdminUI();
-
-    try {
-      const res = await fetch('/api/requests', {
-        method: 'POST',
-        cache: 'no-store',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'add', request: req })
-      });
-      if (!res.ok) throw new Error('Request failed');
-      this.showToast(`🗑️ Delete request for "${game.title}" sent to Admin Portal!`);
-    } catch (e) {
-      alert("⚠️ Could not send delete request to server. Please check connection and try again.");
+    if (confirm(`⚠️ [ADMIN CONFIRMATION]\nAre you sure you want to permanently delete "${game.title}"?`)) {
+      await this.cloudOp({ op: "deleteGame", teamKey, id: gameId }, `🗑️ Game "${game.title}" permanently deleted.`);
     }
   }
 
@@ -2057,6 +1981,10 @@ class CleanEsportsHub {
     const type        = document.getElementById("request-type-select").value;
     const submittedBy = document.getElementById("req-name-input").value.trim() || "Community Fan";
 
+    if (type.startsWith("delete_") && !this.isAdmin) {
+      alert("🔒 Only Admin has access to delete items.");
+      return;
+    }
     let reqData = {};
     if (type === "player") {
       const ign  = document.getElementById("req-ign").value.trim();
