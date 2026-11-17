@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>India EWC Hub | Developed by Pritesh Gehlot</title>
   <meta name="description" content="Official tracker for India's EWC Club Partners (GodLike Esports in Golden Yellow & S8UL Esports in Sky Blue) developed by Pritesh Gehlot.">
-  <link rel="stylesheet" href="css/style.css?v=15">
-  <link rel="stylesheet" href="css/responsive.css?v=15">
+  <link rel="stylesheet" href="css/style.css?v=16">
+  <link rel="stylesheet" href="css/responsive.css?v=16">
 </head>
 <body>
 
@@ -475,8 +475,13 @@
       <!-- ── TAB 1: DAILY UPDATES (UPLOAD + FEED) ─────────────────────── -->
       <div id="daily-updates-tab-view" class="daily-tab-panel active">
 
-      <!-- ── TOP SECTION: UPLOAD / SUBMIT POST ───────────────────────── -->
-      <div class="daily-upload-box">
+      <!-- ── TOP SECTION: COLLAPSIBLE UPLOAD / SUBMIT POST ────────────── -->
+      <div class="daily-upload-toggle-bar">
+        <button type="button" class="btn-toggle-daily-upload" id="btn-toggle-daily-upload" onclick="window.cleanHub && window.cleanHub.toggleDailyUploadBox()">
+          📸 + Upload / Submit New Post
+        </button>
+      </div>
+      <div class="daily-upload-box" id="daily-upload-box" style="display:none;">
         <div class="daily-upload-header">
           <div class="daily-upload-icon-circle">📸</div>
           <div>
@@ -974,6 +979,14 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=7"></script>
+  <script src="js/app.js?v=8"></script>
+
+  <!-- Full-Screen Image Lightbox for Daily Update Posts -->
+  <div class="modal-overlay" id="image-lightbox-modal" onclick="if(event.target===this) this.classList.remove('active')">
+    <div class="lightbox-inner">
+      <button type="button" class="lightbox-close-btn" onclick="document.getElementById('image-lightbox-modal').classList.remove('active')">✕</button>
+      <img id="lightbox-img" src="" alt="Full View" class="lightbox-img" />
+    </div>
+  </div>
 </body>
 </html>

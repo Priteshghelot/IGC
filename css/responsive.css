@@ -1123,6 +1123,15 @@ html, body {
     padding: 1rem;
   }
 
+  .daily-posts-feed-container {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+  }
+
+  .daily-post-main-img {
+    max-height: 520px;
+  }
+
   .daily-post-text {
     font-size: 0.95rem;
   }

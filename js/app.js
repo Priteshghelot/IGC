@@ -250,6 +250,23 @@ class CleanEsportsHub {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  toggleDailyUploadBox() {
+    const box = document.getElementById("daily-upload-box");
+    const btn = document.getElementById("btn-toggle-daily-upload");
+    if (!box) return;
+    const isHidden = box.style.display === "none" || !box.style.display;
+    box.style.display = isHidden ? "block" : "none";
+    if (btn) btn.textContent = isHidden ? "✕ Close Upload Form" : "📸 + Upload / Submit New Post";
+  }
+
+  openImageLightbox(src) {
+    const modal = document.getElementById("image-lightbox-modal");
+    const img   = document.getElementById("lightbox-img");
+    if (!modal || !img || !src) return;
+    img.src = src;
+    modal.classList.add("active");
+  }
+
   switchDailyTab(tabName = "updates") {
     const panels = {
       updates:     { view: "daily-updates-tab-view",     btn: "btn-daily-tab-updates" },
@@ -784,8 +801,9 @@ class CleanEsportsHub {
     container.innerHTML = approved.map(post => {
       const hasImage = post.imageUrl && post.imageUrl.length > 5;
       const imgHtml = hasImage ? `
-        <div class="daily-post-image-box">
-          <img src="${this.escapeHtml(post.imageUrl)}" alt="Daily Update Image" class="daily-post-main-img" onerror="this.parentElement.style.display='none'" />
+        <div class="daily-post-image-box" onclick="window.cleanHub && window.cleanHub.openImageLightbox('${this.escapeHtml(post.imageUrl)}')" title="Click to view full image">
+          <img src="${this.escapeHtml(post.imageUrl)}" alt="Daily Update Image" class="daily-post-main-img" loading="lazy" onerror="this.parentElement.style.display='none'" />
+          <span class="daily-img-zoom-hint">🔍 View Full</span>
         </div>` : "";
 
       return `
