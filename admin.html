@@ -380,7 +380,7 @@
             <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:7px 10px; background:rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.08); border-radius:8px; font-size:0.82rem;">
               <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                 <strong style="color:#fff;">#${g.no || i + 1} ${this.escape(g.title)}</strong>
-                <span style="color:var(--text-sub); margin-left:6px;">${this.escape(g.roster || "-")}</span>
+                <span style="color:var(--text-sub); margin-left:6px;">${this.escape(g.roster || "-")}${g.coach ? ` · Coach: ${this.escape(g.coach)}` : ""}</span>
               </div>
               <button onclick="window.adminPortal.directDeleteGame('${teamKey}','${g.id}')" style="background:#dc2626; border:none; color:#fff; padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:800; cursor:pointer; flex-shrink:0;" title="Permanently delete this game row">🗑️ Delete</button>
             </div>
@@ -514,6 +514,7 @@
               <div class="approval-detail"><strong>Proposed Title:</strong> ${this.escape(req.data.title)}</div>
               <div class="approval-detail"><strong>Proposed Category:</strong> ${this.escape(req.data.genre || "-")}</div>
               <div class="approval-detail"><strong>Proposed Roster:</strong> ${this.escape(req.data.roster || "-")}</div>
+              <div class="approval-detail"><strong>Proposed Coach / Mentor:</strong> ${this.escape(req.data.coach || "-")}</div>
               <div class="approval-detail"><strong>Proposed Status:</strong> ${this.escape(req.data.status || "-")}</div>
               <div class="approval-detail"><strong>Submitted By (Edited By):</strong> <span style="color:var(--godl-gold); font-weight:700;">👤 ${this.escape(req.data.updatedBy || req.submittedBy || "-")}</span></div>
             `;
@@ -532,6 +533,7 @@
               <div class="approval-detail"><strong>Title:</strong> ${this.escape(req.data.title)}</div>
               <div class="approval-detail"><strong>Genre:</strong> ${this.escape(req.data.genre || "-")}</div>
               <div class="approval-detail"><strong>Roster:</strong> ${this.escape(req.data.roster || "-")}</div>
+              <div class="approval-detail"><strong>Coach / Mentor:</strong> ${this.escape(req.data.coach || "-")}</div>
             `;
           }
 

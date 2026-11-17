@@ -1298,6 +1298,7 @@ class CleanEsportsHub {
       if (!q) return true;
       return (g.title || "").toLowerCase().includes(q)
           || (g.roster || "").toLowerCase().includes(q)
+          || (g.coach || "").toLowerCase().includes(q)
           || cat.toLowerCase().includes(q)
           || (g.status || "").toLowerCase().includes(q);
     });
@@ -1306,6 +1307,9 @@ class CleanEsportsHub {
 
     games.forEach((g, index) => {
       const updaterName = g.updatedBy || "Pritesh Gehlot";
+      const coachHtml = g.coach
+        ? `<span class="coach-badge-highlight" style="--team-accent:${themeColor};">${this.escapeHtml(g.coach)}</span>`
+        : `<span class="coach-empty-text">—</span>`;
       html += `
         <tr class="table-row-highlight ${g.highlight ? 'row-spotlight' : ''}">
           <td class="col-num" style="color:${themeColor};" data-label="#">${g.no || index + 1}</td>
@@ -1315,6 +1319,9 @@ class CleanEsportsHub {
           <td class="col-category" data-label="Category"><span class="cat-badge">${this.escapeHtml(g.genre || g.category || "")}</span></td>
           <td class="col-roster" data-label="Official Roster / Athletes">
             ${this.formatRosterHtml(g.roster, themeColor)}
+          </td>
+          <td class="col-coach" data-label="Coach / Mentor">
+            ${coachHtml}
           </td>
           <td class="col-status" data-label="Status">
             <span class="status-badge-highlight" style="color:${themeColor}; border-color:${themeColor};">${this.escapeHtml(g.status)}</span>
@@ -1339,7 +1346,7 @@ class CleanEsportsHub {
     });
 
     if (games.length === 0) {
-      html = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">${allGames.length === 0 ? "No EWC games listed yet." : "No matching games or players found."}</td></tr>`;
+      html = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">${allGames.length === 0 ? "No EWC games listed yet." : "No matching games or players found."}</td></tr>`;
     }
     tbody.innerHTML = html;
 
@@ -1608,6 +1615,8 @@ class CleanEsportsHub {
     document.getElementById("game-title-input").value  = "";
     document.getElementById("game-genre-input").value  = "";
     document.getElementById("game-roster-input").value = "";
+    const addCoachInput = document.getElementById("game-coach-input");
+    if (addCoachInput) addCoachInput.value = "";
     document.getElementById("game-status-input").value = "EWC 2026 Official Title";
     document.getElementById("game-highlight-check").checked = false;
 
@@ -1640,6 +1649,8 @@ class CleanEsportsHub {
     document.getElementById("game-title-input").value  = game.title || "";
     document.getElementById("game-genre-input").value  = game.genre || game.category || "";
     document.getElementById("game-roster-input").value = game.roster || "";
+    const editCoachInput = document.getElementById("game-coach-input");
+    if (editCoachInput) editCoachInput.value = game.coach || "";
     document.getElementById("game-status-input").value = game.status || "";
     document.getElementById("game-highlight-check").checked = !!game.highlight;
 
@@ -1658,6 +1669,8 @@ class CleanEsportsHub {
     const title     = document.getElementById("game-title-input").value.trim();
     const genre     = document.getElementById("game-genre-input").value.trim();
     const roster    = document.getElementById("game-roster-input").value.trim();
+    const coachEl   = document.getElementById("game-coach-input");
+    const coach     = coachEl ? coachEl.value.trim() : "";
     const status    = document.getElementById("game-status-input").value.trim() || "EWC 2026 Official Title";
     const highlight = document.getElementById("game-highlight-check").checked;
 
@@ -1673,7 +1686,7 @@ class CleanEsportsHub {
 
     if (this.isAdmin) {
       // Applied atomically on the server (no full-database upload)
-      const game = { no, title, genre, roster, status, highlight: !!highlight, updatedBy, updatedAt };
+      const game = { no, title, genre, roster, coach, status, highlight: !!highlight, updatedBy, updatedAt };
       this.closeModal("game-modal");
       if (isNew) {
         this.cloudOp({ op: "addGame", teamKey, game }, `✅ Game "${title}" added to ${teamKey === "godlike" ? "GodLike" : "S8UL"}!`);
@@ -1695,7 +1708,7 @@ class CleanEsportsHub {
       submittedAt: new Date().toLocaleString(),
       status: "pending",
       originalData: origGame ? { ...origGame } : null,
-      data: { no, title, genre, roster, status, highlight, updatedBy, updatedAt }
+      data: { no, title, genre, roster, coach, status, highlight, updatedBy, updatedAt }
     };
 
     // 1. Add to pending queue immediately in local storage
@@ -1788,7 +1801,7 @@ class CleanEsportsHub {
     document.getElementById("req-player-fields").style.display = "block";
     document.getElementById("req-game-fields").style.display   = "none";
     document.getElementById("req-delete-fields").style.display  = "none";
-    ["req-ign","req-realname","req-role","req-game","req-desc","req-game-title","req-game-genre","req-game-roster","req-delete-target","req-delete-reason"].forEach(id => {
+    ["req-ign","req-realname","req-role","req-game","req-desc","req-game-title","req-game-genre","req-game-roster","req-game-coach","req-delete-target","req-delete-reason"].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = "";
     });
@@ -1822,8 +1835,10 @@ class CleanEsportsHub {
       const title  = document.getElementById("req-game-title").value.trim();
       const genre  = document.getElementById("req-game-genre").value.trim();
       const roster = document.getElementById("req-game-roster").value.trim();
+      const coachEl = document.getElementById("req-game-coach");
+      const coach  = coachEl ? coachEl.value.trim() : "";
       if (!title) { alert("Please enter the game title."); return; }
-      reqData = { title, genre, roster };
+      reqData = { title, genre, roster, coach };
     } else {
       const target = document.getElementById("req-delete-target").value.trim();
       const reason = document.getElementById("req-delete-reason").value.trim();

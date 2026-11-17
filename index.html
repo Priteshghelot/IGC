@@ -285,6 +285,7 @@
                 <th>Game Title</th>
                 <th>Category</th>
                 <th>Official Roster / Athletes</th>
+                <th>Coach / Mentor</th>
                 <th>Status</th>
                 <th>Edited By</th>
               </tr>
@@ -390,6 +391,7 @@
                 <th>Game Title</th>
                 <th>Category</th>
                 <th>Official Roster / Athletes</th>
+                <th>Coach / Mentor</th>
                 <th>Status</th>
                 <th>Edited By</th>
               </tr>
@@ -724,6 +726,11 @@
           </div>
 
           <div class="form-group form-col-full">
+            <label>Coach / Mentor</label>
+            <input type="text" id="game-coach-input" class="form-input" placeholder="e.g. Ghatak, Mazoku, N/A">
+          </div>
+
+          <div class="form-group form-col-full">
             <label>👤 Edited By / Your Name *</label>
             <input type="text" id="game-updater-input" class="form-input" placeholder="e.g. Pritesh Gehlot" required>
             <small style="color:var(--text-muted); font-size:0.75rem; margin-top:4px; display:block;">
@@ -835,6 +842,10 @@
               <div class="form-group">
                 <label>Roster / Athlete(s)</label>
                 <input type="text" id="req-game-roster" class="form-input" placeholder="Athletes competing in this game">
+              </div>
+              <div class="form-group form-col-full">
+                <label>Coach / Mentor</label>
+                <input type="text" id="req-game-coach" class="form-input" placeholder="e.g. Ghatak, Mazoku, N/A">
               </div>
             </div>
           </div>
@@ -1042,7 +1053,7 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=11"></script>
+  <script src="js/app.js?v=12"></script>
 
   <!-- Full-Screen Image Lightbox for Daily Update Posts -->
   <div class="modal-overlay" id="image-lightbox-modal" onclick="if(event.target===this) this.classList.remove('active')">

@@ -280,6 +280,7 @@
       "num title status"
       "cat cat cat"
       "roster roster roster"
+      "coach coach coach"
       "footer footer footer";
     align-items: center;
     gap: 8px 8px;
@@ -358,6 +359,25 @@
     grid-area: roster;
     width: 100%;
     padding: 2px 0;
+  }
+
+  .clean-table td.col-coach {
+    grid-area: coach;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 0;
+  }
+
+  .clean-table td.col-coach[data-label]::before {
+    display: inline-block;
+    content: attr(data-label) ":";
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
   }
 
   .clean-table td.col-roster .roster-athletes-highlight,

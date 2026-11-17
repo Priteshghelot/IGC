@@ -1001,6 +1001,29 @@ button {
   min-width: 240px;
 }
 
+.col-coach {
+  min-width: 140px;
+}
+
+.coach-badge-highlight {
+  display: inline-block;
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #f8fafc;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  border: 1px solid color-mix(in srgb, var(--team-accent, #ffb800) 45%, rgba(255, 255, 255, 0.16));
+  letter-spacing: 0.015em;
+  line-height: 1.35;
+}
+
+.coach-empty-text {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
 .roster-athletes-highlight {
   display: inline-block;
   font-size: 1.22rem;

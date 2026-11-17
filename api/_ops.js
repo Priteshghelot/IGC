@@ -31,6 +31,7 @@ function cleanGame(g, fallback = {}) {
     title: String(g.title || fallback.title || '').trim(),
     genre: String(g.genre ?? g.category ?? fallback.genre ?? ''),
     roster: String(g.roster ?? fallback.roster ?? ''),
+    coach: String(g.coach ?? fallback.coach ?? '').trim(),
     status: String(g.status || fallback.status || 'EWC 2026 Official Title'),
     highlight: g.highlight !== undefined ? !!g.highlight : !!fallback.highlight,
     updatedBy: String(g.updatedBy || fallback.updatedBy || 'Admin'),
