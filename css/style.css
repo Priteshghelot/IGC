@@ -6,10 +6,10 @@
    ============================================================================= */
 
 :root {
-  --bg-color: #06080e;
-  --card-bg: rgba(20, 24, 34, 0.82);
-  --card-hover: rgba(27, 32, 46, 0.92);
-  --border-color: rgba(38, 44, 59, 0.85);
+  --bg-color: #090e20;
+  --card-bg: rgba(16, 23, 42, 0.84);
+  --card-hover: rgba(23, 33, 58, 0.94);
+  --border-color: rgba(56, 78, 118, 0.55);
   
   /* Indian Tiranga Theme Colors */
   --tiranga-saffron: #ff9933;
@@ -44,6 +44,12 @@
 
 body {
   background-color: var(--bg-color);
+  background-image:
+    radial-gradient(120% 80% at 15% 10%, rgba(0, 168, 255, 0.14) 0%, transparent 55%),
+    radial-gradient(110% 75% at 85% 15%, rgba(99, 102, 241, 0.16) 0%, transparent 55%),
+    radial-gradient(100% 70% at 50% 95%, rgba(16, 185, 129, 0.1) 0%, transparent 60%),
+    linear-gradient(160deg, #070b18 0%, #0d1630 50%, #081122 100%);
+  background-attachment: fixed;
   color: var(--text-main);
   font-family: var(--font-stack);
   line-height: 1.5;
