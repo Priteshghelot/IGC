@@ -111,6 +111,7 @@ class CleanEsportsHub {
           this.pending = json.requests;
           this.savePending();
           this.updateAdminUI();
+          this.renderDailyMarquee();
         }
       }
     } catch(e) {}
@@ -296,13 +297,8 @@ class CleanEsportsHub {
     if (tabName === "thirdparty")  this.renderThirdPartyTournaments();
   }
 
-  renderUpcomingTournaments() {
-    const container = document.getElementById("upcoming-tournaments-list");
-    if (!container) return;
-
-    // Curated major tournament schedule for Indian Teams & Gaming Community.
-    // Automatically filters out completed events and displays the next Top 10 in chronological order.
-    const schedule = [
+  getDefaultMajorTournaments() {
+    return [
       {
         title: "BGMI India Pro Series (BMPS) Winter Cup",
         game: "BGMI",
@@ -430,12 +426,62 @@ class CleanEsportsHub {
         location: "Riyadh, Saudi Arabia"
       }
     ];
+  }
+
+  renderUpcomingTournaments() {
+    const container = document.getElementById("upcoming-tournaments-list");
+    if (!container) return;
 
     const customList = Array.isArray(this.data?.upcomingTournaments) && this.data.upcomingTournaments.length > 0
       ? this.data.upcomingTournaments
-      : schedule;
+      : this.getDefaultMajorTournaments();
 
     this.renderTournamentCards(container, customList, 10, "No Upcoming Major Tournaments Scheduled");
+  }
+
+  renderDailyMarquee() {
+    const track = document.getElementById("daily-marquee-content");
+    if (!track) return;
+
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const parseLocal = (iso) => {
+      const [y, m, d] = String(iso || "").split("-").map(Number);
+      return new Date(y, (m || 1) - 1, d || 1).getTime();
+    };
+    const fmtDate = (iso) => {
+      if (!iso) return "";
+      return new Date(parseLocal(iso)).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+    };
+
+    const majorList = Array.isArray(this.data?.upcomingTournaments) && this.data.upcomingTournaments.length > 0
+      ? this.data.upcomingTournaments
+      : this.getDefaultMajorTournaments();
+    const tpList = this.getActiveThirdPartyList();
+
+    const combined = [...majorList.map(t => ({ ...t, _kind: "🏆" })), ...tpList.map(t => ({ ...t, _kind: "🎮" }))]
+      .filter(t => t.startDate && parseLocal(t.endDate || t.startDate) >= todayStart)
+      .sort((a, b) => parseLocal(a.startDate) - parseLocal(b.startDate))
+      .slice(0, 5);
+
+    const headlines = combined.map(t => {
+      const sMs = parseLocal(t.startDate);
+      const eMs = parseLocal(t.endDate || t.startDate);
+      const badge = (todayStart >= sMs && todayStart <= eMs) ? "LIVE NOW" : `Starts ${fmtDate(t.startDate)}`;
+      return `<span class="marquee-headline">${t._kind} <strong>${this.escapeHtml(t.title)}</strong> (${this.escapeHtml(t.game)}) • ${badge}${t.prize ? ` · ${this.escapeHtml(t.prize)}` : ""}</span>`;
+    });
+
+    const latestPosts = (this.pending || [])
+      .filter(r => r.type === "daily_post" && r.status === "approved" && r.caption)
+      .slice(0, 2);
+    latestPosts.forEach(p => {
+      const shortCap = String(p.caption).replace(/\s+/g, " ").trim().slice(0, 90);
+      headlines.unshift(`<span class="marquee-headline">📰 <strong>Latest Update:</strong> ${this.escapeHtml(shortCap)}${p.caption.length > 90 ? "…" : ""}</span>`);
+    });
+
+    if (headlines.length === 0) return;
+    const oneLoop = headlines.map(h => `${h}<span class="marquee-divider">✦</span>`).join("");
+    track.innerHTML = oneLoop + oneLoop; // Seamless infinite scroll loop
   }
 
   getDefaultThirdPartyTournaments() {
@@ -1103,6 +1149,7 @@ class CleanEsportsHub {
   // RENDERING ALL CONTENT
   // =========================================================================
   renderAll() {
+    this.renderDailyMarquee();
     this.renderEwc27Games();
     this.renderEWC("godlike", "godl-ewc-tbody", "var(--godl-gold)");
     this.renderEWC("s8ul",    "s8ul-ewc-tbody",  "var(--s8ul-blue)");
