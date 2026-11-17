@@ -480,30 +480,42 @@
   .creator-brand-pill {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 6px 12px 6px 8px;
-    max-width: 100%;
-    margin-bottom: 1rem;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px 10px 10px;
+    width: 100%;
+    max-width: 400px;
+    border-width: 2px;
+    margin-bottom: 1.15rem;
   }
 
   .creator-avatar-wrap {
-    width: 36px;
-    height: 36px;
+    width: 54px;
+    height: 54px;
+    border-width: 2.5px;
+  }
+
+  .creator-brand-text {
+    flex: 1;
+    min-width: 0;
   }
 
   .creator-brand-text span {
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    font-weight: 800;
   }
 
   .creator-brand-text strong {
-    font-size: 0.88rem;
+    font-size: 1.16rem;
+    font-weight: 900;
   }
 
   .yt-badge {
-    font-size: 0.72rem;
-    padding: 4px 9px;
+    font-size: 0.88rem;
+    font-weight: 900;
+    padding: 7px 14px;
+    border-radius: 8px;
     flex-shrink: 0;
     white-space: nowrap;
   }
@@ -786,8 +798,18 @@
     font-size: 1.3rem;
   }
 
+  .creator-avatar-wrap {
+    width: 48px;
+    height: 48px;
+  }
+
   .creator-brand-text strong {
-    font-size: 0.75rem;
+    font-size: 1.04rem;
+  }
+
+  .yt-badge {
+    font-size: 0.82rem;
+    padding: 6px 11px;
   }
 }
 
