@@ -422,7 +422,7 @@ class CleanEsportsHub {
         teams: "GodLike Esports, S8UL Esports & Global Club Partners",
         location: "Riyadh, Saudi Arabia"
       }
-    ];
+    ].map((t, i) => ({ id: "maj-" + (i + 1), ...t }));
   }
 
   extractPostGameTags(caption) {
@@ -554,8 +554,23 @@ class CleanEsportsHub {
       container,
       filtered,
       10,
-      isFiltered ? "No Matching Major Tournaments Found" : "No Upcoming Major Tournaments Scheduled"
+      isFiltered ? "No Matching Major Tournaments Found" : "No Upcoming Major Tournaments Scheduled",
+      "major"
     );
+  }
+
+  async deleteMajorTournament(id, title) {
+    if (!this.checkAdminAuth()) return;
+    if (!confirm(`⚠️ Permanently delete major tournament "${title}"?`)) return;
+    const seedList = this.getDefaultMajorTournaments();
+    const ok = await this.cloudOp(
+      { op: "deleteMajorTournament", id, title, seedList },
+      `🗑️ Major tournament "${title}" deleted.`
+    );
+    if (ok) {
+      this.renderUpcomingTournaments();
+      this.renderDailyMarquee();
+    }
   }
 
   renderDailyMarquee() {
@@ -855,7 +870,10 @@ class CleanEsportsHub {
     if (this.isAdmin) {
       if (confirm(`⚠️ Permanently delete tournament "${item.title}"?`)) {
         const ok = await this.cloudOp({ op: "deleteThirdPartyTournament", id, seedList }, `🗑️ Tournament "${item.title}" deleted.`);
-        if (ok) this.renderThirdPartyTournaments();
+        if (ok) {
+          this.renderThirdPartyTournaments();
+          this.renderDailyMarquee();
+        }
       }
       return;
     }
@@ -955,14 +973,20 @@ class CleanEsportsHub {
             <div class="tournament-meta-item"><span>📍 Region</span><strong>${this.escapeHtml(t.location || "India")}</strong></div>
             <div class="tournament-meta-item"><span>🛡️ Featured</span><strong>${this.escapeHtml(t.teams || "Indian Pro Clubs")}</strong></div>
           </div>
-          ${editable && t.id ? `
+          ${(editable === true || editable === "thirdparty") && t.id ? `
           <div class="tournament-card-actions">
             <span class="tournament-updated-by">${t.updatedBy ? `👤 Added/Edited by ${this.escapeHtml(t.updatedBy)}` : "📅 Auto-sorted by Start Date"}</span>
             <div class="row-action-btns">
               <button type="button" class="btn-action-edit" onclick="window.cleanHub.openEditTournamentModal('${this.escapeHtml(t.id)}')">✏️ Edit</button>
               <button type="button" class="btn-action-delete" onclick="window.cleanHub.deleteThirdPartyTournament('${this.escapeHtml(t.id)}')" title="Delete Tournament">🗑️</button>
             </div>
-          </div>` : ""}
+          </div>` : (editable === "major" && this.isAdmin ? `
+          <div class="tournament-card-actions">
+            <span class="tournament-updated-by">🛡️ Admin Control</span>
+            <div class="row-action-btns">
+              <button type="button" class="btn-action-delete" onclick="window.cleanHub.deleteMajorTournament('${this.escapeHtml(t.id || "")}', '${this.escapeHtml(t.title)}')" title="Delete Major Tournament (Admin)">🗑️ Delete</button>
+            </div>
+          </div>` : "")}
         </article>
       `;
     }).join("");
@@ -1231,11 +1255,41 @@ class CleanEsportsHub {
 
           <div class="daily-post-card-footer">
             <span class="daily-post-timestamp">🕒 ${this.escapeHtml(post.submittedAt || "Recent")}</span>
-            <span class="daily-post-tag">🇮🇳 India EWC Desk</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="daily-post-tag">🇮🇳 India EWC Desk</span>
+              ${this.isAdmin ? `<button type="button" class="btn-action-delete" onclick="window.cleanHub.deleteDailyPost('${this.escapeHtml(post.id)}')" title="Delete Post (Admin)">🗑️ Delete</button>` : ""}
+            </div>
           </div>
         </article>
       `;
     }).join("");
+  }
+
+  async deleteDailyPost(id) {
+    if (!this.checkAdminAuth()) return;
+    if (!confirm("⚠️ Permanently delete this Daily Update post?")) return;
+    try {
+      const res = await fetch('/api/requests', {
+        method: 'POST',
+        cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', id })
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) {
+        alert("⚠️ " + (json.error || "Failed to delete post."));
+        return;
+      }
+      this.pending = (this.pending || []).filter(r => r.id !== id);
+      this.cachedApprovedPosts = (this.cachedApprovedPosts || []).filter(r => r.id !== id);
+      this.savePending();
+      this.updateAdminUI();
+      this.renderApprovedPostsList();
+      this.renderDailyMarquee();
+      this.showToast("🗑️ Daily Update post deleted.");
+    } catch (e) {
+      alert("⚠️ Network error. Could not delete post.");
+    }
   }
 
   // =========================================================================

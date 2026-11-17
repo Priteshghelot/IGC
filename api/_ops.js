@@ -184,6 +184,19 @@ function applyOp(data, op) {
       if (data.thirdPartyTournaments.length === before) throw new Error('Tournament not found to delete.');
       return 'Tournament deleted';
     }
+    case 'deleteMajorTournament': {
+      if (!Array.isArray(data.upcomingTournaments)) {
+        data.upcomingTournaments = Array.isArray(op.seedList) ? op.seedList : [];
+      }
+      const before = data.upcomingTournaments.length;
+      data.upcomingTournaments = data.upcomingTournaments.filter(x => {
+        if (op.id && x.id === op.id) return false;
+        if (op.title && norm(x.title) === norm(op.title)) return false;
+        return true;
+      });
+      if (data.upcomingTournaments.length === before) throw new Error('Major tournament not found to delete.');
+      return 'Major tournament deleted';
+    }
     default:
       throw new Error('Unknown operation');
   }
