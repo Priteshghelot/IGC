@@ -434,73 +434,33 @@ button {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  position: relative;
-  z-index: 2;
   filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
-  transition: transform 0.25s ease, filter 0.25s ease;
+  transition: transform 0.25s ease;
 }
 
-/* Dimmed S8UL Jersey behind highlighted S8UL Logo */
-.portal-jersey-bg {
-  position: absolute;
-  inset: 0;
+/* S8UL Side-by-Side: Logo (Left) + Jersey (Right) in same area */
+.portal-logo-wrap-s8ul {
   width: 100%;
+  max-width: 420px;
+  height: 200px;
+  gap: 16px;
+}
+
+.portal-logo-wrap-s8ul .portal-logo-img,
+.portal-logo-wrap-s8ul .portal-jersey-img {
+  flex: 1 1 0;
+  min-width: 0;
   height: 100%;
-  object-fit: contain;
-  z-index: 1;
-  opacity: 0.3;
-  filter: brightness(0.62) contrast(1.08) saturate(0.95);
-  transform: scale(1.24);
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.95) 42%, transparent 76%);
-  mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.95) 42%, transparent 76%);
-  pointer-events: none;
-  transition: opacity 0.28s ease, transform 0.28s ease;
-}
-
-.portal-card.card-s8ul:hover .portal-jersey-bg {
-  opacity: 0.4;
-  transform: scale(1.28);
-}
-
-.portal-card.card-s8ul .portal-logo-img {
-  filter: drop-shadow(0 0 22px rgba(0, 168, 255, 0.85)) drop-shadow(0 8px 24px rgba(0, 0, 0, 0.95));
-}
-
-.portal-card:hover .portal-logo-img {
-  transform: scale(1.05);
-}
-
-/* S8UL Detail Header Card with Dimmed Jersey Watermark */
-.detail-header-card-s8ul {
-  position: relative;
-  overflow: hidden;
-}
-
-.detail-header-card-s8ul .detail-brand,
-.detail-header-card-s8ul .detail-social-links {
-  position: relative;
-  z-index: 2;
-}
-
-.detail-header-card-s8ul .detail-logo-small {
-  background: rgba(6, 14, 28, 0.75);
-  box-shadow: 0 0 22px rgba(0, 168, 255, 0.45);
-}
-
-.detail-jersey-bg {
-  position: absolute;
-  right: 8%;
-  top: 50%;
-  transform: translateY(-50%) scale(1.05);
-  height: 155%;
   width: auto;
+  max-width: 195px;
   object-fit: contain;
-  opacity: 0.16;
-  filter: brightness(0.7) contrast(1.05);
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.95) 35%, transparent 75%);
-  mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.95) 35%, transparent 75%);
-  pointer-events: none;
-  z-index: 1;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.75));
+  transition: transform 0.25s ease;
+}
+
+.portal-card:hover .portal-logo-img,
+.portal-card:hover .portal-jersey-img {
+  transform: scale(1.05);
 }
 
 .portal-team-name {

@@ -110,6 +110,13 @@
     margin-bottom: 1.25rem;
   }
 
+  .portal-logo-wrap.portal-logo-wrap-s8ul {
+    width: 100%;
+    max-width: 320px;
+    height: 140px;
+    gap: 12px;
+  }
+
   /* ── Detail / Team Screen Nav ── */
   .detail-top-nav {
     display: flex !important;
@@ -536,6 +543,13 @@
     width: 112px;
     height: 112px;
     margin-bottom: 1rem;
+  }
+
+  .portal-logo-wrap.portal-logo-wrap-s8ul {
+    width: 100%;
+    max-width: 260px;
+    height: 112px;
+    gap: 10px;
   }
 
   .portal-team-name {
