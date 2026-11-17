@@ -84,46 +84,6 @@ class CleanEsportsHub {
     } catch(e) {}
   }
 
-  reconcileApprovedRequests() {
-    if (!this.pending || !Array.isArray(this.pending)) return;
-    let modified = false;
-    this.pending.forEach(req => {
-      if (req.status === "approved" && (req.type === "edit_game" || req.type === "game") && req.data?.title && req.teamKey) {
-        if (!this.data[req.teamKey]) this.data[req.teamKey] = {};
-        if (!Array.isArray(this.data[req.teamKey].ewcGames)) this.data[req.teamKey].ewcGames = [];
-        const games = this.data[req.teamKey].ewcGames;
-        const exists = games.some(g => (req.targetId && g.id === req.targetId) || g.title.toLowerCase().trim() === req.data.title.toLowerCase().trim());
-        if (!exists) {
-          const nextNo = games.length > 0 ? Math.max(...games.map(g => g.no || 0)) + 1 : 1;
-          games.push({
-            id: req.targetId || "game-" + Date.now(),
-            no: req.data.no || nextNo,
-            title: req.data.title,
-            genre: req.data.genre || req.data.category || "",
-            roster: req.data.roster || "",
-            status: req.data.status || "EWC 2026 Official Title",
-            highlight: !!req.data.highlight,
-            updatedBy: req.data.updatedBy || req.submittedBy || "Admin",
-            updatedAt: req.data.updatedAt || new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
-          });
-          games.sort((a, b) => (a.no || 0) - (b.no || 0));
-          modified = true;
-        }
-      }
-    });
-    if (modified) {
-      this.saveData();
-      this.renderAll();
-      try {
-        fetch('/api/data', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: this.data })
-        }).catch(() => {});
-      } catch(e) {}
-    }
-  }
-
   // ─── Deep Clone ───────────────────────────────────────────────────────────
   cloneData(obj) { return JSON.parse(JSON.stringify(obj)); }
 
