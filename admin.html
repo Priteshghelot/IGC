@@ -308,11 +308,6 @@
         this.dashScreen.style.display = "block";
         this.loadData();
         this.refreshRequests();
-
-        if (this.refreshInterval) clearInterval(this.refreshInterval);
-        this.refreshInterval = setInterval(() => {
-          this.refreshRequests();
-        }, 4000);
       }
 
       loadData() {
