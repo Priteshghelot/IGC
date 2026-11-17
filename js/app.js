@@ -268,8 +268,8 @@ class CleanEsportsHub {
     const container = document.getElementById("upcoming-tournaments-list");
     if (!container) return;
 
-    // Curated schedule calendar for the Indian Gaming Community.
-    // Automatically filters out completed events and displays the next Top 5 in chronological order.
+    // Curated major tournament schedule for Indian Teams & Gaming Community.
+    // Automatically filters out completed events and displays the next Top 10 in chronological order.
     const schedule = [
       {
         title: "BGMI India Pro Series (BMPS) Winter Cup",
@@ -279,6 +279,15 @@ class CleanEsportsHub {
         prize: "₹1,00,00,000+",
         teams: "Top 32 Invited & Open Indian Squads (GodLike, Team SouL, Revenant)",
         location: "India (LAN Finals)"
+      },
+      {
+        title: "PUBG Mobile Global Championship (PMGC) 2026",
+        game: "PUBG Mobile",
+        startDate: "2026-11-24",
+        endDate: "2026-12-14",
+        prize: "$3,000,000 USD",
+        teams: "International Champions & South Asia / India Contenders",
+        location: "Global LAN"
       },
       {
         title: "Valorant Challengers South Asia: Split 1",
@@ -317,12 +326,21 @@ class CleanEsportsHub {
         location: "India / APAC"
       },
       {
+        title: "MLBB South Asia & India Championship",
+        game: "MLBB",
+        startDate: "2026-12-26",
+        endDate: "2027-01-12",
+        prize: "$50,000 USD",
+        teams: "GodLike MLBB Women, S8UL MLBB & Indian Challengers",
+        location: "India / SEA Qualifier"
+      },
+      {
         title: "BGMI India Series (BGIS) 2027",
         game: "BGMI",
         startDate: "2027-01-10",
         endDate: "2027-02-15",
         prize: "₹2,00,00,000+",
-        teams: "All Indian Pro & Underdog Squads",
+        teams: "All Indian Pro & Underdog Squads (GodLike, Team SouL, S8UL)",
         location: "Pan-India + LAN Grand Finals"
       },
       {
@@ -335,6 +353,15 @@ class CleanEsportsHub {
         location: "Seoul, South Korea"
       },
       {
+        title: "Tekken World Tour: India & South Asia Major",
+        game: "Tekken 8",
+        startDate: "2027-02-05",
+        endDate: "2027-02-16",
+        prize: "TWT Ranking Points + $20,000",
+        teams: "S8UL (Soul, AK, Arhaan), GodLike FGC & Top Indian Players",
+        location: "Bengaluru / South Asia"
+      },
+      {
         title: "EWC 2027 India & South Asia Qualifiers",
         game: "Multi-Title (Tekken 8, Chess, FC, MLBB)",
         startDate: "2027-02-20",
@@ -342,6 +369,33 @@ class CleanEsportsHub {
         prize: "Riyadh EWC27 Slots",
         teams: "GodLike Esports, S8UL Esports & Indian Athletes",
         location: "India / Riyadh Road"
+      },
+      {
+        title: "Skyesports Championship 2027 (BGMI & Valorant)",
+        game: "BGMI / Valorant",
+        startDate: "2027-03-10",
+        endDate: "2027-04-02",
+        prize: "₹1,50,00,000",
+        teams: "GodLike, S8UL, Revenant, Orangutan & Invited Clubs",
+        location: "Mumbai / Pune LAN"
+      },
+      {
+        title: "PUBG Mobile World Cup (PMWC) 2027 Qualifiers",
+        game: "PUBG Mobile / BGMI",
+        startDate: "2027-04-15",
+        endDate: "2027-05-10",
+        prize: "EWC27 Riyadh Qualification",
+        teams: "India & South Asia Champion Squads",
+        location: "Regional + Riyadh"
+      },
+      {
+        title: "Esports World Cup (EWC) 2027 — Riyadh",
+        game: "All Official EWC27 Titles",
+        startDate: "2027-07-08",
+        endDate: "2027-08-24",
+        prize: "$60,000,000+ Club & Game Pools",
+        teams: "GodLike Esports, S8UL Esports & Global Club Partners",
+        location: "Riyadh, Saudi Arabia"
       }
     ];
 
@@ -365,17 +419,17 @@ class CleanEsportsHub {
       return `${sStr} – ${eStr}`;
     };
 
-    const top5 = customList
+    const top10 = customList
       .filter(t => parseLocal(t.endDate || t.startDate) >= todayStart)
       .sort((a, b) => parseLocal(a.startDate) - parseLocal(b.startDate))
-      .slice(0, 5);
+      .slice(0, 10);
 
-    if (top5.length === 0) {
+    if (top10.length === 0) {
       container.innerHTML = `<div class="daily-empty-feed-card"><h3>📅 No Upcoming Tournaments Scheduled</h3><p style="color:#94a3b8;">Check back soon for the next Indian Gaming Community schedule.</p></div>`;
       return;
     }
 
-    container.innerHTML = top5.map((t, idx) => {
+    container.innerHTML = top10.map((t, idx) => {
       const sMs = parseLocal(t.startDate);
       const eMs = parseLocal(t.endDate || t.startDate);
       const daysUntil = Math.round((sMs - todayStart) / dayMs);
