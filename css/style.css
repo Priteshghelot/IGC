@@ -3008,6 +3008,17 @@ button {
   font-weight: 800;
 }
 
+#screen-daily-updates .roster-cat-pill.active {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  border-color: #38bdf8;
+  color: #0a0d14;
+  font-weight: 800;
+}
+
+.daily-filter-toolbar {
+  margin-bottom: 1rem;
+}
+
 /* Athlete / Player Chips inside Roster column */
 .athlete-chips-wrap {
   display: flex;

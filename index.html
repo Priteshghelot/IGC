@@ -543,6 +543,8 @@
           <span class="daily-feed-count" id="daily-feed-counter">Showing Updates</span>
         </div>
 
+        <div class="roster-toolbar daily-filter-toolbar" id="daily-updates-toolbar"></div>
+
         <div class="daily-posts-feed-container" id="daily-posts-feed-container">
           <!-- Rendered dynamically via CleanEsportsHub.renderApprovedPosts() -->
         </div>
@@ -559,6 +561,7 @@
           </div>
           <span class="tournaments-auto-pill">🔄 Auto-Schedule Live</span>
         </div>
+        <div class="roster-toolbar daily-filter-toolbar" id="daily-tournaments-toolbar"></div>
         <div id="upcoming-tournaments-list" class="upcoming-tournaments-grid">
           <!-- Rendered dynamically by app.js -->
         </div>
@@ -578,6 +581,7 @@
             </button>
           </div>
         </div>
+        <div class="roster-toolbar daily-filter-toolbar" id="daily-thirdparty-toolbar"></div>
         <div id="thirdparty-tournaments-list" class="upcoming-tournaments-grid">
           <!-- Rendered dynamically by app.js -->
         </div>
@@ -1053,7 +1057,7 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=12"></script>
+  <script src="js/app.js?v=13"></script>
 
   <!-- Full-Screen Image Lightbox for Daily Update Posts -->
   <div class="modal-overlay" id="image-lightbox-modal" onclick="if(event.target===this) this.classList.remove('active')">

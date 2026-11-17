@@ -23,6 +23,12 @@ class CleanEsportsHub {
     this.cardS8ul           = document.getElementById("card-s8ul-select");
     this.dailyUpdates       = (typeof INITIAL_DAILY_UPDATES !== "undefined") ? INITIAL_DAILY_UPDATES : (INITIAL_HUB_DATA.dailyUpdates || []);
     this.currentDailyFilter = "all";
+    this.dailyTabFilters    = {
+      updates:     { q: "", game: "ALL" },
+      tournaments: { q: "", game: "ALL" },
+      thirdparty:  { q: "", game: "ALL" }
+    };
+    this.cachedApprovedPosts = [];
     this.rosterFilter       = { godlike: { q: "", cat: "ALL" }, s8ul: { q: "", cat: "ALL" } };
 
     // Restore active admin session if already authenticated in this tab or from /admin
@@ -428,7 +434,114 @@ class CleanEsportsHub {
     ];
   }
 
-  renderUpcomingTournaments() {
+  extractPostGameTags(caption) {
+    const text = String(caption || "").toLowerCase();
+    const gameRules = [
+      { label: "BGMI", patterns: ["bgmi", "battlegrounds mobile", "bmps", "bgis", "pmwc", "pubg mobile"] },
+      { label: "Valorant", patterns: ["valorant", "vct", "val "] },
+      { label: "League of Legends", patterns: ["league of legends", "lol"] },
+      { label: "Chess", patterns: ["chess", "grandmaster", "fide"] },
+      { label: "Free Fire", patterns: ["free fire", "ffws", "ffwc"] },
+      { label: "COD Mobile", patterns: ["codm", "cod mobile", "call of duty"] },
+      { label: "Apex Legends", patterns: ["apex", "algs"] },
+      { label: "Tekken 8", patterns: ["tekken"] },
+      { label: "Dota 2", patterns: ["dota"] },
+      { label: "MLBB", patterns: ["mlbb", "mobile legends"] },
+      { label: "EWC", patterns: ["ewc", "esports world cup"] }
+    ];
+    return gameRules
+      .filter(r => r.patterns.some(p => text.includes(p)))
+      .map(r => r.label);
+  }
+
+  renderDailyFilterToolbar(toolbarId, tabKey, items, getTagsFn, placeholder, onUpdate, skipToolbar = false) {
+    const toolbar = document.getElementById(toolbarId);
+    if (!toolbar) return;
+    if (skipToolbar) {
+      const clearBtn = toolbar.querySelector(".roster-search-clear");
+      const qVal = this.dailyTabFilters[tabKey]?.q || "";
+      if (clearBtn) clearBtn.style.display = qVal ? "inline-flex" : "none";
+      return;
+    }
+
+    const filter = this.dailyTabFilters[tabKey] || { q: "", game: "ALL" };
+    const tags = Array.from(new Set(items.flatMap(item => getTagsFn(item)).filter(Boolean)));
+    if (filter.game !== "ALL" && !tags.includes(filter.game)) {
+      filter.game = "ALL";
+    }
+
+    toolbar.innerHTML = `
+      <div class="roster-controls-row">
+        <div class="roster-search-wrap">
+          <span class="roster-search-icon">🔍</span>
+          <input type="text" class="roster-search-input" placeholder="${this.escapeHtml(placeholder)}" value="${this.escapeHtml(filter.q)}">
+          <button type="button" class="roster-search-clear" title="Clear search" style="display:${filter.q ? "inline-flex" : "none"};">✕</button>
+        </div>
+        <div class="roster-cat-pills">
+          <button type="button" class="roster-cat-pill ${filter.game === "ALL" ? "active" : ""}" data-game="ALL">All (${items.length})</button>
+          ${tags.map(tag => `<button type="button" class="roster-cat-pill ${filter.game === tag ? "active" : ""}" data-game="${this.escapeHtml(tag)}">${this.escapeHtml(tag)}</button>`).join("")}
+        </div>
+      </div>
+    `;
+
+    const input = toolbar.querySelector(".roster-search-input");
+    if (input) {
+      input.addEventListener("input", (e) => {
+        this.dailyTabFilters[tabKey].q = e.target.value;
+        onUpdate(true);
+      });
+    }
+    const clearBtn = toolbar.querySelector(".roster-search-clear");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        this.dailyTabFilters[tabKey].q = "";
+        onUpdate(false);
+      });
+    }
+    toolbar.querySelectorAll(".roster-cat-pill").forEach(btn => {
+      btn.addEventListener("click", () => {
+        this.dailyTabFilters[tabKey].game = btn.dataset.game;
+        onUpdate(false);
+      });
+    });
+  }
+
+  getFilteredTournaments(list, tabKey, toolbarId, placeholder, onUpdate, skipToolbar = false) {
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const parseLocal = (iso) => {
+      const [y, m, d] = String(iso || "").split("-").map(Number);
+      return new Date(y, (m || 1) - 1, d || 1).getTime();
+    };
+    const activeUpcoming = (list || [])
+      .filter(t => t.startDate && parseLocal(t.endDate || t.startDate) >= todayStart)
+      .sort((a, b) => parseLocal(a.startDate) - parseLocal(b.startDate));
+
+    this.renderDailyFilterToolbar(
+      toolbarId,
+      tabKey,
+      activeUpcoming,
+      t => (t.game ? [t.game.trim()] : []),
+      placeholder,
+      onUpdate,
+      skipToolbar
+    );
+
+    const filter = this.dailyTabFilters[tabKey] || { q: "", game: "ALL" };
+    const q = (filter.q || "").trim().toLowerCase();
+    return activeUpcoming.filter(t => {
+      if (filter.game !== "ALL" && (t.game || "").trim() !== filter.game) return false;
+      if (!q) return true;
+      return (t.title || "").toLowerCase().includes(q)
+          || (t.game || "").toLowerCase().includes(q)
+          || (t.organizer || "").toLowerCase().includes(q)
+          || (t.location || "").toLowerCase().includes(q)
+          || (t.teams || "").toLowerCase().includes(q)
+          || (t.prize || "").toLowerCase().includes(q);
+    });
+  }
+
+  renderUpcomingTournaments(skipToolbar = false) {
     const container = document.getElementById("upcoming-tournaments-list");
     if (!container) return;
 
@@ -436,7 +549,22 @@ class CleanEsportsHub {
       ? this.data.upcomingTournaments
       : this.getDefaultMajorTournaments();
 
-    this.renderTournamentCards(container, customList, 10, "No Upcoming Major Tournaments Scheduled");
+    const filtered = this.getFilteredTournaments(
+      customList,
+      "tournaments",
+      "daily-tournaments-toolbar",
+      "Search game, tournament, or location...",
+      (skip) => this.renderUpcomingTournaments(skip),
+      skipToolbar
+    );
+
+    const isFiltered = (this.dailyTabFilters.tournaments.q || "").trim() !== "" || this.dailyTabFilters.tournaments.game !== "ALL";
+    this.renderTournamentCards(
+      container,
+      filtered,
+      10,
+      isFiltered ? "No Matching Major Tournaments Found" : "No Upcoming Major Tournaments Scheduled"
+    );
   }
 
   renderDailyMarquee() {
@@ -605,10 +733,25 @@ class CleanEsportsHub {
       : this.getDefaultThirdPartyTournaments();
   }
 
-  renderThirdPartyTournaments() {
+  renderThirdPartyTournaments(skipToolbar = false) {
     const container = document.getElementById("thirdparty-tournaments-list");
     if (!container) return;
-    this.renderTournamentCards(container, this.getActiveThirdPartyList(), 25, "No Upcoming 3rd-Party Tournaments Scheduled", true);
+    const filtered = this.getFilteredTournaments(
+      this.getActiveThirdPartyList(),
+      "thirdparty",
+      "daily-thirdparty-toolbar",
+      "Search game, organizer, or tournament...",
+      (skip) => this.renderThirdPartyTournaments(skip),
+      skipToolbar
+    );
+    const isFiltered = (this.dailyTabFilters.thirdparty.q || "").trim() !== "" || this.dailyTabFilters.thirdparty.game !== "ALL";
+    this.renderTournamentCards(
+      container,
+      filtered,
+      25,
+      isFiltered ? "No Matching 3rd-Party Tournaments Found" : "No Upcoming 3rd-Party Tournaments Scheduled",
+      true
+    );
   }
 
   openAddTournamentModal() {
@@ -1006,8 +1149,45 @@ class CleanEsportsHub {
       return timeB - timeA;
     });
 
+    this.cachedApprovedPosts = approved;
+    this.renderApprovedPostsList(approved, false);
+  }
+
+  renderApprovedPostsList(approvedInput = null, skipToolbar = false) {
+    const container = document.getElementById("daily-posts-feed-container");
+    const counter   = document.getElementById("daily-feed-counter");
+    if (!container) return;
+
+    const approved = approvedInput || this.cachedApprovedPosts || [];
+
+    this.renderDailyFilterToolbar(
+      "daily-updates-toolbar",
+      "updates",
+      approved,
+      post => this.extractPostGameTags(post.caption),
+      "Search game, update, or author...",
+      (skip) => this.renderApprovedPostsList(null, skip),
+      skipToolbar
+    );
+
+    const filter = this.dailyTabFilters.updates || { q: "", game: "ALL" };
+    const q = (filter.q || "").trim().toLowerCase();
+    const filteredPosts = approved.filter(post => {
+      if (filter.game !== "ALL" && !this.extractPostGameTags(post.caption).includes(filter.game)) return false;
+      if (!q) return true;
+      return (post.caption || "").toLowerCase().includes(q)
+          || (post.submittedBy || "").toLowerCase().includes(q);
+    });
+
+    const isFiltered = q !== "" || filter.game !== "ALL";
     if (counter) {
-      counter.textContent = approved.length > 0 ? `Showing ${approved.length} Post${approved.length > 1 ? "s" : ""}` : "0 Posts";
+      if (approved.length === 0) {
+        counter.textContent = "0 Posts";
+      } else if (isFiltered) {
+        counter.textContent = `Showing ${filteredPosts.length} of ${approved.length} Posts`;
+      } else {
+        counter.textContent = `Showing ${approved.length} Post${approved.length > 1 ? "s" : ""}`;
+      }
     }
 
     if (approved.length === 0) {
@@ -1022,7 +1202,17 @@ class CleanEsportsHub {
       return;
     }
 
-    container.innerHTML = approved.map(post => {
+    if (filteredPosts.length === 0) {
+      container.innerHTML = `
+        <div class="daily-empty-feed-card">
+          <div style="font-size:2.2rem; margin-bottom:10px;">🔍</div>
+          <h3 style="color:#fff; font-size:1.1rem; margin-bottom:6px;">No Matching Posts Found</h3>
+          <p style="color:#94a3b8; font-size:0.88rem; margin:0 auto;">Try a different game filter or clear your search query.</p>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = filteredPosts.map(post => {
       const hasImage = post.imageUrl && post.imageUrl.length > 5;
       const imgHtml = hasImage ? `
         <div class="daily-post-image-box" onclick="window.cleanHub && window.cleanHub.openImageLightbox('${this.escapeHtml(post.imageUrl)}')" title="Click to view full image">
