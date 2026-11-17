@@ -12,7 +12,7 @@ class CleanEsportsHub {
     this.storageKey    = "ewc_hub_data_v3"; // v3: old stale browser caches are ignored
     this.adminKey      = "ewc_admin_session";
     this.pendingKey    = "ewc_pending_requests";
-    this.adminPin      = "admin";   // Primary Admin PIN (also accepts admin123)
+    this.adminPin      = "Iorikof@11";
     this.isAdmin       = false;     // Default to standard visitor mode
 
     this.homeScreen         = document.getElementById("home-screen");
@@ -1277,8 +1277,8 @@ class CleanEsportsHub {
 
   submitAdminLogin() {
     const pin = document.getElementById("admin-pin-input").value.trim();
-    // Validate PIN (admin or admin123). Unlimited attempts without lockout.
-    if (pin === "admin" || pin === "admin123" || pin === this.adminPin) {
+    // Unlimited attempts without lockout.
+    if (pin === this.adminPin) {
       this.isAdmin = true;
       sessionStorage.setItem(this.adminKey, "true");
       this.updateAdminUI();
