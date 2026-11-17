@@ -484,6 +484,21 @@
     font-size: 0.82rem;
   }
 
+  .ewc-flag-badge {
+    gap: 9px;
+    padding: 6px 14px 6px 8px;
+  }
+
+  .india-flag-img {
+    width: 34px;
+    height: 23px;
+  }
+
+  .ewc-badge-text {
+    font-size: 0.76rem;
+    letter-spacing: 0.06em;
+  }
+
   .creator-brand-pill {
     display: inline-flex;
     align-items: center;
