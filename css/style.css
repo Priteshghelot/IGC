@@ -438,16 +438,16 @@ button {
   transition: transform 0.25s ease;
 }
 
-/* S8UL Side-by-Side: Logo (Left) + Jersey (Right) in same area */
-.portal-logo-wrap-s8ul {
+/* Side-by-Side Logo (Left) + Jersey (Right) in same area */
+.portal-logo-wrap-dual {
   width: 100%;
   max-width: 420px;
   height: 200px;
   gap: 16px;
 }
 
-.portal-logo-wrap-s8ul .portal-logo-img,
-.portal-logo-wrap-s8ul .portal-jersey-img {
+.portal-logo-wrap-dual .portal-logo-img,
+.portal-logo-wrap-dual .portal-jersey-img {
   flex: 1 1 0;
   min-width: 0;
   height: 100%;
