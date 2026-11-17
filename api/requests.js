@@ -4,6 +4,26 @@ const { DATA_KEY, REQ_KEY, applyOp, requestToOp, readJSON } = require('./_ops');
 let memRequests = [];
 let memData = {};
 
+function requestFingerprint(r) {
+  const norm = (v) => String(v || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  const d = r && r.data && typeof r.data === 'object' ? { ...r.data } : {};
+  delete d.updatedAt;
+  delete d.submittedAt;
+  const sortedData = Object.keys(d).sort().reduce((acc, k) => {
+    acc[k] = typeof d[k] === 'string' ? norm(d[k]) : d[k];
+    return acc;
+  }, {});
+  return JSON.stringify({
+    type: norm(r && r.type),
+    teamKey: norm(r && r.teamKey),
+    targetId: norm(r && r.targetId),
+    targetName: norm(r && r.targetName),
+    caption: norm(r && r.caption),
+    imageUrl: String((r && r.imageUrl) || '').trim(),
+    data: sortedData
+  });
+}
+
 // Atomic read-modify-write on a Redis key (retries if someone else wrote meanwhile)
 async function atomicUpdate(redis, keys, fn) {
   for (let attempt = 0; attempt < 6; attempt++) {
@@ -51,12 +71,19 @@ module.exports = async (req, res) => {
         return res.status(403).json({ ok: false, error: 'Delete requests are restricted to Admin only.' });
       }
       if (!newReq.id) newReq.id = 'req-' + Date.now();
+      const newFp = requestFingerprint(newReq);
+      let isDup = false;
       if (redis) {
         await atomicUpdate(redis, [REQ_KEY], (list) => {
-          if (!list.some(r => r.id === newReq.id)) list.unshift(newReq);
+          isDup = list.some(r => r.id === newReq.id || (r.status === 'pending' && requestFingerprint(r) === newFp));
+          if (!isDup) list.unshift(newReq);
         });
       } else {
-        memRequests.unshift(newReq);
+        isDup = memRequests.some(r => r.id === newReq.id || (r.status === 'pending' && requestFingerprint(r) === newFp));
+        if (!isDup) memRequests.unshift(newReq);
+      }
+      if (isDup) {
+        return res.status(200).json({ ok: true, duplicate: true, message: 'This request is already pending Admin review.' });
       }
       return res.status(200).json({ ok: true, message: 'Request submitted successfully', request: newReq });
     }

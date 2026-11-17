@@ -123,6 +123,65 @@ class CleanEsportsHub {
     } catch(e) {}
   }
 
+  requestFingerprint(r) {
+    const norm = (v) => String(v || "").replace(/\s+/g, " ").trim().toLowerCase();
+    const d = r && r.data && typeof r.data === "object" ? { ...r.data } : {};
+    delete d.updatedAt;
+    delete d.submittedAt;
+    const sortedData = Object.keys(d).sort().reduce((acc, k) => {
+      acc[k] = typeof d[k] === "string" ? norm(d[k]) : d[k];
+      return acc;
+    }, {});
+    return JSON.stringify({
+      type: norm(r && r.type),
+      teamKey: norm(r && r.teamKey),
+      targetId: norm(r && r.targetId),
+      targetName: norm(r && r.targetName),
+      caption: norm(r && r.caption),
+      imageUrl: String((r && r.imageUrl) || "").trim(),
+      data: sortedData
+    });
+  }
+
+  async submitPendingRequest(req, successMsg) {
+    if (this._reqInFlight) return false;
+    const fp = this.requestFingerprint(req);
+    const localDup = (this.pending || []).some(r => r.id === req.id || (r.status === "pending" && this.requestFingerprint(r) === fp));
+    if (localDup) {
+      this.showToast("ℹ️ This request is already pending Admin review.");
+      return false;
+    }
+
+    this._reqInFlight = true;
+    try {
+      const res = await fetch("/api/requests", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "add", request: req })
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) {
+        this.showToast("⚠️ " + (json.error || "Could not submit request. Please try again."));
+        return false;
+      }
+      if (json.duplicate) {
+        this.showToast("ℹ️ This request is already pending Admin review.");
+        return false;
+      }
+      this.pending.unshift(req);
+      this.savePending();
+      this.updateAdminUI();
+      if (successMsg) this.showToast(successMsg);
+      return true;
+    } catch (e) {
+      this.showToast("⚠️ Could not reach server. Please try again.");
+      return false;
+    } finally {
+      this._reqInFlight = false;
+    }
+  }
+
   // ─── Deep Clone ───────────────────────────────────────────────────────────
   cloneData(obj) { return JSON.parse(JSON.stringify(obj)); }
 
@@ -844,22 +903,8 @@ class CleanEsportsHub {
       data: payloadT
     };
 
-    this.pending.unshift(req);
-    this.savePending();
-    this.updateAdminUI();
     this.closeModal("tournament-modal");
-
-    try {
-      await fetch('/api/requests', {
-        method: 'POST',
-        cache: 'no-store',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'add', request: req })
-      });
-      this.showToast(`📩 Tournament "${title}" sent to Admin for approval!`);
-    } catch (err) {
-      this.showToast("⚠️ Could not reach server. Please try again.");
-    }
+    await this.submitPendingRequest(req, `📩 Tournament "${title}" sent to Admin for approval!`);
   }
 
   async deleteThirdPartyTournament(id) {
@@ -1070,19 +1115,7 @@ class CleanEsportsHub {
       status: "pending"
     };
 
-    // Save locally
-    this.pending.unshift(request);
-    this.savePending();
-    this.updateAdminUI();
-
-    // Sync to cloud Redis API
-    try {
-      await fetch("/api/requests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "add", request })
-      });
-    } catch(err) { /* local fallback will work */ }
+    await this.submitPendingRequest(request, "📩 Post submitted! An admin will review and approve it.");
 
     // Reset form
     const form = document.getElementById("daily-post-form");
@@ -1093,8 +1126,6 @@ class CleanEsportsHub {
       submitBtn.disabled = false;
       submitBtn.textContent = "📩 Submit Post for Admin Approval";
     }
-
-    this.showToast("📩 Post submitted! An admin will review and approve it.");
     this.renderApprovedPosts();
   }
 
@@ -1753,17 +1784,7 @@ class CleanEsportsHub {
           ign, name, role, stat1Label, stat1Val, stat2Label: "STATUS", stat2Val, desc, divisionId: divVal
         }
       };
-      this.pending.push(req);
-      this.savePending();
-      try {
-        fetch('/api/requests', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'add', request: req })
-        }).catch(() => {});
-      } catch (e) {}
-      this.updateAdminUI();
-      this.showToast(`📩 Edit request for "${ign}" submitted! It will reflect once approved by Admin.`);
+      this.submitPendingRequest(req, `📩 Edit request for "${ign}" submitted! It will reflect once approved by Admin.`);
     }
 
     this.closeModal("player-modal");
@@ -1912,22 +1933,11 @@ class CleanEsportsHub {
       data: { no, title, genre, roster, coach, status, highlight, updatedBy, updatedAt }
     };
 
-    // 1. Add to pending queue immediately in local storage
-    this.pending.unshift(req);
-    this.savePending();
-    this.updateAdminUI();
-
-    // 2. Broadcast to Cloud Redis API
-    try {
-      fetch('/api/requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'add', request: req })
-      }).catch(e => console.warn('Cloud sync error:', e));
-    } catch(e) {}
-
-    this.showToast(isNew ? `📩 New Game "${title}" sent to Admin for approval!` : `📩 Edit for "${title}" sent to Admin for approval!`);
     this.closeModal("game-modal");
+    this.submitPendingRequest(
+      req,
+      isNew ? `📩 New Game "${title}" sent to Admin for approval!` : `📩 Edit for "${title}" sent to Admin for approval!`
+    );
   }
 
   handleDeleteFromGameModal() {
@@ -2023,19 +2033,8 @@ class CleanEsportsHub {
       data:        reqData
     };
 
-    this.pending.push(request);
-    this.savePending();
     this.closeModal("request-modal");
-    this.showToast("📨 Request submitted! An admin will review and accept it.");
-    this.updateAdminUI();
-
-    try {
-      fetch('/api/requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'add', request })
-      }).catch(() => {});
-    } catch (e) {}
+    this.submitPendingRequest(request, "📨 Request submitted! An admin will review and accept it.");
   }
 
   // =========================================================================
