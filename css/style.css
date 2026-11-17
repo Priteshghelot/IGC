@@ -3019,6 +3019,21 @@ button {
   margin-bottom: 1rem;
 }
 
+.footer-disclaimer {
+  max-width: 780px;
+  margin: 12px auto 0;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.74rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.footer-disclaimer strong {
+  color: var(--text-sub);
+}
+
 /* Athlete / Player Chips inside Roster column */
 .athlete-chips-wrap {
   display: flex;
