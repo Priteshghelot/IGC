@@ -3251,3 +3251,64 @@ button {
   font-weight: 700;
   color: #f8fafc;
 }
+
+/* =============================================================================
+   EWC 27 CLUB PARTNER INDIAN ORG BANNER (Below Daily Update Marquee)
+   ============================================================================= */
+.ewc27-partner-banner {
+  width: 100%;
+  max-width: 1380px;
+  margin: 0.25rem auto 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+.ewc27-partner-line {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 168, 255, 0.5), rgba(255, 184, 0, 0.5), transparent);
+  min-width: 30px;
+}
+
+.ewc27-partner-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.ewc27-partner-kicker {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.ewc27-partner-heading {
+  font-size: clamp(1.35rem, 2.5vw, 2.2rem);
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  margin: 0;
+  background: linear-gradient(90deg, #38bdf8 0%, #ffffff 48%, #ffb800 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.55));
+}
+
+.ewc27-partner-dot {
+  -webkit-text-fill-color: #64748b;
+  margin: 0 4px;
+}
+
+.ewc27-partner-india {
+  background: linear-gradient(90deg, #ff9933 0%, #ffffff 50%, #22c55e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

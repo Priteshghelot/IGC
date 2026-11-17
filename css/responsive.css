@@ -953,6 +953,21 @@ html, body {
     font-size: 0.74rem;
   }
 
+  .ewc27-partner-banner {
+    gap: 0.65rem;
+    margin: 0.15rem auto 1.15rem;
+  }
+
+  .ewc27-partner-kicker {
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+  }
+
+  .ewc27-partner-heading {
+    font-size: 1.1rem;
+    letter-spacing: 0.04em;
+  }
+
   /* ── EWC27 Games Showcase Mobile (Full-Width 2-Column Grid) ── */
   .ewc27-games-section {
     width: 100%;
