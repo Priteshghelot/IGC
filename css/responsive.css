@@ -488,17 +488,24 @@
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 10px 14px 10px 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 12px 10px 10px;
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     border-width: 2px;
     margin-bottom: 1.15rem;
   }
 
+  .creator-brand-main {
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
   .creator-avatar-wrap {
-    width: 54px;
-    height: 54px;
+    width: 52px;
+    height: 52px;
     border-width: 2.5px;
   }
 
@@ -508,23 +515,36 @@
   }
 
   .creator-brand-text span {
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
     font-weight: 800;
   }
 
   .creator-brand-text strong {
-    font-size: 1.16rem;
+    font-size: 1.1rem;
     font-weight: 900;
   }
 
-  .yt-badge {
-    font-size: 0.88rem;
+  .creator-social-badges {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .yt-badge,
+  .kick-badge {
+    justify-content: center;
+    font-size: 0.86rem;
     font-weight: 900;
-    padding: 7px 14px;
+    padding: 7px 12px;
     border-radius: 8px;
-    flex-shrink: 0;
     white-space: nowrap;
+  }
+
+  .kick-logo-svg {
+    width: 15px;
+    height: 15px;
   }
 
   /* Portal cards */
@@ -821,9 +841,10 @@
     font-size: 1.04rem;
   }
 
-  .yt-badge {
-    font-size: 0.82rem;
-    padding: 6px 11px;
+  .yt-badge,
+  .kick-badge {
+    font-size: 0.8rem;
+    padding: 6px 10px;
   }
 }
 
