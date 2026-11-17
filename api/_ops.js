@@ -136,6 +136,53 @@ function applyOp(data, op) {
       data.ewc27Meta = { title: String(op.meta?.title || 'EWC27 Games'), subtitle: String(op.meta?.subtitle || '') };
       return 'EWC27 text updated';
     }
+    case 'saveThirdPartyTournament': {
+      if (!Array.isArray(data.thirdPartyTournaments)) {
+        data.thirdPartyTournaments = Array.isArray(op.seedList) ? op.seedList : [];
+      }
+      const t = op.tournament || {};
+      if (!String(t.title || '').trim() || !String(t.startDate || '').trim()) {
+        throw new Error('Tournament title and start date are required');
+      }
+      const cleanT = {
+        id: t.id || 'tp-' + Date.now(),
+        title: String(t.title).trim(),
+        game: String(t.game || 'Esports').trim(),
+        organizer: String(t.organizer || 'Community / 3rd Party').trim(),
+        startDate: String(t.startDate).trim(),
+        endDate: String(t.endDate || t.startDate).trim(),
+        prize: String(t.prize || 'TBA').trim(),
+        location: String(t.location || 'India').trim(),
+        teams: String(t.teams || 'Open / Invited Indian Squads').trim(),
+        updatedBy: String(t.updatedBy || 'Admin').trim(),
+        updatedAt: t.updatedAt || today()
+      };
+      if (t.id) {
+        const idx = data.thirdPartyTournaments.findIndex(x => x.id === t.id);
+        if (idx !== -1) {
+          data.thirdPartyTournaments[idx] = cleanT;
+        } else {
+          data.thirdPartyTournaments.push(cleanT);
+        }
+      } else {
+        data.thirdPartyTournaments.push(cleanT);
+      }
+      data.thirdPartyTournaments.sort((a, b) => String(a.startDate).localeCompare(String(b.startDate)));
+      return `Saved tournament "${cleanT.title}"`;
+    }
+    case 'deleteThirdPartyTournament': {
+      if (!Array.isArray(data.thirdPartyTournaments)) {
+        data.thirdPartyTournaments = Array.isArray(op.seedList) ? op.seedList : [];
+      }
+      const before = data.thirdPartyTournaments.length;
+      data.thirdPartyTournaments = data.thirdPartyTournaments.filter(x => {
+        if (op.id && x.id === op.id) return false;
+        if (op.title && norm(x.title) === norm(op.title)) return false;
+        return true;
+      });
+      if (data.thirdPartyTournaments.length === before) throw new Error('Tournament not found to delete.');
+      return 'Tournament deleted';
+    }
     default:
       throw new Error('Unknown operation');
   }
@@ -165,6 +212,10 @@ function requestToOp(req) {
       return { op: 'saveEwc27Game', game: { id: req.targetId || null, title: d.title, genre: d.genre, sub: d.sub, isNewlyAdded: true } };
     case 'ewc27_text':
       return { op: 'setEwc27Meta', meta: d };
+    case 'thirdparty_tournament':
+      return { op: 'saveThirdPartyTournament', tournament: { ...d, id: req.targetId || d.id || null, updatedBy: d.updatedBy || req.submittedBy }, seedList: req.seedList };
+    case 'delete_thirdparty_tournament':
+      return { op: 'deleteThirdPartyTournament', id: req.targetId || null, title: d.target || req.targetName, seedList: req.seedList };
     default:
       return null; // e.g. daily_post: approval only, no data change
   }

@@ -427,12 +427,10 @@ class CleanEsportsHub {
     this.renderTournamentCards(container, customList, 10, "No Upcoming Major Tournaments Scheduled");
   }
 
-  renderThirdPartyTournaments() {
-    const container = document.getElementById("thirdparty-tournaments-list");
-    if (!container) return;
-
-    const thirdPartySchedule = [
+  getDefaultThirdPartyTournaments() {
+    return [
       {
+        id: "tp-1",
         title: "Upthrust Esports: The Patriot Cup (BGMI)",
         game: "BGMI",
         organizer: "Upthrust Esports",
@@ -443,6 +441,7 @@ class CleanEsportsHub {
         location: "India (Online)"
       },
       {
+        id: "tp-2",
         title: "iQOO Pro Series Season 5 (BGMI)",
         game: "BGMI",
         organizer: "iQOO / NODWIN Gaming",
@@ -453,6 +452,7 @@ class CleanEsportsHub {
         location: "India (Online + LAN)"
       },
       {
+        id: "tp-3",
         title: "Villager Esports Winter Domin8r Series",
         game: "BGMI / Free Fire MAX",
         organizer: "Villager Esports",
@@ -463,6 +463,7 @@ class CleanEsportsHub {
         location: "India (Online)"
       },
       {
+        id: "tp-4",
         title: "Skyesports Souvenir: Mumbai Edition",
         game: "Valorant / Counter-Strike 2",
         organizer: "Skyesports",
@@ -473,6 +474,7 @@ class CleanEsportsHub {
         location: "Mumbai LAN"
       },
       {
+        id: "tp-5",
         title: "NODWIN Gaming: Masters Winter Showdown",
         game: "BGMI / Valorant",
         organizer: "NODWIN Gaming",
@@ -483,6 +485,7 @@ class CleanEsportsHub {
         location: "Delhi NCR LAN"
       },
       {
+        id: "tp-6",
         title: "Snapdragon Pro Series: India Mobile Open",
         game: "BGMI / CODM / Brawl Stars",
         organizer: "ESL & Qualcomm",
@@ -493,6 +496,7 @@ class CleanEsportsHub {
         location: "Pan-India + LAN"
       },
       {
+        id: "tp-7",
         title: "The Esports Club (TEC) Challenger Series",
         game: "Valorant",
         organizer: "The Esports Club",
@@ -503,6 +507,7 @@ class CleanEsportsHub {
         location: "India / South Asia"
       },
       {
+        id: "tp-8",
         title: "Lidoma Battlegrounds Invitational 2027",
         game: "BGMI / Free Fire MAX",
         organizer: "Lidoma Esports",
@@ -513,6 +518,7 @@ class CleanEsportsHub {
         location: "India (Online)"
       },
       {
+        id: "tp-9",
         title: "Upthrust Esports: India Rising Series 2027",
         game: "BGMI",
         organizer: "Upthrust Esports",
@@ -523,6 +529,7 @@ class CleanEsportsHub {
         location: "India (Online + LAN)"
       },
       {
+        id: "tp-10",
         title: "Skyesports Grand Slam 2027",
         game: "Counter-Strike 2 / Valorant",
         organizer: "Skyesports",
@@ -533,15 +540,167 @@ class CleanEsportsHub {
         location: "Pune / Bengaluru LAN"
       }
     ];
-
-    const customThirdParty = Array.isArray(this.data?.thirdPartyTournaments) && this.data.thirdPartyTournaments.length > 0
-      ? this.data.thirdPartyTournaments
-      : thirdPartySchedule;
-
-    this.renderTournamentCards(container, customThirdParty, 10, "No Upcoming 3rd Party Tournaments Scheduled");
   }
 
-  renderTournamentCards(container, list, limit, emptyTitle) {
+  getActiveThirdPartyList() {
+    return Array.isArray(this.data?.thirdPartyTournaments) && this.data.thirdPartyTournaments.length > 0
+      ? this.data.thirdPartyTournaments
+      : this.getDefaultThirdPartyTournaments();
+  }
+
+  renderThirdPartyTournaments() {
+    const container = document.getElementById("thirdparty-tournaments-list");
+    if (!container) return;
+    this.renderTournamentCards(container, this.getActiveThirdPartyList(), 25, "No Upcoming 3rd-Party Tournaments Scheduled", true);
+  }
+
+  openAddTournamentModal() {
+    this.editingTournamentId = null;
+    const titleEl = document.getElementById("tournament-modal-title");
+    const btnEl = document.getElementById("tourn-modal-submit-btn");
+    if (titleEl) titleEl.textContent = this.isAdmin ? "➕ Add 3rd-Party Tournament (Admin)" : "🎮 Submit 3rd-Party Tournament";
+    if (btnEl) btnEl.textContent = this.isAdmin ? "💾 Save Tournament Live" : "📩 Submit for Admin Approval";
+
+    ["tourn-title-input", "tourn-game-input", "tourn-org-input", "tourn-start-input", "tourn-end-input", "tourn-prize-input", "tourn-loc-input", "tourn-teams-input"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+    const updaterEl = document.getElementById("tourn-updater-input");
+    if (updaterEl) updaterEl.value = localStorage.getItem("last_updater_name") || (this.isAdmin ? "Pritesh Gehlot" : "");
+    this.openModal("tournament-modal");
+  }
+
+  openEditTournamentModal(id) {
+    const item = this.getActiveThirdPartyList().find(t => t.id === id);
+    if (!item) return;
+    this.editingTournamentId = id;
+    const titleEl = document.getElementById("tournament-modal-title");
+    const btnEl = document.getElementById("tourn-modal-submit-btn");
+    if (titleEl) titleEl.textContent = this.isAdmin ? `✏️ Edit Tournament (Admin): ${item.title}` : `📝 Suggest Tournament Edit: ${item.title}`;
+    if (btnEl) btnEl.textContent = this.isAdmin ? "💾 Save Changes Live" : "📩 Submit Edit for Approval";
+
+    document.getElementById("tourn-title-input").value = item.title || "";
+    document.getElementById("tourn-game-input").value  = item.game || "";
+    document.getElementById("tourn-org-input").value   = item.organizer || "";
+    document.getElementById("tourn-start-input").value = item.startDate || "";
+    document.getElementById("tourn-end-input").value   = item.endDate || item.startDate || "";
+    document.getElementById("tourn-prize-input").value = item.prize || "";
+    document.getElementById("tourn-loc-input").value   = item.location || "";
+    document.getElementById("tourn-teams-input").value = item.teams || "";
+    document.getElementById("tourn-updater-input").value = item.updatedBy || localStorage.getItem("last_updater_name") || "";
+    this.openModal("tournament-modal");
+  }
+
+  async handleSaveTournament(e) {
+    if (e) e.preventDefault();
+    const title     = document.getElementById("tourn-title-input").value.trim();
+    const game      = document.getElementById("tourn-game-input").value.trim();
+    const organizer = document.getElementById("tourn-org-input").value.trim() || "Community / 3rd Party";
+    const startDate = document.getElementById("tourn-start-input").value.trim();
+    const endDate   = document.getElementById("tourn-end-input").value.trim() || startDate;
+    const prize     = document.getElementById("tourn-prize-input").value.trim() || "TBA";
+    const location  = document.getElementById("tourn-loc-input").value.trim() || "India";
+    const teams     = document.getElementById("tourn-teams-input").value.trim() || "Indian Squads";
+    const updatedBy = document.getElementById("tourn-updater-input").value.trim() || localStorage.getItem("last_updater_name") || "Community Member";
+
+    if (!title || !game || !startDate) {
+      alert("Please fill in Tournament Title, Game Title, and Start Date.");
+      return;
+    }
+    localStorage.setItem("last_updater_name", updatedBy);
+
+    const seedList = this.getDefaultThirdPartyTournaments();
+    const payloadT = {
+      id: this.editingTournamentId || null,
+      title, game, organizer, startDate, endDate, prize, location, teams, updatedBy
+    };
+
+    if (this.isAdmin) {
+      this.closeModal("tournament-modal");
+      const ok = await this.cloudOp(
+        { op: "saveThirdPartyTournament", tournament: payloadT, seedList },
+        this.editingTournamentId ? `✅ Tournament "${title}" updated & sorted by date!` : `✅ Tournament "${title}" added & sorted by date!`
+      );
+      if (ok) this.renderThirdPartyTournaments();
+      return;
+    }
+
+    const req = {
+      id: "req-" + Date.now(),
+      type: "thirdparty_tournament",
+      teamKey: "godlike",
+      targetId: this.editingTournamentId || null,
+      targetName: title,
+      submittedBy: updatedBy,
+      submittedAt: new Date().toLocaleString(),
+      status: "pending",
+      seedList,
+      data: payloadT
+    };
+
+    this.pending.unshift(req);
+    this.savePending();
+    this.updateAdminUI();
+    this.closeModal("tournament-modal");
+
+    try {
+      await fetch('/api/requests', {
+        method: 'POST',
+        cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'add', request: req })
+      });
+      this.showToast(`📩 Tournament "${title}" sent to Admin for approval!`);
+    } catch (err) {
+      this.showToast("⚠️ Could not reach server. Please try again.");
+    }
+  }
+
+  async deleteThirdPartyTournament(id) {
+    const item = this.getActiveThirdPartyList().find(t => t.id === id);
+    if (!item) return;
+    const seedList = this.getDefaultThirdPartyTournaments();
+
+    if (this.isAdmin) {
+      if (confirm(`⚠️ Permanently delete tournament "${item.title}"?`)) {
+        const ok = await this.cloudOp({ op: "deleteThirdPartyTournament", id, seedList }, `🗑️ Tournament "${item.title}" deleted.`);
+        if (ok) this.renderThirdPartyTournaments();
+      }
+      return;
+    }
+
+    const defaultName = localStorage.getItem("last_updater_name") || "Community Member";
+    const nameInput = prompt(`🗑️ Request Deletion of "${item.title}"\nEnter your name:`, defaultName);
+    if (nameInput === null) return;
+    const submittedBy = nameInput.trim() || defaultName;
+
+    const req = {
+      id: "req-" + Date.now(),
+      type: "delete_thirdparty_tournament",
+      teamKey: "godlike",
+      targetId: item.id,
+      targetName: item.title,
+      submittedBy,
+      submittedAt: new Date().toLocaleString(),
+      status: "pending",
+      seedList,
+      data: { target: item.title, reason: `Delete requested for "${item.title}"` }
+    };
+    this.pending.unshift(req);
+    this.savePending();
+    this.updateAdminUI();
+    try {
+      await fetch('/api/requests', {
+        method: 'POST',
+        cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'add', request: req })
+      });
+      this.showToast(`🗑️ Delete request for "${item.title}" sent to Admin!`);
+    } catch (e) {}
+  }
+
+  renderTournamentCards(container, list, limit, emptyTitle, editable = false) {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     const dayMs = 86400000;
@@ -605,6 +764,14 @@ class CleanEsportsHub {
             <div class="tournament-meta-item"><span>📍 Region</span><strong>${this.escapeHtml(t.location || "India")}</strong></div>
             <div class="tournament-meta-item"><span>🛡️ Featured</span><strong>${this.escapeHtml(t.teams || "Indian Pro Clubs")}</strong></div>
           </div>
+          ${editable && t.id ? `
+          <div class="tournament-card-actions">
+            <span class="tournament-updated-by">${t.updatedBy ? `👤 Added/Edited by ${this.escapeHtml(t.updatedBy)}` : "📅 Auto-sorted by Start Date"}</span>
+            <div class="row-action-btns">
+              <button type="button" class="btn-action-edit" onclick="window.cleanHub.openEditTournamentModal('${this.escapeHtml(t.id)}')">✏️ Edit</button>
+              <button type="button" class="btn-action-delete" onclick="window.cleanHub.deleteThirdPartyTournament('${this.escapeHtml(t.id)}')" title="Delete Tournament">🗑️</button>
+            </div>
+          </div>` : ""}
         </article>
       `;
     }).join("");
@@ -1785,6 +1952,20 @@ class CleanEsportsHub {
         typeLabel = "🗑️ Delete Lineup Request";
         details = `
           <div class="approval-detail"><strong>Target Lineup:</strong> ${this.escapeHtml(req.data.target || "-")}</div>
+          <div class="approval-detail"><strong>Reason:</strong> ${this.escapeHtml(req.data.reason || "-")}</div>
+        `;
+      } else if (req.type === "thirdparty_tournament") {
+        typeLabel = "🎮 3rd-Party Tournament";
+        details = `
+          <div class="approval-detail"><strong>Tournament:</strong> ${this.escapeHtml(req.data.title || "-")}</div>
+          <div class="approval-detail"><strong>Game / Organizer:</strong> ${this.escapeHtml(req.data.game || "-")} · ${this.escapeHtml(req.data.organizer || "-")}</div>
+          <div class="approval-detail"><strong>Dates:</strong> ${this.escapeHtml(req.data.startDate || "-")} → ${this.escapeHtml(req.data.endDate || "-")}</div>
+          <div class="approval-detail"><strong>Prize / Region:</strong> ${this.escapeHtml(req.data.prize || "TBA")} · ${this.escapeHtml(req.data.location || "India")}</div>
+        `;
+      } else if (req.type === "delete_thirdparty_tournament") {
+        typeLabel = "🗑️ Delete 3rd-Party Tournament";
+        details = `
+          <div class="approval-detail"><strong>Target Tournament:</strong> ${this.escapeHtml(req.data.target || req.targetName || "-")}</div>
           <div class="approval-detail"><strong>Reason:</strong> ${this.escapeHtml(req.data.reason || "-")}</div>
         `;
       } else if (req.type === "delete_game") {

@@ -477,6 +477,20 @@
               <div class="approval-detail"><strong>Target Lineup:</strong> ${this.escape(req.data.target || "-")}</div>
               <div class="approval-detail"><strong>Reason:</strong> ${this.escape(req.data.reason || "-")}</div>
             `;
+          } else if (req.type === "thirdparty_tournament") {
+            typeLabel = "🎮 3rd-Party Tournament";
+            details = `
+              <div class="approval-detail"><strong>Tournament:</strong> ${this.escape(req.data.title || "-")}</div>
+              <div class="approval-detail"><strong>Game / Organizer:</strong> ${this.escape(req.data.game || "-")} · ${this.escape(req.data.organizer || "-")}</div>
+              <div class="approval-detail"><strong>Dates:</strong> ${this.escape(req.data.startDate || "-")} → ${this.escape(req.data.endDate || "-")}</div>
+              <div class="approval-detail"><strong>Prize / Region:</strong> ${this.escape(req.data.prize || "TBA")} · ${this.escape(req.data.location || "India")}</div>
+            `;
+          } else if (req.type === "delete_thirdparty_tournament") {
+            typeLabel = "🗑️ Delete 3rd-Party Tournament";
+            details = `
+              <div class="approval-detail"><strong>Target Tournament:</strong> ${this.escape(req.data.target || req.targetName || "-")}</div>
+              <div class="approval-detail"><strong>Reason:</strong> ${this.escape(req.data.reason || "-")}</div>
+            `;
           } else if (req.type === "delete_game") {
             typeLabel = "🗑️ Delete Game Request";
             details = `
