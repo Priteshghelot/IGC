@@ -245,23 +245,27 @@ class CleanEsportsHub {
 
     this.renderApprovedPosts();
     this.renderUpcomingTournaments();
+    this.renderThirdPartyTournaments();
     try { window.location.hash = "daily-updates"; } catch(e) {}
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   switchDailyTab(tabName = "updates") {
-    const updatesView = document.getElementById("daily-updates-tab-view");
-    const tournView   = document.getElementById("daily-tournaments-tab-view");
-    const btnUpdates  = document.getElementById("btn-daily-tab-updates");
-    const btnTourn    = document.getElementById("btn-daily-tab-tournaments");
+    const panels = {
+      updates:     { view: "daily-updates-tab-view",     btn: "btn-daily-tab-updates" },
+      tournaments: { view: "daily-tournaments-tab-view", btn: "btn-daily-tab-tournaments" },
+      thirdparty:  { view: "daily-thirdparty-tab-view",  btn: "btn-daily-tab-thirdparty" }
+    };
+    Object.entries(panels).forEach(([key, ids]) => {
+      const v = document.getElementById(ids.view);
+      const b = document.getElementById(ids.btn);
+      const active = key === tabName;
+      if (v) v.style.display = active ? "block" : "none";
+      if (b) b.classList.toggle("active", active);
+    });
 
-    const showTourn = tabName === "tournaments";
-    if (updatesView) updatesView.style.display = showTourn ? "none" : "block";
-    if (tournView)   tournView.style.display   = showTourn ? "block" : "none";
-    if (btnUpdates)  btnUpdates.classList.toggle("active", !showTourn);
-    if (btnTourn)    btnTourn.classList.toggle("active", showTourn);
-
-    if (showTourn) this.renderUpcomingTournaments();
+    if (tabName === "tournaments") this.renderUpcomingTournaments();
+    if (tabName === "thirdparty")  this.renderThirdPartyTournaments();
   }
 
   renderUpcomingTournaments() {
@@ -403,6 +407,124 @@ class CleanEsportsHub {
       ? this.data.upcomingTournaments
       : schedule;
 
+    this.renderTournamentCards(container, customList, 10, "No Upcoming Major Tournaments Scheduled");
+  }
+
+  renderThirdPartyTournaments() {
+    const container = document.getElementById("thirdparty-tournaments-list");
+    if (!container) return;
+
+    const thirdPartySchedule = [
+      {
+        title: "Upthrust Esports: The Patriot Cup (BGMI)",
+        game: "BGMI",
+        organizer: "Upthrust Esports",
+        startDate: "2026-11-18",
+        endDate: "2026-11-30",
+        prize: "₹15,00,000",
+        teams: "GodLike, Team SouL, Revenant, Orangutan & Underdogs",
+        location: "India (Online)"
+      },
+      {
+        title: "iQOO Pro Series Season 5 (BGMI)",
+        game: "BGMI",
+        organizer: "iQOO / NODWIN Gaming",
+        startDate: "2026-11-22",
+        endDate: "2026-12-10",
+        prize: "₹40,00,000",
+        teams: "Invited Tier-1 Indian Rosters & Community Qualifiers",
+        location: "India (Online + LAN)"
+      },
+      {
+        title: "Villager Esports Winter Domin8r Series",
+        game: "BGMI / Free Fire MAX",
+        organizer: "Villager Esports",
+        startDate: "2026-11-29",
+        endDate: "2026-12-16",
+        prize: "₹12,00,000",
+        teams: "Top 24 Indian Mobile Contenders",
+        location: "India (Online)"
+      },
+      {
+        title: "Skyesports Souvenir: Mumbai Edition",
+        game: "Valorant / Counter-Strike 2",
+        organizer: "Skyesports",
+        startDate: "2026-12-06",
+        endDate: "2026-12-20",
+        prize: "$30,000 USD",
+        teams: "Indian & South Asian Invited PC Squads",
+        location: "Mumbai LAN"
+      },
+      {
+        title: "NODWIN Gaming: Masters Winter Showdown",
+        game: "BGMI / Valorant",
+        organizer: "NODWIN Gaming",
+        startDate: "2026-12-14",
+        endDate: "2027-01-03",
+        prize: "₹50,00,000",
+        teams: "GodLike Esports, S8UL, Global Esports & Top Clubs",
+        location: "Delhi NCR LAN"
+      },
+      {
+        title: "Snapdragon Pro Series: India Mobile Open",
+        game: "BGMI / CODM / Brawl Stars",
+        organizer: "ESL & Qualcomm",
+        startDate: "2026-12-22",
+        endDate: "2027-01-20",
+        prize: "₹1,00,00,000",
+        teams: "Open Qualifiers + Pro Indian Lineups",
+        location: "Pan-India + LAN"
+      },
+      {
+        title: "The Esports Club (TEC) Challenger Series",
+        game: "Valorant",
+        organizer: "The Esports Club",
+        startDate: "2027-01-12",
+        endDate: "2027-02-02",
+        prize: "₹15,00,000",
+        teams: "South Asia & India Tier-1/Tier-2 Valorant Teams",
+        location: "India / South Asia"
+      },
+      {
+        title: "Lidoma Battlegrounds Invitational 2027",
+        game: "BGMI / Free Fire MAX",
+        organizer: "Lidoma Esports",
+        startDate: "2027-01-25",
+        endDate: "2027-02-14",
+        prize: "₹20,00,000",
+        teams: "Top Indian & Regional Scrims Powerhouses",
+        location: "India (Online)"
+      },
+      {
+        title: "Upthrust Esports: India Rising Series 2027",
+        game: "BGMI",
+        organizer: "Upthrust Esports",
+        startDate: "2027-02-10",
+        endDate: "2027-03-01",
+        prize: "₹25,00,000",
+        teams: "GodLike, S8UL, Entity, TX & Qualifier Teams",
+        location: "India (Online + LAN)"
+      },
+      {
+        title: "Skyesports Grand Slam 2027",
+        game: "Counter-Strike 2 / Valorant",
+        organizer: "Skyesports",
+        startDate: "2027-03-04",
+        endDate: "2027-03-18",
+        prize: "$50,000 USD",
+        teams: "Top Indian & International Invited Squads",
+        location: "Pune / Bengaluru LAN"
+      }
+    ];
+
+    const customThirdParty = Array.isArray(this.data?.thirdPartyTournaments) && this.data.thirdPartyTournaments.length > 0
+      ? this.data.thirdPartyTournaments
+      : thirdPartySchedule;
+
+    this.renderTournamentCards(container, customThirdParty, 10, "No Upcoming 3rd Party Tournaments Scheduled");
+  }
+
+  renderTournamentCards(container, list, limit, emptyTitle) {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     const dayMs = 86400000;
@@ -419,17 +541,17 @@ class CleanEsportsHub {
       return `${sStr} – ${eStr}`;
     };
 
-    const top10 = customList
+    const items = list
       .filter(t => parseLocal(t.endDate || t.startDate) >= todayStart)
       .sort((a, b) => parseLocal(a.startDate) - parseLocal(b.startDate))
-      .slice(0, 10);
+      .slice(0, limit);
 
-    if (top10.length === 0) {
-      container.innerHTML = `<div class="daily-empty-feed-card"><h3>📅 No Upcoming Tournaments Scheduled</h3><p style="color:#94a3b8;">Check back soon for the next Indian Gaming Community schedule.</p></div>`;
+    if (items.length === 0) {
+      container.innerHTML = `<div class="daily-empty-feed-card"><h3>📅 ${this.escapeHtml(emptyTitle)}</h3><p style="color:#94a3b8;">Check back soon for the next Indian Gaming Community schedule.</p></div>`;
       return;
     }
 
-    container.innerHTML = top10.map((t, idx) => {
+    container.innerHTML = items.map((t, idx) => {
       const sMs = parseLocal(t.startDate);
       const eMs = parseLocal(t.endDate || t.startDate);
       const daysUntil = Math.round((sMs - todayStart) / dayMs);
@@ -455,6 +577,7 @@ class CleanEsportsHub {
             <div class="tournament-rank-wrap">
               <span class="tournament-rank-badge">#${idx + 1}</span>
               <span class="tournament-game-pill">${this.escapeHtml(t.game)}</span>
+              ${t.organizer ? `<span class="tournament-org-pill">${this.escapeHtml(t.organizer)}</span>` : ""}
             </div>
             <span class="tournament-countdown-pill ${statusCls}">${statusText}</span>
           </div>

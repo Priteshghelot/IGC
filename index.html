@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>India EWC Hub | Developed by Pritesh Gehlot</title>
   <meta name="description" content="Official tracker for India's EWC Club Partners (GodLike Esports in Golden Yellow & S8UL Esports in Sky Blue) developed by Pritesh Gehlot.">
-  <link rel="stylesheet" href="css/style.css?v=14">
-  <link rel="stylesheet" href="css/responsive.css?v=14">
+  <link rel="stylesheet" href="css/style.css?v=15">
+  <link rel="stylesheet" href="css/responsive.css?v=15">
 </head>
 <body>
 
@@ -459,13 +459,16 @@
         <p class="daily-simple-sub">Community & official updates. Every post upload is reviewed & approved by Admin before appearing.</p>
       </div>
 
-      <!-- ── MODE SWITCHER: DAILY UPDATES & UPCOMING TOURNAMENTS ───────── -->
+      <!-- ── MODE SWITCHER: DAILY UPDATES, MAJOR TOURNAMENTS & 3RD PARTY ── -->
       <div class="daily-mode-tabs">
         <button type="button" class="daily-mode-btn active" id="btn-daily-tab-updates" onclick="window.cleanHub && window.cleanHub.switchDailyTab('updates')">
           📰 Daily Updates
         </button>
         <button type="button" class="daily-mode-btn" id="btn-daily-tab-tournaments" onclick="window.cleanHub && window.cleanHub.switchDailyTab('tournaments')">
-          🏆 Upcoming Tournaments <span class="daily-mode-count">Top 10</span>
+          🏆 Major Tournaments <span class="daily-mode-count">Top 10</span>
+        </button>
+        <button type="button" class="daily-mode-btn" id="btn-daily-tab-thirdparty" onclick="window.cleanHub && window.cleanHub.switchDailyTab('thirdparty')">
+          🎮 3rd Party Tournaments <span class="daily-mode-count daily-mode-count-blue">Live</span>
         </button>
       </div>
 
@@ -548,6 +551,20 @@
           <span class="tournaments-auto-pill">🔄 Auto-Schedule Live</span>
         </div>
         <div id="upcoming-tournaments-list" class="upcoming-tournaments-grid">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+      </div>
+
+      <!-- ── TAB 3: 3RD PARTY TOURNAMENTS (AUTO-UPDATED BY SCHEDULE) ───── -->
+      <div id="daily-thirdparty-tab-view" class="daily-tab-panel" style="display:none;">
+        <div class="tournaments-header-card">
+          <div>
+            <h2 class="tournaments-section-title">🎮 3rd Party Tournaments (Indian Gaming Community)</h2>
+            <p class="tournaments-section-sub">Upcoming & live third-party events (NODWIN, Skyesports, Upthrust, Villager, iQOO, Snapdragon Pro & more) automatically updated by schedule.</p>
+          </div>
+          <span class="tournaments-auto-pill">🔄 Auto-Schedule Live</span>
+        </div>
+        <div id="thirdparty-tournaments-list" class="upcoming-tournaments-grid">
           <!-- Rendered dynamically by app.js -->
         </div>
       </div>
@@ -957,6 +974,6 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=6"></script>
+  <script src="js/app.js?v=7"></script>
 </body>
 </html>

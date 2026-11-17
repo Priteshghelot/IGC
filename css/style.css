@@ -2939,9 +2939,10 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   margin: 0 auto 1.75rem;
-  max-width: 620px;
+  max-width: 880px;
+  flex-wrap: wrap;
   padding: 6px;
   background: rgba(15, 23, 42, 0.85);
   border: 1.5px solid rgba(255, 255, 255, 0.12);
@@ -2985,6 +2986,21 @@ button {
   padding: 2px 8px;
   border-radius: 999px;
   text-transform: uppercase;
+}
+
+.daily-mode-count-blue {
+  background: var(--s8ul-blue);
+  color: #0a0d14;
+}
+
+.tournament-org-pill {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
 }
 
 .tournaments-header-card {
