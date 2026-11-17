@@ -199,10 +199,61 @@
     text-align: center;
   }
 
-  /* ── EWC Table → card view on mobile ── */
+  /* ── Roster Toolbar Mobile ── */
+  .roster-toolbar {
+    gap: 0.65rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .roster-stats-strip {
+    gap: 0.45rem;
+  }
+
+  .roster-stat-chip {
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 0.55rem 0.4rem;
+    text-align: center;
+  }
+
+  .roster-stat-chip strong {
+    font-size: 1.15rem;
+  }
+
+  .roster-stat-chip span {
+    font-size: 0.66rem;
+  }
+
+  .roster-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .roster-search-wrap {
+    max-width: none;
+    min-width: 0;
+  }
+
+  .roster-cat-pills {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .roster-cat-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ── Compact Pro Roster Card Layout on Mobile ── */
   .clean-table-box {
-    overflow-x: hidden;
-    border-radius: 10px;
+    overflow-x: visible;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   .clean-table thead {
@@ -210,77 +261,109 @@
   }
 
   .clean-table,
-  .clean-table tbody,
-  .clean-table tr,
-  .clean-table td {
+  .clean-table tbody {
     display: block;
     width: 100%;
   }
 
   .clean-table tr {
-    border-bottom: 1px solid var(--border-color);
-    padding: 0.9rem 1rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "num title status"
+      "cat cat cat"
+      "roster roster roster"
+      "footer footer footer";
+    align-items: center;
+    gap: 8px 8px;
+    width: 100%;
+    padding: 0.9rem 0.85rem;
+    margin-bottom: 0.75rem;
+    background: rgba(15, 23, 42, 0.88);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
   }
 
-  .clean-table tr:last-child {
-    border-bottom: none;
+  #screen-godlike .clean-table tr {
+    border-color: rgba(255, 184, 0, 0.25);
+  }
+
+  #screen-s8ul .clean-table tr {
+    border-color: rgba(0, 168, 255, 0.25);
+  }
+
+  .clean-table tr.row-spotlight {
+    background: linear-gradient(135deg, rgba(255, 184, 0, 0.1), rgba(15, 23, 42, 0.95));
   }
 
   .clean-table td {
-    padding: 4px 0;
+    display: block;
+    width: auto;
+    padding: 0;
     border: none;
-    font-size: 1.05rem;
   }
 
   .clean-table td[data-label]::before {
-    content: attr(data-label) ": ";
-    font-size: 0.78rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    display: block;
-    margin-bottom: 2px;
+    display: none;
   }
 
   .clean-table td.col-num {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    text-align: left;
-    font-weight: 700;
+    grid-area: num;
+    font-size: 0.82rem;
+    font-weight: 900;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-align: center;
   }
 
   .clean-table td.col-title {
-    padding: 6px 0;
+    grid-area: title;
+    min-width: 0;
   }
 
   .clean-table td.col-title .game-title-highlight {
-    font-size: 1.15rem;
-    padding: 5px 12px;
+    font-size: 1rem;
+    padding: 3px 8px;
     display: inline-block;
-    margin-top: 3px;
+    margin: 0;
+    line-height: 1.25;
   }
 
-  .clean-table td.col-roster {
-    padding: 6px 0;
-  }
-
-  .clean-table td.col-roster .roster-athletes-highlight {
-    font-size: 1.12rem;
-    padding: 6px 12px;
-    display: inline-block;
-    margin-top: 3px;
-    line-height: 1.4;
-  }
-
-  .clean-table td.col-category {
-    font-size: 1.02rem;
-    font-weight: 700;
+  .clean-table td.col-status {
+    grid-area: status;
+    text-align: right;
   }
 
   .clean-table td.col-status .status-badge-highlight {
-    font-size: 0.95rem;
+    font-size: 0.68rem;
+    padding: 3px 8px;
     display: inline-block;
-    margin-top: 2px;
+    white-space: nowrap;
+  }
+
+  .clean-table td.col-category {
+    grid-area: cat;
+  }
+
+  .clean-table td.col-roster {
+    grid-area: roster;
+    width: 100%;
+    padding: 2px 0;
+  }
+
+  .clean-table td.col-roster .roster-athletes-highlight {
+    font-size: 0.92rem;
+    padding: 6px 10px;
+    display: block;
+    width: 100%;
+    line-height: 1.35;
+  }
+
+  .athlete-chip {
+    font-size: 0.78rem;
+    padding: 4px 8px;
   }
 
   .player-ign-text {
@@ -292,9 +375,11 @@
   }
 
   .clean-table td[data-label="Edited By"] {
-    margin-top: 6px;
-    padding-top: 6px;
-    border-top: 1px dashed rgba(255, 255, 255, 0.08);
+    grid-area: footer;
+    width: 100%;
+    margin-top: 2px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
   }
 
   .clean-table td[data-label="Edited By"] .edited-by-cell {
@@ -303,12 +388,11 @@
     justify-content: space-between;
     width: 100%;
     gap: 8px;
-    margin-top: 4px;
   }
 
   .clean-table td[data-label="Edited By"] .btn-action-edit {
-    padding: 6px 14px;
-    font-size: 0.85rem;
+    padding: 5px 12px;
+    font-size: 0.8rem;
   }
 
   /* ── Roster grid ── */

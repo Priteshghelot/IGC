@@ -23,6 +23,7 @@ class CleanEsportsHub {
     this.cardS8ul           = document.getElementById("card-s8ul-select");
     this.dailyUpdates       = (typeof INITIAL_DAILY_UPDATES !== "undefined") ? INITIAL_DAILY_UPDATES : (INITIAL_HUB_DATA.dailyUpdates || []);
     this.currentDailyFilter = "all";
+    this.rosterFilter       = { godlike: { q: "", cat: "ALL" }, s8ul: { q: "", cat: "ALL" } };
 
     // Restore active admin session if already authenticated in this tab or from /admin
     if (sessionStorage.getItem(this.adminKey) === "true" || (window.location && window.location.search && window.location.search.includes("admin=true"))) {
@@ -609,11 +610,110 @@ class CleanEsportsHub {
     }).join("");
   }
 
+  // ─── Roster Toolbar (Stats + Search + Category Filter) ────────────────────
+  renderRosterToolbar(teamKey, games, themeColor) {
+    const toolbarId = teamKey === "godlike" ? "godl-roster-toolbar" : "s8ul-roster-toolbar";
+    const toolbar = document.getElementById(toolbarId);
+    if (!toolbar) return;
+
+    const filter = this.rosterFilter[teamKey] || { q: "", cat: "ALL" };
+    const totalGames = games.length;
+    const flagshipCount = games.filter(g => g.highlight).length;
+    const categories = Array.from(new Set(games.map(g => (g.genre || g.category || "").trim()).filter(Boolean)));
+
+    // Preserve search input focus if user is currently typing
+    const existingInput = toolbar.querySelector(".roster-search-input");
+    const isTyping = existingInput && document.activeElement === existingInput;
+    if (isTyping) {
+      toolbar.querySelectorAll(".roster-cat-pill").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.cat === filter.cat);
+      });
+      return;
+    }
+
+    toolbar.innerHTML = `
+      <div class="roster-stats-strip">
+        <div class="roster-stat-chip" style="--team-accent:${themeColor};">
+          <strong>${totalGames}</strong>
+          <span>Active Titles</span>
+        </div>
+        <div class="roster-stat-chip" style="--team-accent:${themeColor};">
+          <strong>${flagshipCount}</strong>
+          <span>⭐ Flagship</span>
+        </div>
+        <div class="roster-stat-chip" style="--team-accent:${themeColor};">
+          <strong>${categories.length}</strong>
+          <span>Categories</span>
+        </div>
+      </div>
+      <div class="roster-controls-row">
+        <div class="roster-search-wrap">
+          <span class="roster-search-icon">🔍</span>
+          <input type="text" class="roster-search-input" placeholder="Search game or player IGN..." value="${this.escapeHtml(filter.q)}">
+          ${filter.q ? `<button type="button" class="roster-search-clear" title="Clear search">✕</button>` : ""}
+        </div>
+        <div class="roster-cat-pills">
+          <button type="button" class="roster-cat-pill ${filter.cat === "ALL" ? "active" : ""}" data-cat="ALL">All (${totalGames})</button>
+          ${categories.map(c => `<button type="button" class="roster-cat-pill ${filter.cat === c ? "active" : ""}" data-cat="${this.escapeHtml(c)}">${this.escapeHtml(c)}</button>`).join("")}
+        </div>
+      </div>
+    `;
+
+    const tbodyId = teamKey === "godlike" ? "godl-ewc-tbody" : "s8ul-ewc-tbody";
+    const input = toolbar.querySelector(".roster-search-input");
+    if (input) {
+      input.addEventListener("input", (e) => {
+        this.rosterFilter[teamKey].q = e.target.value;
+        this.renderEWC(teamKey, tbodyId, themeColor, true);
+      });
+    }
+    const clearBtn = toolbar.querySelector(".roster-search-clear");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        this.rosterFilter[teamKey].q = "";
+        this.renderEWC(teamKey, tbodyId, themeColor);
+      });
+    }
+    toolbar.querySelectorAll(".roster-cat-pill").forEach(btn => {
+      btn.addEventListener("click", () => {
+        this.rosterFilter[teamKey].cat = btn.dataset.cat;
+        this.renderEWC(teamKey, tbodyId, themeColor);
+      });
+    });
+  }
+
+  formatRosterHtml(rosterText, themeColor) {
+    const raw = (rosterText || "").trim();
+    if (!raw) return `<span class="roster-athletes-highlight" style="--team-accent:${themeColor};">-</span>`;
+    const parts = raw.includes("•")
+      ? raw.split("•").map(s => s.trim()).filter(Boolean)
+      : (raw.includes(",") ? raw.split(",").map(s => s.trim()).filter(Boolean) : [raw]);
+
+    if (parts.length > 1) {
+      return `<div class="athlete-chips-wrap" style="--team-accent:${themeColor};">${parts.map(p => `<span class="athlete-chip">${this.escapeHtml(p)}</span>`).join("")}</div>`;
+    }
+    return `<span class="roster-athletes-highlight" style="--team-accent:${themeColor};">${this.escapeHtml(raw)}</span>`;
+  }
+
   // ─── Render EWC Games Table ───────────────────────────────────────────────
-  renderEWC(teamKey, tbodyId, themeColor) {
+  renderEWC(teamKey, tbodyId, themeColor, skipToolbar = false) {
     const tbody = document.getElementById(tbodyId);
     if (!tbody) return;
-    const games = this.data[teamKey]?.ewcGames || [];
+    const allGames = this.data[teamKey]?.ewcGames || [];
+    if (!skipToolbar) this.renderRosterToolbar(teamKey, allGames, themeColor);
+
+    const filter = this.rosterFilter[teamKey] || { q: "", cat: "ALL" };
+    const q = (filter.q || "").trim().toLowerCase();
+    const games = allGames.filter(g => {
+      const cat = (g.genre || g.category || "").trim();
+      if (filter.cat !== "ALL" && cat !== filter.cat) return false;
+      if (!q) return true;
+      return (g.title || "").toLowerCase().includes(q)
+          || (g.roster || "").toLowerCase().includes(q)
+          || cat.toLowerCase().includes(q)
+          || (g.status || "").toLowerCase().includes(q);
+    });
+
     let html = "";
 
     games.forEach((g, index) => {
@@ -622,11 +722,11 @@ class CleanEsportsHub {
         <tr class="table-row-highlight ${g.highlight ? 'row-spotlight' : ''}">
           <td class="col-num" style="color:${themeColor};" data-label="#">${g.no || index + 1}</td>
           <td class="col-title" data-label="Game">
-            <span class="game-title-highlight" style="--team-accent:${themeColor};">${this.escapeHtml(g.title)}</span>
+            <span class="game-title-highlight" style="--team-accent:${themeColor};">${g.highlight ? '<span class="row-star">⭐</span> ' : ''}${this.escapeHtml(g.title)}</span>
           </td>
-          <td class="col-category" data-label="Category">${this.escapeHtml(g.genre || g.category || "")}</td>
+          <td class="col-category" data-label="Category"><span class="cat-badge">${this.escapeHtml(g.genre || g.category || "")}</span></td>
           <td class="col-roster" data-label="Official Roster / Athletes">
-            <span class="roster-athletes-highlight" style="--team-accent:${themeColor};">${this.escapeHtml(g.roster)}</span>
+            ${this.formatRosterHtml(g.roster, themeColor)}
           </td>
           <td class="col-status" data-label="Status">
             <span class="status-badge-highlight" style="color:${themeColor}; border-color:${themeColor};">${this.escapeHtml(g.status)}</span>
@@ -637,19 +737,21 @@ class CleanEsportsHub {
                 <span class="updater-icon">👤</span>
                 <span class="updater-name">${this.escapeHtml(updaterName)}</span>
               </span>
-              <button class="btn-action-edit" onclick="window.cleanHub.openEditGameModal('${teamKey}','${g.id}')" title="Edit this line-up">
-                ✏️ Edit
-              </button>
-              <button class="btn-action-delete" onclick="window.cleanHub.deleteGame('${teamKey}','${g.id}')" title="${this.isAdmin ? 'Delete Game Live (Admin)' : 'Request Delete Game'}">
-                🗑️
-              </button>
+              <div class="row-action-btns">
+                <button class="btn-action-edit" onclick="window.cleanHub.openEditGameModal('${teamKey}','${g.id}')" title="Edit this line-up">
+                  ✏️ Edit
+                </button>
+                <button class="btn-action-delete" onclick="window.cleanHub.deleteGame('${teamKey}','${g.id}')" title="${this.isAdmin ? 'Delete Game Live (Admin)' : 'Request Delete Game'}">
+                  🗑️
+                </button>
+              </div>
             </div>
           </td>
         </tr>`;
     });
 
     if (games.length === 0) {
-      html = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No EWC games listed yet.</td></tr>`;
+      html = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">${allGames.length === 0 ? "No EWC games listed yet." : "No matching games or players found."}</td></tr>`;
     }
     tbody.innerHTML = html;
 
