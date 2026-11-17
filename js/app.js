@@ -306,15 +306,6 @@ class CleanEsportsHub {
   getDefaultMajorTournaments() {
     return [
       {
-        title: "BGMI India Pro Series (BMPS) Winter Cup",
-        game: "BGMI",
-        startDate: "2026-11-20",
-        endDate: "2026-12-06",
-        prize: "₹1,00,00,000+",
-        teams: "Top 32 Invited & Open Indian Squads (GodLike, Team SouL, Revenant)",
-        location: "India (LAN Finals)"
-      },
-      {
         title: "PUBG Mobile Global Championship (PMGC) 2026",
         game: "PUBG Mobile",
         startDate: "2026-11-24",
