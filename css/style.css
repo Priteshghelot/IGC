@@ -3034,6 +3034,14 @@ button {
   color: var(--text-sub);
 }
 
+.footer-copyright {
+  margin-top: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-sub);
+  letter-spacing: 0.03em;
+}
+
 /* Athlete / Player Chips inside Roster column */
 .athlete-chips-wrap {
   display: flex;
