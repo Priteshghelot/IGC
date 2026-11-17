@@ -250,6 +250,17 @@ class CleanEsportsHub {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  openAddDailyPost() {
+    this.switchDailyTab("updates");
+    const box = document.getElementById("daily-upload-box");
+    const btn = document.getElementById("btn-toggle-daily-upload");
+    if (box) {
+      box.style.display = "block";
+      box.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    if (btn) btn.textContent = "✕ Close Upload Form";
+  }
+
   toggleDailyUploadBox() {
     const box = document.getElementById("daily-upload-box");
     const btn = document.getElementById("btn-toggle-daily-upload");

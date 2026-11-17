@@ -451,7 +451,10 @@
           </div>
         </div>
 
-        <div class="detail-top-actions">
+        <div class="detail-top-actions" style="flex-wrap:wrap; gap:8px;">
+          <button type="button" class="btn-add-tournament" onclick="window.cleanHub && window.cleanHub.openAddDailyPost()" title="Add a Daily Esports Post">
+            ✏️ Add Post
+          </button>
           <div class="daily-live-timestamp-pill">
             <span class="pulsing-live-dot"></span>
             <span id="daily-live-date-text">DAILY ESPORTS UPDATES</span>
@@ -1050,7 +1053,7 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=9"></script>
+  <script src="js/app.js?v=10"></script>
 
   <!-- Full-Screen Image Lightbox for Daily Update Posts -->
   <div class="modal-overlay" id="image-lightbox-modal" onclick="if(event.target===this) this.classList.remove('active')">
