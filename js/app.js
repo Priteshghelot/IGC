@@ -18,6 +18,7 @@ class CleanEsportsHub {
     this.homeScreen         = document.getElementById("home-screen");
     this.godlikeScreen      = document.getElementById("screen-godlike");
     this.s8ulScreen         = document.getElementById("screen-s8ul");
+    this.enc27Screen        = document.getElementById("screen-enc27");
     this.dailyUpdatesScreen = document.getElementById("screen-daily-updates");
     this.cardGodlike        = document.getElementById("card-godlike-select");
     this.cardS8ul           = document.getElementById("card-s8ul-select");
@@ -51,10 +52,14 @@ class CleanEsportsHub {
     // Check deep link hash
     if (window.location.hash === "#daily-updates") {
       this.showDailyUpdates();
+    } else if (window.location.hash === "#enc27") {
+      this.showEnc27();
     }
     window.addEventListener("hashchange", () => {
       if (window.location.hash === "#daily-updates") {
         this.showDailyUpdates();
+      } else if (window.location.hash === "#enc27") {
+        this.showEnc27();
       } else if (!window.location.hash || window.location.hash === "#home" || window.location.hash === "#") {
         this.showHome();
       }
@@ -274,9 +279,10 @@ class CleanEsportsHub {
   showHome() {
     this.godlikeScreen.classList.remove("active");
     this.s8ulScreen.classList.remove("active");
+    if (this.enc27Screen) this.enc27Screen.classList.remove("active");
     if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.remove("active");
     this.homeScreen.style.display = "flex";
-    if (window.location.hash === "#daily-updates") {
+    if (window.location.hash === "#daily-updates" || window.location.hash === "#enc27") {
       try { history.replaceState(null, null, " "); } catch(e) {}
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -285,6 +291,7 @@ class CleanEsportsHub {
   showGodlike() {
     this.homeScreen.style.display = "none";
     this.s8ulScreen.classList.remove("active");
+    if (this.enc27Screen) this.enc27Screen.classList.remove("active");
     if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.remove("active");
     this.godlikeScreen.classList.add("active");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -293,8 +300,19 @@ class CleanEsportsHub {
   showS8ul() {
     this.homeScreen.style.display = "none";
     this.godlikeScreen.classList.remove("active");
+    if (this.enc27Screen) this.enc27Screen.classList.remove("active");
     if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.remove("active");
     this.s8ulScreen.classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  showEnc27() {
+    this.homeScreen.style.display = "none";
+    this.godlikeScreen.classList.remove("active");
+    this.s8ulScreen.classList.remove("active");
+    if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.remove("active");
+    if (this.enc27Screen) this.enc27Screen.classList.add("active");
+    this.renderEnc27Rosters();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -302,6 +320,7 @@ class CleanEsportsHub {
     this.homeScreen.style.display = "none";
     this.godlikeScreen.classList.remove("active");
     this.s8ulScreen.classList.remove("active");
+    if (this.enc27Screen) this.enc27Screen.classList.remove("active");
     if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.add("active");
     
     const dateEl = document.getElementById("daily-live-date-text");

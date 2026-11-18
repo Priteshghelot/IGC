@@ -3119,6 +3119,69 @@ button {
   margin-top: 2rem;
 }
 
+.enc27-roadmap-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 1.25rem;
+}
+
+.enc27-step-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.enc27-step-card.enc27-step-final {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: linear-gradient(135deg, rgba(255, 153, 51, 0.08), rgba(34, 197, 94, 0.09));
+}
+
+.enc27-step-num {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  font-size: 0.85rem;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.enc27-step-final .enc27-step-num {
+  background: rgba(34, 197, 94, 0.18);
+  border-color: rgba(34, 197, 94, 0.45);
+  color: #4ade80;
+}
+
+.enc27-step-card strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #f8fafc;
+  font-weight: 800;
+}
+
+.enc27-step-card span {
+  display: block;
+  font-size: 0.76rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+@media (max-width: 768px) {
+  .enc27-roadmap-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
 .enc27-roster-header {
   display: flex;
   align-items: center;
