@@ -30,6 +30,7 @@ class CleanEsportsHub {
     };
     this.cachedApprovedPosts = [];
     this.rosterFilter       = { godlike: { q: "", cat: "ALL" }, s8ul: { q: "", cat: "ALL" } };
+    this.enc27Filter        = { q: "", cat: "ALL" };
 
     // Restore active admin session if already authenticated in this tab or from /admin
     if (sessionStorage.getItem(this.adminKey) === "true" || (window.location && window.location.search && window.location.search.includes("admin=true"))) {
@@ -1385,10 +1386,217 @@ class CleanEsportsHub {
   renderAll() {
     this.renderDailyMarquee();
     this.renderEwc27Games();
+    this.renderEnc27Rosters();
     this.renderEWC("godlike", "godl-ewc-tbody", "var(--godl-gold)");
     this.renderEWC("s8ul",    "s8ul-ewc-tbody",  "var(--s8ul-blue)");
     this.renderRosters("godlike", "godl-roster-container", "var(--godl-gold)");
     this.renderRosters("s8ul",    "s8ul-roster-container",  "var(--s8ul-blue)");
+  }
+
+  // ─── Road to ENC27 — Indian Region Roster ─────────────────────────────────
+  getDefaultEnc27Rosters() {
+    return [
+      { id: "enc-1", no: 1, title: "BGMI / PUBG Mobile", genre: "Mobile Battle Royale", roster: "TBA — India National Trials", coach: "", status: "Road to ENC27 — Qualifier Watch", updatedBy: "Pritesh Gehlot" },
+      { id: "enc-2", no: 2, title: "Valorant", genre: "Tactical FPS", roster: "TBA — South Asia Trials", coach: "", status: "Road to ENC27 — Qualifier Watch", updatedBy: "Pritesh Gehlot" },
+      { id: "enc-3", no: 3, title: "Chess", genre: "Strategy / Mind", roster: "TBA — Indian Grandmasters", coach: "", status: "Road to ENC27 — Invited", updatedBy: "Pritesh Gehlot" },
+      { id: "enc-4", no: 4, title: "Tekken 8", genre: "Fighting (FGC)", roster: "TBA — India FGC Qualifiers", coach: "", status: "Road to ENC27 — Qualifier Watch", updatedBy: "Pritesh Gehlot" },
+      { id: "enc-5", no: 5, title: "EA SPORTS FC", genre: "Sports Sim", roster: "TBA — India National Selection", coach: "", status: "Road to ENC27 — Qualifier Watch", updatedBy: "Pritesh Gehlot" },
+      { id: "enc-6", no: 6, title: "Call of Duty: Mobile", genre: "Mobile FPS", roster: "TBA — India Regional Trials", coach: "", status: "Road to ENC27 — Qualifier Watch", updatedBy: "Pritesh Gehlot" },
+      { id: "enc-7", no: 7, title: "Free Fire MAX", genre: "Mobile Battle Royale", roster: "TBA — India Regional Trials", coach: "", status: "Road to ENC27 — Qualifier Watch", updatedBy: "Pritesh Gehlot" },
+      { id: "enc-8", no: 8, title: "MLBB", genre: "Mobile MOBA", roster: "TBA — South Asia Qualifiers", coach: "", status: "Road to ENC27 — Qualifier Watch", updatedBy: "Pritesh Gehlot" }
+    ];
+  }
+
+  getActiveEnc27Rosters() {
+    return Array.isArray(this.data?.enc27Rosters) && this.data.enc27Rosters.length > 0
+      ? this.data.enc27Rosters
+      : this.getDefaultEnc27Rosters();
+  }
+
+  renderEnc27Rosters(skipToolbar = false) {
+    const tbody = document.getElementById("enc27-roster-tbody");
+    if (!tbody) return;
+    const allItems = this.getActiveEnc27Rosters();
+    const themeColor = "#38bdf8";
+
+    const toolbar = document.getElementById("enc27-roster-toolbar");
+    if (toolbar && !skipToolbar) {
+      const cats = Array.from(new Set(allItems.map(r => (r.genre || "").trim()).filter(Boolean)));
+      if (this.enc27Filter.cat !== "ALL" && !cats.includes(this.enc27Filter.cat)) {
+        this.enc27Filter.cat = "ALL";
+      }
+      toolbar.innerHTML = `
+        <div class="roster-controls-row">
+          <div class="roster-search-wrap">
+            <span class="roster-search-icon">🔍</span>
+            <input type="text" class="roster-search-input" placeholder="Search ENC27 game, player, or coach..." value="${this.escapeHtml(this.enc27Filter.q)}">
+            ${this.enc27Filter.q ? `<button type="button" class="roster-search-clear" title="Clear search">✕</button>` : ""}
+          </div>
+          <div class="roster-cat-pills">
+            <button type="button" class="roster-cat-pill ${this.enc27Filter.cat === "ALL" ? "active" : ""}" data-cat="ALL">All (${allItems.length})</button>
+            ${cats.map(c => `<button type="button" class="roster-cat-pill ${this.enc27Filter.cat === c ? "active" : ""}" data-cat="${this.escapeHtml(c)}">${this.escapeHtml(c)}</button>`).join("")}
+          </div>
+        </div>
+      `;
+      const input = toolbar.querySelector(".roster-search-input");
+      if (input) {
+        input.addEventListener("input", (e) => {
+          this.enc27Filter.q = e.target.value;
+          this.renderEnc27Rosters(true);
+        });
+      }
+      const clearBtn = toolbar.querySelector(".roster-search-clear");
+      if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+          this.enc27Filter.q = "";
+          this.renderEnc27Rosters(false);
+        });
+      }
+      toolbar.querySelectorAll(".roster-cat-pill").forEach(btn => {
+        btn.addEventListener("click", () => {
+          this.enc27Filter.cat = btn.dataset.cat;
+          this.renderEnc27Rosters(false);
+        });
+      });
+    } else if (toolbar && skipToolbar) {
+      const clearBtn = toolbar.querySelector(".roster-search-clear");
+      if (clearBtn) clearBtn.style.display = this.enc27Filter.q ? "inline-flex" : "none";
+    }
+
+    const q = (this.enc27Filter.q || "").trim().toLowerCase();
+    const items = allItems.filter(r => {
+      const cat = (r.genre || "").trim();
+      if (this.enc27Filter.cat !== "ALL" && cat !== this.enc27Filter.cat) return false;
+      if (!q) return true;
+      return (r.title || "").toLowerCase().includes(q)
+          || (r.roster || "").toLowerCase().includes(q)
+          || (r.coach || "").toLowerCase().includes(q)
+          || cat.toLowerCase().includes(q)
+          || (r.status || "").toLowerCase().includes(q);
+    });
+
+    if (items.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">No matching ENC27 rosters found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = items.map((r, idx) => {
+      const coachHtml = r.coach
+        ? `<span class="coach-badge-highlight" style="--team-accent:${themeColor};">${this.escapeHtml(r.coach)}</span>`
+        : `<span class="coach-empty-text">—</span>`;
+      return `
+        <tr class="table-row-highlight">
+          <td class="col-num" style="color:${themeColor};" data-label="#">${r.no || idx + 1}</td>
+          <td class="col-title" data-label="Game">
+            <span class="game-title-highlight" style="--team-accent:${themeColor};">${this.escapeHtml(r.title)}</span>
+          </td>
+          <td class="col-category" data-label="Category"><span class="cat-badge">${this.escapeHtml(r.genre || "")}</span></td>
+          <td class="col-roster" data-label="Team India Roster / Athletes">
+            ${this.formatRosterHtml(r.roster, themeColor)}
+          </td>
+          <td class="col-coach" data-label="Coach / Mentor">${coachHtml}</td>
+          <td class="col-status" data-label="Status">
+            <span class="status-badge-highlight" style="color:${themeColor}; border-color:${themeColor};">${this.escapeHtml(r.status || "Road to ENC27")}</span>
+          </td>
+          <td data-label="Edited By" class="col-edited-by">
+            <div class="edited-by-cell">
+              <span class="updater-pill">
+                <span class="updater-icon">👤</span>
+                <span class="updater-name">${this.escapeHtml(r.updatedBy || "Pritesh Gehlot")}</span>
+              </span>
+              <div class="row-action-btns">
+                <button class="btn-action-edit" onclick="window.cleanHub.openEditEnc27RosterModal('${this.escapeHtml(r.id)}')" title="Edit ENC27 Roster">✏️ Edit</button>
+                ${this.isAdmin ? `<button class="btn-action-delete" onclick="window.cleanHub.deleteEnc27Roster('${this.escapeHtml(r.id)}')" title="Delete ENC27 Roster (Admin)">🗑️</button>` : ""}
+              </div>
+            </div>
+          </td>
+        </tr>`;
+    }).join("");
+  }
+
+  openAddEnc27RosterModal() {
+    if (!this.checkAdminAuth()) return;
+    this.editingEnc27RosterId = null;
+    const titleEl = document.getElementById("enc27-modal-title");
+    const btnEl = document.getElementById("enc27-modal-submit-btn");
+    if (titleEl) titleEl.textContent = "➕ Add ENC27 Roster (Admin)";
+    if (btnEl) btnEl.textContent = "💾 Save ENC27 Roster Live";
+    document.getElementById("enc27-no-input").value = this.getActiveEnc27Rosters().length + 1;
+    document.getElementById("enc27-title-input").value = "";
+    document.getElementById("enc27-genre-input").value = "";
+    document.getElementById("enc27-roster-input").value = "";
+    document.getElementById("enc27-coach-input").value = "";
+    document.getElementById("enc27-status-input").value = "Road to ENC27 — Trials";
+    document.getElementById("enc27-updater-input").value = localStorage.getItem("last_updater_name") || "Pritesh Gehlot";
+    this.openModal("enc27-roster-modal");
+  }
+
+  openEditEnc27RosterModal(id) {
+    const item = this.getActiveEnc27Rosters().find(r => r.id === id);
+    if (!item) return;
+    this.editingEnc27RosterId = id;
+    const titleEl = document.getElementById("enc27-modal-title");
+    const btnEl = document.getElementById("enc27-modal-submit-btn");
+    if (titleEl) titleEl.textContent = this.isAdmin ? `✏️ Edit ENC27 Roster: ${item.title}` : `📝 Suggest ENC27 Roster Edit: ${item.title}`;
+    if (btnEl) btnEl.textContent = this.isAdmin ? "💾 Save Changes Live" : "📩 Submit for Admin Approval";
+    document.getElementById("enc27-no-input").value = item.no || 1;
+    document.getElementById("enc27-title-input").value = item.title || "";
+    document.getElementById("enc27-genre-input").value = item.genre || "";
+    document.getElementById("enc27-roster-input").value = item.roster || "";
+    document.getElementById("enc27-coach-input").value = item.coach || "";
+    document.getElementById("enc27-status-input").value = item.status || "";
+    document.getElementById("enc27-updater-input").value = item.updatedBy || localStorage.getItem("last_updater_name") || "";
+    this.openModal("enc27-roster-modal");
+  }
+
+  async handleSaveEnc27Roster(e) {
+    if (e) e.preventDefault();
+    const no = parseInt(document.getElementById("enc27-no-input").value, 10) || 1;
+    const title = document.getElementById("enc27-title-input").value.trim();
+    const genre = document.getElementById("enc27-genre-input").value.trim();
+    const roster = document.getElementById("enc27-roster-input").value.trim() || "TBA — National Trials";
+    const coach = document.getElementById("enc27-coach-input").value.trim();
+    const status = document.getElementById("enc27-status-input").value.trim() || "Road to ENC27 — Trials";
+    const updatedBy = document.getElementById("enc27-updater-input").value.trim() || "Community Member";
+    if (!title) { alert("Please enter Game Title."); return; }
+    localStorage.setItem("last_updater_name", updatedBy);
+
+    const seedList = this.getDefaultEnc27Rosters();
+    const payload = { id: this.editingEnc27RosterId || null, no, title, genre, roster, coach, status, updatedBy };
+
+    if (this.isAdmin) {
+      this.closeModal("enc27-roster-modal");
+      const ok = await this.cloudOp({ op: "saveEnc27Roster", roster: payload, seedList }, `✅ ENC27 roster "${title}" saved!`);
+      if (ok) this.renderEnc27Rosters();
+      return;
+    }
+
+    const req = {
+      id: "req-" + Date.now(),
+      type: "enc27_roster",
+      teamKey: "godlike",
+      targetId: this.editingEnc27RosterId || null,
+      targetName: title,
+      submittedBy: updatedBy,
+      submittedAt: new Date().toLocaleString(),
+      status: "pending",
+      seedList,
+      data: payload
+    };
+    this.closeModal("enc27-roster-modal");
+    await this.submitPendingRequest(req, `📩 ENC27 roster update for "${title}" sent to Admin for approval!`);
+  }
+
+  async deleteEnc27Roster(id) {
+    if (!this.checkAdminAuth()) return;
+    const item = this.getActiveEnc27Rosters().find(r => r.id === id);
+    if (!item) return;
+    if (!confirm(`⚠️ Permanently delete ENC27 roster "${item.title}"?`)) return;
+    const ok = await this.cloudOp(
+      { op: "deleteEnc27Roster", id, seedList: this.getDefaultEnc27Rosters() },
+      `🗑️ ENC27 roster "${item.title}" deleted.`
+    );
+    if (ok) this.renderEnc27Rosters();
   }
 
   // ─── Render EWC27 Games Section (Above Daily Updates) ─────────────────────
