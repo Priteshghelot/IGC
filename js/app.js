@@ -181,7 +181,7 @@ class CleanEsportsHub {
     ping(true);
     this._visitorHeartbeat = setInterval(() => {
       if (!document.hidden) ping(false);
-    }, 30000);
+    }, 10000);
   }
 
   startAutoLiveSync() {
@@ -195,7 +195,7 @@ class CleanEsportsHub {
       if (this.dailyUpdatesScreen?.classList.contains("active")) {
         this.renderApprovedPosts();
       }
-    }, 15000);
+    }, 10000);
   }
 
   requestFingerprint(r) {

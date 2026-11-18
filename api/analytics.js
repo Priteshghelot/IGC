@@ -26,7 +26,7 @@ async function fetchLiveSocials(redis) {
       const cached = await redis.get(SOCIAL_CACHE_KEY);
       if (cached) return JSON.parse(cached);
     } catch (e) {}
-  } else if (memStats.socials && (now - memStats.socialsAt < 30000)) {
+  } else if (memStats.socials && (now - memStats.socialsAt < 10000)) {
     return memStats.socials;
   }
 
@@ -75,7 +75,7 @@ async function fetchLiveSocials(redis) {
   const out = { ytSubs, kickFollowers, igFollowers };
   if (redis) {
     try {
-      await redis.set(SOCIAL_CACHE_KEY, JSON.stringify(out), 'EX', 30);
+      await redis.set(SOCIAL_CACHE_KEY, JSON.stringify(out), 'EX', 10);
       await redis.set(SOCIAL_LAST_GOOD_KEY, JSON.stringify(out));
     } catch (e) {}
   } else {
