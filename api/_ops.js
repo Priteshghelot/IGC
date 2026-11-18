@@ -197,6 +197,43 @@ function applyOp(data, op) {
       if (data.upcomingTournaments.length === before) throw new Error('Major tournament not found to delete.');
       return 'Major tournament deleted';
     }
+    case 'saveEnc27Roster': {
+      if (!Array.isArray(data.enc27Rosters)) {
+        data.enc27Rosters = Array.isArray(op.seedList) ? op.seedList : [];
+      }
+      const r = op.roster || {};
+      if (!String(r.title || '').trim()) throw new Error('Game title required');
+      const cleanR = {
+        id: r.id || 'enc-' + Date.now(),
+        no: Number.isFinite(+r.no) && +r.no > 0 ? +r.no : (data.enc27Rosters.length + 1),
+        title: String(r.title).trim(),
+        genre: String(r.genre || 'Esports').trim(),
+        roster: String(r.roster || 'TBA — National Trials').trim(),
+        coach: String(r.coach || '').trim(),
+        status: String(r.status || 'Road to ENC27 — Trials').trim(),
+        updatedBy: String(r.updatedBy || 'Admin').trim(),
+        updatedAt: r.updatedAt || today()
+      };
+      if (r.id) {
+        const idx = data.enc27Rosters.findIndex(x => x.id === r.id);
+        if (idx !== -1) data.enc27Rosters[idx] = cleanR;
+        else data.enc27Rosters.push(cleanR);
+      } else {
+        data.enc27Rosters.push(cleanR);
+      }
+      data.enc27Rosters.sort((a, b) => (a.no || 0) - (b.no || 0));
+      return `Saved ENC27 roster "${cleanR.title}"`;
+    }
+    case 'deleteEnc27Roster': {
+      if (!Array.isArray(data.enc27Rosters)) {
+        data.enc27Rosters = Array.isArray(op.seedList) ? op.seedList : [];
+      }
+      const before = data.enc27Rosters.length;
+      data.enc27Rosters = data.enc27Rosters.filter(x => x.id !== op.id);
+      if (data.enc27Rosters.length === before) throw new Error('ENC27 roster not found to delete.');
+      data.enc27Rosters.forEach((x, i) => { x.no = i + 1; });
+      return 'ENC27 roster deleted';
+    }
     default:
       throw new Error('Unknown operation');
   }
@@ -230,6 +267,8 @@ function requestToOp(req) {
       return { op: 'saveThirdPartyTournament', tournament: { ...d, id: req.targetId || d.id || null, updatedBy: d.updatedBy || req.submittedBy }, seedList: req.seedList };
     case 'delete_thirdparty_tournament':
       return { op: 'deleteThirdPartyTournament', id: req.targetId || null, title: d.target || req.targetName, seedList: req.seedList };
+    case 'enc27_roster':
+      return { op: 'saveEnc27Roster', roster: { ...d, id: req.targetId || d.id || null, updatedBy: d.updatedBy || req.submittedBy }, seedList: req.seedList };
     default:
       return null; // e.g. daily_post: approval only, no data change
   }
