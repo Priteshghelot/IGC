@@ -1433,36 +1433,30 @@ class CleanEsportsHub {
       : this.getDefaultEnc27Rosters();
   }
 
-  getEnc27GameBg(title) {
-    const t = String(title || "").toLowerCase();
-    if (t.includes("bgmi") || t.includes("pubg")) return "/images/games/bgmi.jpg";
-    if (t.includes("valorant")) return "/images/games/valorant.jpg";
-    if (t.includes("chess")) return "/images/games/chess.jpg";
-    if (t.includes("tekken")) return "/images/games/tekken8.jpg";
-    if (t.includes("fc") || t.includes("fifa")) return "/images/games/eafc.jpg";
-    if (t.includes("call of duty") || t.includes("codm")) return "/images/games/codm.jpg";
-    if (t.includes("free fire")) return "/images/games/freefire.jpg";
-    if (t.includes("mlbb") || t.includes("mobile legends")) return "/images/games/mlbb.jpg";
-    return "/images/ewc_banner.jpg";
+  openEnc27Game(title) {
+    this.enc27Filter.q = title || "";
+    this.enc27Filter.cat = "ALL";
+    this.showEnc27();
+    setTimeout(() => {
+      const target = document.getElementById("enc27-roster-view") || document.getElementById("enc27-roster-toolbar");
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 120);
   }
 
   renderEnc27Games() {
     const track = document.getElementById("enc27-games-track");
     if (!track) return;
     const items = this.getActiveEnc27Rosters();
-    track.innerHTML = items.map(r => {
-      const bgUrl = this.getEnc27GameBg(r.title);
-      return `
-      <div class="ewc27-game-card enc27-game-card-bg" style="background-image: linear-gradient(180deg, rgba(6, 12, 24, 0.56) 0%, rgba(6, 12, 24, 0.84) 100%), url('${bgUrl}'); background-size: cover; background-position: center;">
+    track.innerHTML = items.map(r => `
+      <div class="ewc27-game-card enc27-game-card-clickable" onclick="window.cleanHub && window.cleanHub.openEnc27Game('${this.escapeHtml(r.title)}')" title="View ${this.escapeHtml(r.title)} Roster on ENC27">
         <div class="ewc27-card-content">
           <h3 class="ewc27-game-name">${this.escapeHtml(r.title)}</h3>
           ${r.status ? `<span class="ewc27-game-sub">${this.escapeHtml(r.status)}</span>` : ""}
           ${r.genre ? `<span class="ewc27-game-genre">${this.escapeHtml(r.genre)}</span>` : ""}
         </div>
-        ${this.isAdmin ? `<button class="ewc27-card-edit-btn" onclick="window.cleanHub.openEditEnc27RosterModal('${this.escapeHtml(r.id)}')" title="Edit ENC27 Game">✏️</button>` : ""}
+        ${this.isAdmin ? `<button class="ewc27-card-edit-btn" onclick="event.stopPropagation(); window.cleanHub.openEditEnc27RosterModal('${this.escapeHtml(r.id)}')" title="Edit ENC27 Game">✏️</button>` : ""}
       </div>
-    `;
-    }).join("");
+    `).join("");
   }
 
   renderEnc27Rosters(skipToolbar = false) {
