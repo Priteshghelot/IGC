@@ -3043,21 +3043,26 @@ button {
 }
 
 /* ============================================================================
-   ROAD TO ENC27 — INDIAN REGION & ROSTER OF ENC
+   ROAD TO ENC27 — INDIAN REGION PORTAL CARD & ROSTER OF ENC
    ============================================================================ */
 .enc27-section {
   max-width: 1180px;
-  margin: 3.25rem auto 1.5rem;
+  margin: 2.5rem auto 1.5rem;
 }
 
-.enc27-hero-card {
+.portal-card.card-enc27 {
+  max-width: 560px;
+  margin: 0 auto;
   position: relative;
   overflow: hidden;
-  border-radius: 20px;
-  background: linear-gradient(145deg, rgba(13, 21, 38, 0.96), rgba(9, 14, 26, 0.98));
-  border: 1.5px solid rgba(56, 189, 248, 0.28);
-  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  padding: 1.75rem 1.75rem 1.5rem;
+  background: radial-gradient(circle at top, rgba(34, 197, 94, 0.12), rgba(7, 17, 34, 0.96) 65%);
+  border: 1.5px solid rgba(56, 189, 248, 0.45);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55), 0 0 28px rgba(56, 189, 248, 0.12);
+}
+
+.portal-card.card-enc27:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.65), 0 0 36px rgba(56, 189, 248, 0.25);
 }
 
 .enc27-tricolor-bar {
@@ -3069,153 +3074,49 @@ button {
   background: linear-gradient(90deg, #ff9933 0%, #ffffff 50%, #22c55e 100%);
 }
 
-.enc27-hero-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-}
-
-.enc27-brand-wrap {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  flex: 1;
-  min-width: 260px;
-}
-
-.enc27-logo-box {
-  width: 116px;
-  height: 76px;
-  border-radius: 14px;
-  background: linear-gradient(145deg, #f8fafc, #e2e8f0);
-  border: 2px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.25), 0 0 0 3px rgba(255, 153, 51, 0.16);
+.enc27-portal-logo-wrap {
+  height: 112px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 14px;
-  flex-shrink: 0;
+  margin-bottom: 1rem;
 }
 
-.enc27-logo-img {
-  width: 100%;
-  height: 100%;
+.enc27-portal-logo-img {
+  max-width: 240px;
+  max-height: 92px;
+  width: auto;
+  height: auto;
   object-fit: contain;
-  display: block;
+  filter: invert(1) contrast(1.45) brightness(1.1) drop-shadow(0 0 18px rgba(56, 189, 248, 0.45));
+  mix-blend-mode: screen;
 }
 
-.enc27-kicker {
-  display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #38bdf8;
-  margin-bottom: 4px;
-}
-
-.enc27-title {
-  font-size: clamp(1.55rem, 3vw, 2.25rem);
-  font-weight: 950;
-  letter-spacing: -0.02em;
-  color: #ffffff;
-  margin: 0 0 6px;
-  line-height: 1.1;
-}
-
-.enc27-title-accent {
+.enc27-portal-title {
   background: linear-gradient(90deg, #ff9933 0%, #ffffff 50%, #22c55e 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.enc27-subtitle {
-  margin: 0;
-  font-size: 0.92rem;
-  color: #94a3b8;
-  line-height: 1.45;
-  max-width: 650px;
-}
-
-.enc27-hero-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.enc27-region-pill {
-  background: linear-gradient(135deg, rgba(255, 153, 51, 0.18), rgba(34, 197, 94, 0.18));
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  color: #f8fafc;
-  font-size: 0.78rem;
-  font-weight: 800;
-  padding: 7px 14px;
-  border-radius: 999px;
-  letter-spacing: 0.04em;
-}
-
-.enc27-roadmap-strip {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 1.35rem;
-}
-
-.enc27-step-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 12px 14px;
-}
-
-.enc27-step-card.enc27-step-final {
-  border-color: rgba(34, 197, 94, 0.35);
-  background: linear-gradient(135deg, rgba(255, 153, 51, 0.08), rgba(34, 197, 94, 0.09));
-}
-
-.enc27-step-num {
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  background: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.4);
+.tag-enc27 {
   color: #38bdf8;
-  font-size: 0.85rem;
-  font-weight: 900;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  border-color: rgba(56, 189, 248, 0.45);
+  background: rgba(56, 189, 248, 0.1);
 }
 
-.enc27-step-final .enc27-step-num {
-  background: rgba(34, 197, 94, 0.18);
-  border-color: rgba(34, 197, 94, 0.45);
-  color: #4ade80;
+.btn-enc27 {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #061224;
+  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.35);
 }
 
-.enc27-step-card strong {
-  display: block;
-  font-size: 0.88rem;
-  color: #f8fafc;
-  font-weight: 800;
-}
-
-.enc27-step-card span {
-  display: block;
-  font-size: 0.76rem;
-  color: #94a3b8;
-  margin-top: 2px;
+.btn-enc27:hover {
+  background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+  transform: translateY(-2px);
 }
 
 .enc27-roster-block {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 }
 
 .enc27-roster-header {
