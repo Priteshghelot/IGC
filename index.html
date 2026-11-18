@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>India EWC Hub | Developed by Pritesh Gehlot</title>
   <meta name="description" content="Official tracker for India's EWC Club Partners (GodLike Esports in Golden Yellow & S8UL Esports in Sky Blue) developed by Pritesh Gehlot.">
-  <link rel="stylesheet" href="css/style.css?v=21">
+  <link rel="stylesheet" href="css/style.css?v=22">
   <link rel="stylesheet" href="css/responsive.css?v=19">
 </head>
 <body>
@@ -1296,9 +1296,27 @@
     </div>
   </div>
 
+  <!-- =========================================================================
+       MODAL: EWC27 GAME -> CLUB ROSTERS (S8UL & GODLIKE BY ORG)
+       ========================================================================= -->
+  <div class="modal-overlay" id="ewc27-club-roster-modal">
+    <div class="modal-card" style="max-width:860px;">
+      <div class="modal-header">
+        <h3 id="ewc27-club-modal-title">🏆 EWC Club Rosters</h3>
+        <button class="modal-close-btn" onclick="window.cleanHub.closeModal('ewc27-club-roster-modal')">✕</button>
+      </div>
+      <div class="modal-body" id="ewc27-club-modal-body">
+        <!-- Rendered dynamically by CleanEsportsHub.openEwc27ClubRoster() -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-secondary" onclick="window.cleanHub.closeModal('ewc27-club-roster-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=24"></script>
+  <script src="js/app.js?v=25"></script>
 
   <!-- Full-Screen Image Lightbox for Daily Update Posts -->
   <div class="modal-overlay" id="image-lightbox-modal" onclick="if(event.target===this) this.classList.remove('active')">

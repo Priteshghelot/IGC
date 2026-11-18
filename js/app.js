@@ -1679,17 +1679,104 @@ class CleanEsportsHub {
       const badgeHtml = isHighlighted ? `<span class="ewc27-card-badge">⭐ REVEALED</span>` : "";
 
       return `
-        <div class="ewc27-game-card ${highlightClass}">
+        <div class="ewc27-game-card enc27-game-card-clickable ${highlightClass}" onclick="window.cleanHub && window.cleanHub.openEwc27ClubRoster('${this.escapeHtml(g.title)}')" title="View S8UL & GodLike rosters for ${this.escapeHtml(g.title)}">
           ${badgeHtml}
           <div class="ewc27-card-content">
             <h3 class="ewc27-game-name">${this.escapeHtml(g.title)}</h3>
             ${g.sub ? `<span class="ewc27-game-sub">${this.escapeHtml(g.sub)}</span>` : ""}
             ${g.genre ? `<span class="ewc27-game-genre">${this.escapeHtml(g.genre)}</span>` : ""}
           </div>
-          ${this.isAdmin ? `<button class="ewc27-card-edit-btn" onclick="window.cleanHub.openEditEwc27GameModal('${g.id}')" title="Edit Game">✏️</button>` : ""}
+          ${this.isAdmin ? `<button class="ewc27-card-edit-btn" onclick="event.stopPropagation(); window.cleanHub.openEditEwc27GameModal('${g.id}')" title="Edit Game">✏️</button>` : ""}
         </div>
       `;
     }).join("");
+  }
+
+  matchTeamGamesForEwcTitle(teamKey, ewcTitle) {
+    const games = this.data?.[teamKey]?.ewcGames || [];
+    const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    const q = norm(ewcTitle);
+    const aliases = [
+      ["pubg mobile", "bgmi", "pmwc", "pubg battlegrounds", "pubg pc"],
+      ["ea sports fc", "fc 26", "fc 25", "fc 27", "fifa"],
+      ["call of duty warzone", "warzone", "codm", "cod mobile", "call of duty"],
+      ["teamfight tactics", "tft"],
+      ["counter strike 2", "cs2", "counter strike"],
+      ["mobile legends", "mlbb"],
+      ["free fire", "free fire max", "fire fire"],
+      ["street fighter 6", "sf6"],
+      ["fatal fury", "city of the wolves"],
+      ["honor of kings", "hok"]
+    ];
+    const group = aliases.find(arr => arr.some(a => q.includes(a) || a.includes(q))) || [q];
+    return games.filter(g => {
+      const gt = norm(g.title);
+      if (!gt) return false;
+      if (gt.includes(q) || q.includes(gt)) return true;
+      return group.some(a => gt.includes(a));
+    });
+  }
+
+  openEwc27ClubRoster(title) {
+    const titleEl = document.getElementById("ewc27-club-modal-title");
+    const bodyEl  = document.getElementById("ewc27-club-modal-body");
+    if (!bodyEl) return;
+    if (titleEl) titleEl.textContent = `🏆 ${title} — EWC Club Rosters`;
+
+    const renderOrgPanel = (teamKey, label, logoSrc, themeColor, cls) => {
+      const matches = this.matchTeamGamesForEwcTitle(teamKey, title);
+      const rowsHtml = matches.length > 0
+        ? matches.map(g => `
+            <div class="ewc27-org-game-row">
+              <div class="ewc27-org-game-head">
+                <strong>${this.escapeHtml(g.title)}</strong>
+                <span class="status-badge-highlight" style="color:${themeColor}; border-color:${themeColor}; font-size:0.75rem; padding:3px 9px;">${this.escapeHtml(g.status || "Active")}</span>
+              </div>
+              <div class="ewc27-org-roster-line">${this.formatRosterHtml(g.roster, themeColor)}</div>
+              ${g.coach ? `<div class="ewc27-org-coach-line">🎓 Coach / Mentor: <strong>${this.escapeHtml(g.coach)}</strong></div>` : ""}
+            </div>
+          `).join("")
+        : `<div class="ewc27-org-empty">No active ${this.escapeHtml(label)} roster listed for <strong>${this.escapeHtml(title)}</strong> yet.</div>`;
+
+      return `
+        <div class="ewc27-org-panel ${cls}">
+          <div class="ewc27-org-panel-head">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <img src="${logoSrc}" alt="${this.escapeHtml(label)}" style="width:36px; height:36px; object-fit:contain; border-radius:8px;">
+              <div>
+                <h4 style="margin:0; color:${themeColor}; font-size:1.05rem; font-weight:900;">${this.escapeHtml(label)}</h4>
+                <span style="font-size:0.75rem; color:#94a3b8;">${matches.length} matching roster${matches.length === 1 ? "" : "s"}</span>
+              </div>
+            </div>
+            <button type="button" class="btn-action-edit" onclick="window.cleanHub.openTeamGameFromEwc('${teamKey}', '${this.escapeHtml(matches[0]?.title || title)}')">
+              View Full Roster →
+            </button>
+          </div>
+          <div class="ewc27-org-panel-body">${rowsHtml}</div>
+        </div>
+      `;
+    };
+
+    bodyEl.innerHTML = `
+      <div class="ewc27-org-split">
+        ${renderOrgPanel("s8ul", "S8UL Esports", "images/s8ul_logo.png", "var(--s8ul-blue)", "org-s8ul")}
+        ${renderOrgPanel("godlike", "GodLike Esports", "images/godlike_logo.png", "var(--godl-gold)", "org-godlike")}
+      </div>
+    `;
+    this.openModal("ewc27-club-roster-modal");
+  }
+
+  openTeamGameFromEwc(teamKey, filterQuery) {
+    this.closeModal("ewc27-club-roster-modal");
+    if (this.rosterFilter[teamKey]) {
+      this.rosterFilter[teamKey].q = filterQuery || "";
+      this.rosterFilter[teamKey].cat = "ALL";
+    }
+    const tbodyId = teamKey === "godlike" ? "godl-ewc-tbody" : "s8ul-ewc-tbody";
+    const color   = teamKey === "godlike" ? "var(--godl-gold)" : "var(--s8ul-blue)";
+    this.renderEWC(teamKey, tbodyId, color);
+    if (teamKey === "godlike") this.showGodlike();
+    else this.showS8ul();
   }
 
   // ─── Roster Toolbar (Stats + Search + Category Filter) ────────────────────

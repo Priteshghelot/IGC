@@ -3064,6 +3064,75 @@ button {
   box-shadow: 0 10px 26px rgba(56, 189, 248, 0.25);
 }
 
+.ewc27-org-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.ewc27-org-panel {
+  background: rgba(10, 17, 32, 0.9);
+  border-radius: 14px;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  padding: 1rem;
+}
+
+.ewc27-org-panel.org-s8ul {
+  border-color: rgba(0, 168, 255, 0.4);
+}
+
+.ewc27-org-panel.org-godlike {
+  border-color: rgba(255, 184, 0, 0.4);
+}
+
+.ewc27-org-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ewc27-org-game-row {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.ewc27-org-game-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.ewc27-org-coach-line {
+  margin-top: 0.55rem;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+}
+
+.ewc27-org-empty {
+  color: #94a3b8;
+  font-size: 0.86rem;
+  padding: 1.1rem 0.5rem;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .ewc27-org-split {
+    grid-template-columns: 1fr;
+  }
+}
+
 .portal-card.card-enc27 {
   width: 100%;
   max-width: 100%;
