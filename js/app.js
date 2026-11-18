@@ -1404,6 +1404,7 @@ class CleanEsportsHub {
   // =========================================================================
   renderAll() {
     this.renderDailyMarquee();
+    this.renderEnc27Marquee();
     this.renderEwc27Games();
     this.renderEnc27Rosters();
     this.renderEWC("godlike", "godl-ewc-tbody", "var(--godl-gold)");
@@ -1430,6 +1431,20 @@ class CleanEsportsHub {
     return Array.isArray(this.data?.enc27Rosters) && this.data.enc27Rosters.length > 0
       ? this.data.enc27Rosters
       : this.getDefaultEnc27Rosters();
+  }
+
+  renderEnc27Marquee() {
+    const track = document.getElementById("enc27-marquee-content");
+    if (!track) return;
+    const items = this.getActiveEnc27Rosters();
+    if (!items.length) return;
+    const headlines = items.map(r => {
+      const cat = r.genre ? ` (${this.escapeHtml(r.genre)})` : "";
+      const st  = r.status ? ` • ${this.escapeHtml(r.status)}` : "";
+      return `<span class="marquee-headline">🎮 <strong>${this.escapeHtml(r.title)}</strong>${cat}${st}</span>`;
+    });
+    const oneLoop = headlines.map(h => `${h}<span class="marquee-divider">✦</span>`).join("");
+    track.innerHTML = oneLoop + oneLoop;
   }
 
   renderEnc27Rosters(skipToolbar = false) {
@@ -1586,7 +1601,10 @@ class CleanEsportsHub {
     if (this.isAdmin) {
       this.closeModal("enc27-roster-modal");
       const ok = await this.cloudOp({ op: "saveEnc27Roster", roster: payload, seedList }, `✅ ENC27 roster "${title}" saved!`);
-      if (ok) this.renderEnc27Rosters();
+      if (ok) {
+        this.renderEnc27Rosters();
+        this.renderEnc27Marquee();
+      }
       return;
     }
 
@@ -1615,7 +1633,10 @@ class CleanEsportsHub {
       { op: "deleteEnc27Roster", id, seedList: this.getDefaultEnc27Rosters() },
       `🗑️ ENC27 roster "${item.title}" deleted.`
     );
-    if (ok) this.renderEnc27Rosters();
+    if (ok) {
+      this.renderEnc27Rosters();
+      this.renderEnc27Marquee();
+    }
   }
 
   // ─── Render EWC27 Games Section (Above Daily Updates) ─────────────────────
