@@ -3,7 +3,7 @@ const { getRedis } = require('./_redis');
 const TOTAL_KEY = 'igc:stats:total_views';
 const DAILY_PREFIX = 'igc:stats:daily_views:';
 const ACTIVE_ZSET = 'igc:stats:active_sessions';
-const SOCIAL_CACHE_KEY = 'igc:stats:socials_v1';
+const SOCIAL_CACHE_KEY = 'igc:stats:socials_v2';
 const ACTIVE_TTL_MS = 75000; // 75s window for active live viewers
 
 const memStats = {
@@ -25,37 +25,45 @@ async function fetchLiveSocials(redis) {
       const cached = await redis.get(SOCIAL_CACHE_KEY);
       if (cached) return JSON.parse(cached);
     } catch (e) {}
-  } else if (memStats.socials && (now - memStats.socialsAt < 900000)) {
+  } else if (memStats.socials && (now - memStats.socialsAt < 60000)) {
     return memStats.socials;
   }
 
-  let ytSubs = '9.51K';
+  let ytSubs = '6.38K';
   let kickFollowers = '54';
+  let igFollowers = '8,228';
+
+  const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
 
   try {
-    const [ytRes, kickRes] = await Promise.all([
-      fetch('https://www.youtube.com/@priteshgehlot', {
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
-      }).then(r => r.text()).catch(() => ''),
-      fetch('https://kick.com/api/v2/channels/pritesh-gehlot', {
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
-      }).then(r => r.json()).catch(() => null)
+    const [ytRes, kickRes, igRes] = await Promise.all([
+      fetch('https://www.youtube.com/@priteshgehlot', { headers: { 'User-Agent': ua } })
+        .then(r => r.text()).catch(() => ''),
+      fetch('https://kick.com/api/v2/channels/pritesh-gehlot', { headers: { 'User-Agent': ua } })
+        .then(r => r.json()).catch(() => null),
+      fetch('https://www.instagram.com/pritesh__gehlot/', { headers: { 'User-Agent': ua } })
+        .then(r => r.text()).catch(() => '')
     ]);
 
     if (ytRes) {
-      const m = ytRes.match(/"subscriberCountText"[^}]*"simpleText"\s*:\s*"([\d.,]+\s*[kKmMbB]?)\s+subscribers"/i)
-             || ytRes.match(/([\d.,]+[kKmMbB]?)\s+subscribers/i);
+      // Match the channel header handle (@priteshgehlot • X subscribers) so featured channels don't override it
+      const m = ytRes.match(/@priteshgehlot[\s\S]{0,60}?([\d.,]+\s*[kKmMbB]?)\s+subscribers/i);
       if (m && m[1]) ytSubs = m[1].replace(/\s+/g, '').toUpperCase();
     }
 
     if (kickRes && Number.isFinite(Number(kickRes.followers_count))) {
       kickFollowers = Number(kickRes.followers_count).toLocaleString('en-IN');
     }
+
+    if (igRes) {
+      const mIg = igRes.match(/([\d.,]+\s*[kKmMbB]?)\s+Followers/i);
+      if (mIg && mIg[1]) igFollowers = mIg[1].replace(/\s+/g, '');
+    }
   } catch (e) {}
 
-  const out = { ytSubs, kickFollowers };
+  const out = { ytSubs, kickFollowers, igFollowers };
   if (redis) {
-    try { await redis.set(SOCIAL_CACHE_KEY, JSON.stringify(out), 'EX', 900); } catch (e) {}
+    try { await redis.set(SOCIAL_CACHE_KEY, JSON.stringify(out), 'EX', 60); } catch (e) {}
   } else {
     memStats.socials = out;
     memStats.socialsAt = now;
@@ -116,6 +124,7 @@ module.exports = async (req, res) => {
         totalViews,
         ytSubs: socials.ytSubs,
         kickFollowers: socials.kickFollowers,
+        igFollowers: socials.igFollowers,
         date: today
       });
     }
@@ -138,6 +147,7 @@ module.exports = async (req, res) => {
       totalViews: memStats.total || 0,
       ytSubs: socials.ytSubs,
       kickFollowers: socials.kickFollowers,
+      igFollowers: socials.igFollowers,
       date: today
     });
   } catch (err) {

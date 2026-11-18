@@ -3249,6 +3249,38 @@ button {
   font-size: 0.85rem;
 }
 
+.visitor-stat-pill.visitor-stat-ig {
+  border-color: rgba(236, 72, 153, 0.72);
+  background: linear-gradient(135deg, rgba(219, 39, 119, 0.28), rgba(15, 23, 42, 0.92));
+  box-shadow: 0 6px 22px rgba(236, 72, 153, 0.24);
+  text-decoration: none;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.visitor-stat-pill.visitor-stat-ig:hover {
+  transform: translateY(-2px);
+  border-color: #f472b6;
+  box-shadow: 0 8px 26px rgba(236, 72, 153, 0.45);
+}
+
+.visitor-stat-pill.visitor-stat-ig strong {
+  color: #f9a8d4;
+}
+
+.ig-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #f59e0b, #ec4899, #8b5cf6);
+  color: #ffffff;
+  font-weight: 950;
+  font-size: 0.68rem;
+  letter-spacing: -0.02em;
+}
+
 .live-visitor-bar {
   display: inline-flex;
   align-items: center;

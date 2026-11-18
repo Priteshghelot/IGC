@@ -49,6 +49,7 @@ class CleanEsportsHub {
     this.syncCloudData();
     this.syncCloudPending();
     this.initVisitorTracker();
+    this.startAutoLiveSync();
 
     // Check deep link hash
     if (window.location.hash === "#daily-updates") {
@@ -154,11 +155,13 @@ class CleanEsportsHub {
         const totalEl  = document.getElementById("stat-total-views");
         const ytEl     = document.getElementById("stat-yt-subs");
         const kickEl   = document.getElementById("stat-kick-followers");
+        const igEl     = document.getElementById("stat-ig-followers");
         if (activeEl) activeEl.textContent = fmt(json.activeNow);
         if (dailyEl)  dailyEl.textContent  = fmt(json.dailyViews);
         if (totalEl)  totalEl.textContent  = fmt(json.totalViews);
         if (ytEl && json.ytSubs)            ytEl.textContent   = json.ytSubs;
         if (kickEl && json.kickFollowers)   kickEl.textContent = json.kickFollowers;
+        if (igEl && json.igFollowers)       igEl.textContent   = json.igFollowers;
       } catch (e) {}
     };
 
@@ -166,6 +169,20 @@ class CleanEsportsHub {
     this._visitorHeartbeat = setInterval(() => {
       if (!document.hidden) ping(false);
     }, 30000);
+  }
+
+  startAutoLiveSync() {
+    this._liveDataSync = setInterval(() => {
+      if (document.hidden) return;
+      // Avoid interrupting while user is typing in a search box or editing a modal
+      const activeTag = document.activeElement?.tagName;
+      if (activeTag === "INPUT" || activeTag === "TEXTAREA" || document.querySelector(".modal-overlay.active")) return;
+      this.syncCloudData();
+      this.syncCloudPending();
+      if (this.dailyUpdatesScreen?.classList.contains("active")) {
+        this.renderApprovedPosts();
+      }
+    }, 15000);
   }
 
   requestFingerprint(r) {
