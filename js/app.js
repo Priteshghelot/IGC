@@ -48,6 +48,7 @@ class CleanEsportsHub {
     // Sync from Cloud Database (Redis API)
     this.syncCloudData();
     this.syncCloudPending();
+    this.initVisitorTracker();
 
     // Check deep link hash
     if (window.location.hash === "#daily-updates") {
@@ -127,6 +128,40 @@ class CleanEsportsHub {
         }
       }
     } catch(e) {}
+  }
+
+  initVisitorTracker() {
+    let sid = sessionStorage.getItem("igc_visitor_sid");
+    if (!sid) {
+      sid = "v-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8);
+      sessionStorage.setItem("igc_visitor_sid", sid);
+    }
+
+    const ping = async (isHit) => {
+      try {
+        const res = await fetch("/api/analytics", {
+          method: "POST",
+          cache: "no-store",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sid, hit: isHit ? 1 : 0 })
+        });
+        if (!res.ok) return;
+        const json = await res.json();
+        if (!json.ok) return;
+        const fmt = (n) => Number(n || 0).toLocaleString("en-IN");
+        const activeEl = document.getElementById("stat-active-now");
+        const dailyEl  = document.getElementById("stat-daily-views");
+        const totalEl  = document.getElementById("stat-total-views");
+        if (activeEl) activeEl.textContent = fmt(json.activeNow);
+        if (dailyEl)  dailyEl.textContent  = fmt(json.dailyViews);
+        if (totalEl)  totalEl.textContent  = fmt(json.totalViews);
+      } catch (e) {}
+    };
+
+    ping(true);
+    this._visitorHeartbeat = setInterval(() => {
+      if (!document.hidden) ping(false);
+    }, 30000);
   }
 
   requestFingerprint(r) {

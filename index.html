@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>India EWC Hub | Developed by Pritesh Gehlot</title>
   <meta name="description" content="Official tracker for India's EWC Club Partners (GodLike Esports in Golden Yellow & S8UL Esports in Sky Blue) developed by Pritesh Gehlot.">
-  <link rel="stylesheet" href="css/style.css?v=23">
+  <link rel="stylesheet" href="css/style.css?v=24">
   <link rel="stylesheet" href="css/responsive.css?v=19">
 </head>
 <body>
@@ -46,7 +46,26 @@
   <section id="home-screen">
     
     <div class="home-header">
-      
+
+      <!-- Live Visitor & Daily/Total Views Counter (Top Right) -->
+      <div class="live-visitor-bar" id="live-visitor-bar" aria-label="Live Visitor Statistics">
+        <div class="visitor-stat-pill visitor-stat-live">
+          <span class="pulsing-live-dot"></span>
+          <strong id="stat-active-now">1</strong>
+          <span>Live</span>
+        </div>
+        <div class="visitor-stat-pill visitor-stat-daily">
+          <span>📅</span>
+          <strong id="stat-daily-views">—</strong>
+          <span>Today</span>
+        </div>
+        <div class="visitor-stat-pill visitor-stat-total">
+          <span>👁️</span>
+          <strong id="stat-total-views">—</strong>
+          <span>Total</span>
+        </div>
+      </div>
+
       <!-- Developer Branding Badge with Pritesh's Profile Picture -->
       <div class="creator-brand-pill">
         <a href="https://www.youtube.com/@priteshgehlot" target="_blank" rel="noopener noreferrer" class="creator-brand-main" title="Visit Pritesh Gehlot's YouTube Channel">
@@ -1316,7 +1335,7 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=26"></script>
+  <script src="js/app.js?v=27"></script>
 
   <!-- Full-Screen Image Lightbox for Daily Update Posts -->
   <div class="modal-overlay" id="image-lightbox-modal" onclick="if(event.target===this) this.classList.remove('active')">
