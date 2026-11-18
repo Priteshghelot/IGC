@@ -3157,15 +3157,21 @@ button {
 /* ============================================================================
    LIVE VISITOR & DAILY / TOTAL VIEWS COUNTER
    ============================================================================ */
+.home-top-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
 .header-left-stats {
-  position: absolute;
-  top: 0;
-  left: 0;
   display: inline-flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  z-index: 5;
 }
 
 .visitor-stat-pill.visitor-stat-social-lg {
@@ -3244,29 +3250,20 @@ button {
 }
 
 .live-visitor-bar {
-  position: absolute;
-  top: 0;
-  right: 0;
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
   flex-wrap: wrap;
-  z-index: 5;
-  max-width: 440px;
 }
 
-.home-header {
-  position: relative;
-}
-
-@media (max-width: 1080px) {
+@media (max-width: 1180px) {
+  .home-top-bar {
+    justify-content: center;
+  }
   .header-left-stats,
   .live-visitor-bar {
-    position: static;
     justify-content: center;
-    margin-bottom: 0.75rem;
-    max-width: 100%;
   }
 }
 
