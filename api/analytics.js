@@ -43,36 +43,71 @@ async function fetchLiveSocials(redis) {
   let ytSubs = lastGood.ytSubs;
   let kickFollowers = lastGood.kickFollowers;
   let igFollowers = lastGood.igFollowers;
+  let ytOk = false;
+  let kickOk = false;
+  let igOk = false;
 
-  const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
+  const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
 
   try {
-    const [ytRes, kickRes, igRes] = await Promise.all([
-      fetch('https://www.youtube.com/@priteshgehlot', { cache: 'no-store', headers: { 'User-Agent': ua } })
-        .then(r => r.text()).catch(() => ''),
-      fetch('https://kick.com/api/v2/channels/pritesh-gehlot', { cache: 'no-store', headers: { 'User-Agent': ua } })
-        .then(r => r.json()).catch(() => null),
-      fetch('https://www.instagram.com/pritesh__gehlot/', { cache: 'no-store', headers: { 'User-Agent': ua } })
-        .then(r => r.text()).catch(() => '')
+    const [ytRes, kickV2, igHtml] = await Promise.all([
+      fetch('https://www.youtube.com/@priteshgehlot?hl=en', {
+        cache: 'no-store',
+        headers: { 'User-Agent': ua, 'Accept-Language': 'en-US,en;q=0.9' }
+      }).then(r => r.text()).catch(() => ''),
+      fetch('https://kick.com/api/v2/channels/pritesh-gehlot', {
+        cache: 'no-store',
+        headers: { 'User-Agent': ua, 'Accept': 'application/json' }
+      }).then(r => (r.ok ? r.json() : null)).catch(() => null),
+      fetch('https://www.instagram.com/pritesh__gehlot/', {
+        cache: 'no-store',
+        headers: { 'User-Agent': ua, 'Accept-Language': 'en-US,en;q=0.9' }
+      }).then(r => r.text()).catch(() => '')
     ]);
 
     if (ytRes) {
-      // Match the channel header handle (@priteshgehlot • X subscribers) so featured channels don't override it
       const m = ytRes.match(/@priteshgehlot[\s\S]{0,60}?([\d.,]+\s*[kKmMbB]?)\s+subscribers/i);
-      if (m && m[1]) ytSubs = m[1].replace(/\s+/g, '').toUpperCase();
+      if (m && m[1]) {
+        ytSubs = m[1].replace(/\s+/g, '').toUpperCase();
+        ytOk = true;
+      }
     }
 
-    if (kickRes && Number.isFinite(Number(kickRes.followers_count))) {
-      kickFollowers = Number(kickRes.followers_count).toLocaleString('en-IN');
+    if (kickV2 && Number.isFinite(Number(kickV2.followers_count))) {
+      kickFollowers = Number(kickV2.followers_count).toLocaleString('en-IN');
+      kickOk = true;
+    } else {
+      const kickV1 = await fetch('https://kick.com/api/v1/channels/pritesh-gehlot', {
+        cache: 'no-store',
+        headers: { 'User-Agent': ua, 'Accept': 'application/json' }
+      }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+      if (kickV1 && Number.isFinite(Number(kickV1.followersCount ?? kickV1.followers_count))) {
+        kickFollowers = Number(kickV1.followersCount ?? kickV1.followers_count).toLocaleString('en-IN');
+        kickOk = true;
+      }
     }
 
-    if (igRes) {
-      const mIg = igRes.match(/([\d.,]+\s*[kKmMbB]?)\s+Followers/i);
-      if (mIg && mIg[1]) igFollowers = mIg[1].replace(/\s+/g, '');
+    if (igHtml) {
+      const mIg = igHtml.match(/([\d.,]+\s*[kKmMbB]?)\s+Followers/i);
+      if (mIg && mIg[1]) {
+        igFollowers = mIg[1].replace(/\s+/g, '');
+        igOk = true;
+      }
+    }
+    if (!igOk) {
+      const igApi = await fetch('https://i.instagram.com/api/v1/users/web_profile_info/?username=pritesh__gehlot', {
+        cache: 'no-store',
+        headers: { 'User-Agent': ua, 'x-ig-app-id': '936619743392459', 'Accept': 'application/json' }
+      }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+      const count = igApi?.data?.user?.edge_followed_by?.count;
+      if (Number.isFinite(Number(count))) {
+        igFollowers = Number(count).toLocaleString('en-IN');
+        igOk = true;
+      }
     }
   } catch (e) {}
 
-  const out = { ytSubs, kickFollowers, igFollowers };
+  const out = { ytSubs, kickFollowers, igFollowers, liveOk: { ytOk, kickOk, igOk } };
   if (redis) {
     try {
       await redis.set(SOCIAL_CACHE_KEY, JSON.stringify(out), 'EX', 10);
@@ -139,6 +174,7 @@ module.exports = async (req, res) => {
         ytSubs: socials.ytSubs,
         kickFollowers: socials.kickFollowers,
         igFollowers: socials.igFollowers,
+        liveOk: socials.liveOk || null,
         date: today
       });
     }
