@@ -3056,13 +3056,14 @@ button {
 }
 
 .ewc27-game-card.enc27-game-card-bg {
-  background: linear-gradient(180deg, rgba(6, 12, 24, 0.68) 0%, rgba(6, 12, 24, 0.86) 100%), var(--card-bg) center / cover no-repeat;
-  border: 1.5px solid rgba(56, 189, 248, 0.38);
+  background-color: #091326;
+  background-size: cover;
+  background-position: center;
+  border: 1.5px solid rgba(56, 189, 248, 0.42);
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
 }
 
 .ewc27-game-card.enc27-game-card-bg:hover {
-  background: linear-gradient(180deg, rgba(6, 12, 24, 0.56) 0%, rgba(6, 12, 24, 0.82) 100%), var(--card-bg) center / cover no-repeat;
   border-color: #38bdf8;
 }
 
