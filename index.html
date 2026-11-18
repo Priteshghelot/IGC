@@ -192,6 +192,91 @@
 
     </div>
 
+    <!-- =====================================================================
+         ROAD TO ENC27 — INDIAN REGION + ROSTER OF ENC
+         ===================================================================== -->
+    <div class="enc27-section" id="enc27-section">
+      <div class="enc27-hero-card">
+        <div class="enc27-tricolor-bar"></div>
+        <div class="enc27-hero-top">
+          <div class="enc27-brand-wrap">
+            <div class="enc27-logo-box">
+              <img src="images/enc_logo.png" alt="ENC — Esports Nations Cup Logo" class="enc27-logo-img">
+            </div>
+            <div class="enc27-hero-text">
+              <span class="enc27-kicker">🇮🇳 ESPORTS NATIONS CUP 2027 • INDIAN REGION</span>
+              <h2 class="enc27-title">Road to <span class="enc27-title-accent">ENC27</span></h2>
+              <p class="enc27-subtitle">
+                India's national pathway to the Esports Nations Cup 2027 — regional qualifiers, national trials, and official Team India rosters.
+              </p>
+            </div>
+          </div>
+          <div class="enc27-hero-actions">
+            <span class="enc27-region-pill">🇮🇳 Team India Hub</span>
+            <button type="button" class="btn-add-tournament admin-only-btn" style="display:none;" onclick="window.cleanHub && window.cleanHub.openAddEnc27RosterModal()">
+              ➕ Add ENC27 Roster
+            </button>
+          </div>
+        </div>
+
+        <!-- 3-Step Road to ENC27 Pathway -->
+        <div class="enc27-roadmap-strip">
+          <div class="enc27-step-card">
+            <span class="enc27-step-num">01</span>
+            <div>
+              <strong>India National Qualifiers</strong>
+              <span>Open &amp; Invited Pro Trials across titles</span>
+            </div>
+          </div>
+          <div class="enc27-step-card">
+            <span class="enc27-step-num">02</span>
+            <div>
+              <strong>South Asia / APAC Seedings</strong>
+              <span>Regional Playoffs &amp; National Squad Selection</span>
+            </div>
+          </div>
+          <div class="enc27-step-card enc27-step-final">
+            <span class="enc27-step-num">03</span>
+            <div>
+              <strong>ENC27 Main Event</strong>
+              <span>Team India Representing Bharat Globally</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Roster of ENC27 -->
+      <div class="enc27-roster-block">
+        <div class="enc27-roster-header">
+          <div>
+            <h3 class="enc27-roster-title">🛡️ Roster of ENC27 <span class="enc27-roster-subpill">Indian Region</span></h3>
+            <p class="enc27-roster-sub">Official &amp; trial rosters representing India on the Road to ENC27.</p>
+          </div>
+        </div>
+
+        <div class="roster-toolbar" id="enc27-roster-toolbar"></div>
+
+        <div class="clean-table-box">
+          <table class="clean-table">
+            <thead>
+              <tr>
+                <th class="col-num" style="color:#38bdf8;">No.</th>
+                <th>Game Title</th>
+                <th>Category</th>
+                <th>Team India Roster / Athletes</th>
+                <th>Coach / Mentor</th>
+                <th>Status</th>
+                <th>Edited By</th>
+              </tr>
+            </thead>
+            <tbody id="enc27-roster-tbody">
+              <!-- Rendered dynamically by app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </section>
 
   <!-- =========================================================================
@@ -1058,7 +1143,7 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=18"></script>
+  <script src="js/app.js?v=19"></script>
 
   <!-- Full-Screen Image Lightbox for Daily Update Posts -->
   <div class="modal-overlay" id="image-lightbox-modal" onclick="if(event.target===this) this.classList.remove('active')">
