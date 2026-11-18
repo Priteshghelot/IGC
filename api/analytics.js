@@ -3,7 +3,7 @@ const { getRedis } = require('./_redis');
 const TOTAL_KEY = 'igc:stats:total_views';
 const DAILY_PREFIX = 'igc:stats:daily_views:';
 const ACTIVE_ZSET = 'igc:stats:active_sessions';
-const SOCIAL_CACHE_KEY = 'igc:stats:socials_v2';
+const SOCIAL_CACHE_KEY = 'igc:stats:socials_v3';
 const SOCIAL_LAST_GOOD_KEY = 'igc:stats:socials_last_good';
 const ACTIVE_TTL_MS = 75000; // 75s window for active live viewers
 
@@ -61,7 +61,7 @@ async function fetchLiveSocials(redis) {
       }).then(r => (r.ok ? r.json() : null)).catch(() => null),
       fetch('https://www.instagram.com/pritesh__gehlot/', {
         cache: 'no-store',
-        headers: { 'User-Agent': ua, 'Accept-Language': 'en-US,en;q=0.9' }
+        headers: { 'User-Agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)', 'Accept-Language': 'en-US,en;q=0.9' }
       }).then(r => r.text()).catch(() => '')
     ]);
 
