@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>India EWC Hub | Developed by Pritesh Gehlot</title>
   <meta name="description" content="Official tracker for India's EWC Club Partners (GodLike Esports in Golden Yellow & S8UL Esports in Sky Blue) developed by Pritesh Gehlot.">
-  <link rel="stylesheet" href="css/style.css?v=24">
+  <link rel="stylesheet" href="css/style.css?v=25">
   <link rel="stylesheet" href="css/responsive.css?v=19">
 </head>
 <body>
@@ -47,8 +47,22 @@
     
     <div class="home-header">
 
-      <!-- Live Visitor & Daily/Total Views Counter (Top Right) -->
-      <div class="live-visitor-bar" id="live-visitor-bar" aria-label="Live Visitor Statistics">
+      <!-- Left Side: YouTube Subscriber Count -->
+      <div class="header-left-stats" aria-label="YouTube Subscriber Count">
+        <a href="https://www.youtube.com/@priteshgehlot" target="_blank" rel="noopener noreferrer" class="visitor-stat-pill visitor-stat-yt" title="Subscribe on YouTube">
+          <span class="yt-dot-icon">▶</span>
+          <strong id="stat-yt-subs">9.51K</strong>
+          <span>YT Subscribers</span>
+        </a>
+      </div>
+
+      <!-- Right Side: Kick Followers + Live Visitor & Views Counter -->
+      <div class="live-visitor-bar" id="live-visitor-bar" aria-label="Kick Followers and Live Visitor Statistics">
+        <a href="https://kick.com/pritesh-gehlot" target="_blank" rel="noopener noreferrer" class="visitor-stat-pill visitor-stat-kick" title="Follow on Kick">
+          <span class="kick-k-icon">K</span>
+          <strong id="stat-kick-followers">54</strong>
+          <span>Kick Followers</span>
+        </a>
         <div class="visitor-stat-pill visitor-stat-live">
           <span class="pulsing-live-dot"></span>
           <strong id="stat-active-now">1</strong>
@@ -57,7 +71,7 @@
         <div class="visitor-stat-pill visitor-stat-daily">
           <span>📅</span>
           <strong id="stat-daily-views">—</strong>
-          <span>Today</span>
+          <span>Today Visitors</span>
         </div>
         <div class="visitor-stat-pill visitor-stat-total">
           <span>👁️</span>
@@ -1335,7 +1349,7 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=27"></script>
+  <script src="js/app.js?v=28"></script>
 
   <!-- Full-Screen Image Lightbox for Daily Update Posts -->
   <div class="modal-overlay" id="image-lightbox-modal" onclick="if(event.target===this) this.classList.remove('active')">

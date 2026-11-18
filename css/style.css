@@ -3157,6 +3157,66 @@ button {
 /* ============================================================================
    LIVE VISITOR & DAILY / TOTAL VIEWS COUNTER
    ============================================================================ */
+.header-left-stats {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 5;
+}
+
+.visitor-stat-pill.visitor-stat-yt {
+  border-color: rgba(239, 68, 68, 0.55);
+  background: rgba(127, 29, 29, 0.28);
+  text-decoration: none;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.visitor-stat-pill.visitor-stat-yt:hover {
+  transform: translateY(-1px);
+  border-color: #ef4444;
+}
+
+.visitor-stat-pill.visitor-stat-yt strong {
+  color: #f87171;
+}
+
+.yt-dot-icon {
+  color: #ef4444;
+  font-size: 0.78rem;
+}
+
+.visitor-stat-pill.visitor-stat-kick {
+  border-color: rgba(83, 252, 24, 0.55);
+  background: rgba(20, 83, 45, 0.25);
+  text-decoration: none;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.visitor-stat-pill.visitor-stat-kick:hover {
+  transform: translateY(-1px);
+  border-color: #53fc18;
+}
+
+.visitor-stat-pill.visitor-stat-kick strong {
+  color: #53fc18;
+}
+
+.kick-k-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 4px;
+  background: #53fc18;
+  color: #051305;
+  font-weight: 950;
+  font-size: 0.7rem;
+}
+
 .live-visitor-bar {
   position: absolute;
   top: 0;
@@ -3167,17 +3227,20 @@ button {
   gap: 8px;
   flex-wrap: wrap;
   z-index: 5;
+  max-width: 440px;
 }
 
 .home-header {
   position: relative;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1080px) {
+  .header-left-stats,
   .live-visitor-bar {
     position: static;
     justify-content: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
+    max-width: 100%;
   }
 }
 

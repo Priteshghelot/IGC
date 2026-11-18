@@ -152,9 +152,13 @@ class CleanEsportsHub {
         const activeEl = document.getElementById("stat-active-now");
         const dailyEl  = document.getElementById("stat-daily-views");
         const totalEl  = document.getElementById("stat-total-views");
+        const ytEl     = document.getElementById("stat-yt-subs");
+        const kickEl   = document.getElementById("stat-kick-followers");
         if (activeEl) activeEl.textContent = fmt(json.activeNow);
         if (dailyEl)  dailyEl.textContent  = fmt(json.dailyViews);
         if (totalEl)  totalEl.textContent  = fmt(json.totalViews);
+        if (ytEl && json.ytSubs)            ytEl.textContent   = json.ytSubs;
+        if (kickEl && json.kickFollowers)   kickEl.textContent = json.kickFollowers;
       } catch (e) {}
     };
 

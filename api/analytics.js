@@ -3,16 +3,64 @@ const { getRedis } = require('./_redis');
 const TOTAL_KEY = 'igc:stats:total_views';
 const DAILY_PREFIX = 'igc:stats:daily_views:';
 const ACTIVE_ZSET = 'igc:stats:active_sessions';
+const SOCIAL_CACHE_KEY = 'igc:stats:socials_v1';
 const ACTIVE_TTL_MS = 75000; // 75s window for active live viewers
 
 const memStats = {
   total: 0,
   daily: {},
-  sessions: new Map()
+  sessions: new Map(),
+  socials: null,
+  socialsAt: 0
 };
 
 function getTodayIST() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }); // YYYY-MM-DD
+}
+
+async function fetchLiveSocials(redis) {
+  const now = Date.now();
+  if (redis) {
+    try {
+      const cached = await redis.get(SOCIAL_CACHE_KEY);
+      if (cached) return JSON.parse(cached);
+    } catch (e) {}
+  } else if (memStats.socials && (now - memStats.socialsAt < 900000)) {
+    return memStats.socials;
+  }
+
+  let ytSubs = '9.51K';
+  let kickFollowers = '54';
+
+  try {
+    const [ytRes, kickRes] = await Promise.all([
+      fetch('https://www.youtube.com/@priteshgehlot', {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+      }).then(r => r.text()).catch(() => ''),
+      fetch('https://kick.com/api/v2/channels/pritesh-gehlot', {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+      }).then(r => r.json()).catch(() => null)
+    ]);
+
+    if (ytRes) {
+      const m = ytRes.match(/"subscriberCountText"[^}]*"simpleText"\s*:\s*"([\d.,]+\s*[kKmMbB]?)\s+subscribers"/i)
+             || ytRes.match(/([\d.,]+[kKmMbB]?)\s+subscribers/i);
+      if (m && m[1]) ytSubs = m[1].replace(/\s+/g, '').toUpperCase();
+    }
+
+    if (kickRes && Number.isFinite(Number(kickRes.followers_count))) {
+      kickFollowers = Number(kickRes.followers_count).toLocaleString('en-IN');
+    }
+  } catch (e) {}
+
+  const out = { ytSubs, kickFollowers };
+  if (redis) {
+    try { await redis.set(SOCIAL_CACHE_KEY, JSON.stringify(out), 'EX', 900); } catch (e) {}
+  } else {
+    memStats.socials = out;
+    memStats.socialsAt = now;
+  }
+  return out;
 }
 
 module.exports = async (req, res) => {
@@ -37,12 +85,14 @@ module.exports = async (req, res) => {
     const isHit = req.method === 'POST' && Boolean(body.hit);
     const sid = req.method === 'POST' && body.sid ? String(body.sid).slice(0, 64) : null;
 
+    const socialsPromise = fetchLiveSocials(redis);
+
     if (redis) {
       const multi = redis.multi();
       if (isHit) {
         multi.incr(TOTAL_KEY);
         multi.incr(dailyKey);
-        multi.expire(dailyKey, 172800); // keep daily counter for 48h
+        multi.expire(dailyKey, 172800);
       } else {
         multi.get(TOTAL_KEY);
         multi.get(dailyKey);
@@ -54,13 +104,20 @@ module.exports = async (req, res) => {
       multi.zremrangebyscore(ACTIVE_ZSET, '-inf', cutoff);
       multi.zcard(ACTIVE_ZSET);
 
-      const results = await multi.exec();
-      // Multi results: [total, daily, (expire if isHit), (zadd if sid), zrem, zcard]
+      const [results, socials] = await Promise.all([multi.exec(), socialsPromise]);
       const totalViews = parseInt(results[0][1], 10) || 0;
       const dailyViews = parseInt(results[1][1], 10) || 0;
       const activeNow = Math.max(1, parseInt(results[results.length - 1][1], 10) || 0);
 
-      return res.status(200).json({ ok: true, activeNow, dailyViews, totalViews, date: today });
+      return res.status(200).json({
+        ok: true,
+        activeNow,
+        dailyViews,
+        totalViews,
+        ytSubs: socials.ytSubs,
+        kickFollowers: socials.kickFollowers,
+        date: today
+      });
     }
 
     // In-memory fallback
@@ -72,12 +129,15 @@ module.exports = async (req, res) => {
     for (const [k, ts] of memStats.sessions.entries()) {
       if (ts < cutoff) memStats.sessions.delete(k);
     }
+    const socials = await socialsPromise;
 
     return res.status(200).json({
       ok: true,
       activeNow: Math.max(1, memStats.sessions.size),
       dailyViews: memStats.daily[today] || 0,
       totalViews: memStats.total || 0,
+      ytSubs: socials.ytSubs,
+      kickFollowers: socials.kickFollowers,
       date: today
     });
   } catch (err) {
