@@ -1433,12 +1433,27 @@ class CleanEsportsHub {
       : this.getDefaultEnc27Rosters();
   }
 
+  getEnc27GameBg(title) {
+    const t = String(title || "").toLowerCase();
+    if (t.includes("bgmi") || t.includes("pubg")) return "images/games/bgmi.jpg";
+    if (t.includes("valorant")) return "images/games/valorant.jpg";
+    if (t.includes("chess")) return "images/games/chess.jpg";
+    if (t.includes("tekken")) return "images/games/tekken8.jpg";
+    if (t.includes("fc") || t.includes("fifa")) return "images/games/eafc.jpg";
+    if (t.includes("call of duty") || t.includes("codm")) return "images/games/codm.jpg";
+    if (t.includes("free fire")) return "images/games/freefire.jpg";
+    if (t.includes("mlbb") || t.includes("mobile legends")) return "images/games/mlbb.jpg";
+    return "images/ewc_banner.jpg";
+  }
+
   renderEnc27Games() {
     const track = document.getElementById("enc27-games-track");
     if (!track) return;
     const items = this.getActiveEnc27Rosters();
-    track.innerHTML = items.map(r => `
-      <div class="ewc27-game-card">
+    track.innerHTML = items.map(r => {
+      const bgUrl = this.getEnc27GameBg(r.title);
+      return `
+      <div class="ewc27-game-card enc27-game-card-bg" style="--card-bg: url('${bgUrl}');">
         <div class="ewc27-card-content">
           <h3 class="ewc27-game-name">${this.escapeHtml(r.title)}</h3>
           ${r.status ? `<span class="ewc27-game-sub">${this.escapeHtml(r.status)}</span>` : ""}
@@ -1446,7 +1461,8 @@ class CleanEsportsHub {
         </div>
         ${this.isAdmin ? `<button class="ewc27-card-edit-btn" onclick="window.cleanHub.openEditEnc27RosterModal('${this.escapeHtml(r.id)}')" title="Edit ENC27 Game">✏️</button>` : ""}
       </div>
-    `).join("");
+    `;
+    }).join("");
   }
 
   renderEnc27Rosters(skipToolbar = false) {

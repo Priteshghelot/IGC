@@ -3055,6 +3055,32 @@ button {
   margin-bottom: 1.75rem;
 }
 
+.ewc27-game-card.enc27-game-card-bg {
+  background: linear-gradient(180deg, rgba(6, 12, 24, 0.68) 0%, rgba(6, 12, 24, 0.86) 100%), var(--card-bg) center / cover no-repeat;
+  border: 1.5px solid rgba(56, 189, 248, 0.38);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+}
+
+.ewc27-game-card.enc27-game-card-bg:hover {
+  background: linear-gradient(180deg, rgba(6, 12, 24, 0.56) 0%, rgba(6, 12, 24, 0.82) 100%), var(--card-bg) center / cover no-repeat;
+  border-color: #38bdf8;
+}
+
+.ewc27-game-card.enc27-game-card-bg .ewc27-game-name {
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+}
+
+.ewc27-game-card.enc27-game-card-bg .ewc27-game-sub {
+  color: #38bdf8;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.85);
+}
+
+.ewc27-game-card.enc27-game-card-bg .ewc27-game-genre {
+  color: #e2e8f0;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.85);
+}
+
 .portal-card.card-enc27 {
   width: 100%;
   max-width: 100%;
