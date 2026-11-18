@@ -1195,9 +1195,16 @@ html, body {
   }
 
   .home-top-bar {
+    display: flex;
     flex-direction: column;
     gap: 10px;
     margin-bottom: 1rem;
+  }
+
+  .creator-brand-pill.creator-brand-center-only {
+    order: -1;
+    width: auto;
+    max-width: 100%;
   }
 
   .header-left-stats,
