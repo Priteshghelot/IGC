@@ -1748,7 +1748,7 @@ class CleanEsportsHub {
                 <span style="font-size:0.75rem; color:#94a3b8;">${matches.length} matching roster${matches.length === 1 ? "" : "s"}</span>
               </div>
             </div>
-            <button type="button" class="btn-action-edit" onclick="window.cleanHub.openTeamGameFromEwc('${teamKey}', '${this.escapeHtml(matches[0]?.title || title)}')">
+            <button type="button" class="btn-ewc27-view-roster btn-view-${teamKey}" onclick="window.cleanHub.openTeamGameFromEwc('${teamKey}', '${this.escapeHtml(matches[0]?.title || title)}')">
               View Full Roster →
             </button>
           </div>

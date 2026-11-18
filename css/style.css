@@ -3127,6 +3127,33 @@ button {
   text-align: center;
 }
 
+.btn-ewc27-view-roster {
+  border: none;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  white-space: nowrap;
+}
+
+.btn-ewc27-view-roster.btn-view-s8ul {
+  background: linear-gradient(135deg, #38bdf8, #00a8ff);
+  color: #061224;
+  box-shadow: 0 4px 16px rgba(0, 168, 255, 0.45);
+}
+
+.btn-ewc27-view-roster.btn-view-godlike {
+  background: linear-gradient(135deg, #fcd34d, #ffb800);
+  color: #140f02;
+  box-shadow: 0 4px 16px rgba(255, 184, 0, 0.45);
+}
+
+.btn-ewc27-view-roster:hover {
+  transform: translateY(-2px);
+}
+
 @media (max-width: 768px) {
   .ewc27-org-split {
     grid-template-columns: 1fr;
