@@ -193,10 +193,10 @@
     </div>
 
     <!-- =====================================================================
-         ROAD TO ENC27 — INDIAN REGION PORTAL CARD + ROSTER OF ENC
+         ROAD TO ENC27 — INDIAN REGION PORTAL CARD
          ===================================================================== -->
     <div class="enc27-section" id="enc27-section">
-      <div class="portal-card card-enc27" onclick="document.getElementById('enc27-roster-block')?.scrollIntoView({ behavior: 'smooth', block: 'start' })">
+      <div class="portal-card card-enc27" id="card-enc27-select" onclick="window.cleanHub && window.cleanHub.showEnc27()">
         <div class="enc27-tricolor-bar"></div>
         <div class="portal-logo-wrap enc27-portal-logo-wrap">
           <img src="images/enc_logo.png" alt="ENC — Esports Nations Cup Logo" class="enc27-portal-logo-img">
@@ -212,40 +212,6 @@
         <button type="button" class="portal-btn btn-enc27">
           Check Active Roster →
         </button>
-      </div>
-
-      <!-- Roster of ENC27 -->
-      <div class="enc27-roster-block" id="enc27-roster-block">
-        <div class="enc27-roster-header">
-          <div>
-            <h3 class="enc27-roster-title">🛡️ Roster of ENC27 <span class="enc27-roster-subpill">Indian Region</span></h3>
-            <p class="enc27-roster-sub">Official &amp; trial rosters representing India on the Road to ENC27.</p>
-          </div>
-          <button type="button" class="btn-add-tournament admin-only-btn" style="display:none;" onclick="window.cleanHub && window.cleanHub.openAddEnc27RosterModal()">
-            ➕ Add ENC27 Roster
-          </button>
-        </div>
-
-        <div class="roster-toolbar" id="enc27-roster-toolbar"></div>
-
-        <div class="clean-table-box">
-          <table class="clean-table">
-            <thead>
-              <tr>
-                <th class="col-num" style="color:#38bdf8;">No.</th>
-                <th>Game Title</th>
-                <th>Category</th>
-                <th>Team India Roster / Athletes</th>
-                <th>Coach / Mentor</th>
-                <th>Status</th>
-                <th>Edited By</th>
-              </tr>
-            </thead>
-            <tbody id="enc27-roster-tbody">
-              <!-- Rendered dynamically by app.js -->
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
 
@@ -464,7 +430,120 @@
   </main>
 
   <!-- =========================================================================
-       3. DAILY ESPORTS UPDATES SCREEN
+       3. ENC27 DEDICATED HUB SCREEN (ROAD TO ENC27 — INDIAN REGION)
+       ========================================================================= -->
+  <main class="detail-screen" id="screen-enc27">
+    <div class="container">
+
+      <div class="detail-top-nav">
+        <div>
+          <button class="btn-back-home" onclick="window.cleanHub.showHome()">
+            ← Back to Clubs
+          </button>
+        </div>
+
+        <div class="detail-top-center-brand">
+          <div class="creator-brand-pill creator-brand-pill-center">
+            <a href="https://www.youtube.com/@priteshgehlot" target="_blank" rel="noopener noreferrer" class="creator-brand-main" title="Visit Pritesh Gehlot's YouTube Channel">
+              <div class="creator-avatar-wrap">
+                <img src="images/pritesh_avatar.jpg" alt="Pritesh Gehlot Profile Picture" class="creator-avatar-img">
+              </div>
+              <div class="creator-brand-text">
+                <span>DEVELOPED BY</span>
+                <strong>PRITESH GEHLOT</strong>
+              </div>
+            </a>
+            <div class="creator-social-badges">
+              <a href="https://www.youtube.com/@priteshgehlot" target="_blank" rel="noopener noreferrer" class="yt-badge" title="Watch on YouTube">▶ YouTube</a>
+              <a href="https://kick.com/pritesh-gehlot" target="_blank" rel="noopener noreferrer" class="kick-badge" title="Watch on Kick">
+                <svg class="kick-logo-svg" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 2h6v6h2V5h2V2h8v6h-3v2h-2v4h2v2h3v6h-8v-3h-2v-3H9v6H3V2z"/></svg>
+                <span>Kick</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-top-actions">
+          <button type="button" class="btn-add-tournament admin-only-btn" style="display:none;" onclick="window.cleanHub && window.cleanHub.openAddEnc27RosterModal()">
+            ➕ Add ENC27 Roster
+          </button>
+        </div>
+      </div>
+
+      <!-- ENC27 Header Card -->
+      <div class="detail-header-card" style="border-top: 3px solid #38bdf8;">
+        <div class="detail-brand">
+          <div class="detail-logo-small" style="border-color:#38bdf8; background:#091528; padding:8px;">
+            <img src="images/enc_logo.png" alt="ENC Logo" class="enc27-portal-logo-img" style="max-height:54px;">
+          </div>
+          <div class="detail-brand-info">
+            <h2 class="enc27-portal-title">Road to ENC27 — Indian Region</h2>
+            <p>Esports Nations Cup 2027 • National Qualifiers, Regional Seedings &amp; Team India Lineups</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-Step Pathway Details -->
+      <div class="enc27-roadmap-strip">
+        <div class="enc27-step-card">
+          <span class="enc27-step-num">01</span>
+          <div>
+            <strong>India National Qualifiers</strong>
+            <span>Open &amp; Invited Pro Trials across official ENC27 titles</span>
+          </div>
+        </div>
+        <div class="enc27-step-card">
+          <span class="enc27-step-num">02</span>
+          <div>
+            <strong>South Asia / APAC Seedings</strong>
+            <span>Regional Playoffs &amp; Official National Squad Selection</span>
+          </div>
+        </div>
+        <div class="enc27-step-card enc27-step-final">
+          <span class="enc27-step-num">03</span>
+          <div>
+            <strong>ENC27 Main Event</strong>
+            <span>Team India Representing Bharat on the Global Stage</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Line-UP Heading -->
+      <div class="active-line-header-wrap" style="margin-top:1.75rem;">
+        <h1 class="active-line-h1">
+          <input type="radio" checked readonly class="green-radio-input" name="enc27-status" aria-label="ENC27 Roster Status">
+          <span>Roster of ENC27 — Team India</span>
+        </h1>
+      </div>
+
+      <div class="roster-toolbar" id="enc27-roster-toolbar"></div>
+
+      <div class="sub-tab-content active" id="enc27-roster-view">
+        <div class="clean-table-box">
+          <table class="clean-table">
+            <thead>
+              <tr>
+                <th class="col-num" style="color:#38bdf8;">No.</th>
+                <th>Game Title</th>
+                <th>Category</th>
+                <th>Team India Roster / Athletes</th>
+                <th>Coach / Mentor</th>
+                <th>Status</th>
+                <th>Edited By</th>
+              </tr>
+            </thead>
+            <tbody id="enc27-roster-tbody">
+              <!-- Rendered dynamically by app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- =========================================================================
+       4. DAILY ESPORTS UPDATES SCREEN
        ========================================================================= -->
   <main class="detail-screen" id="screen-daily-updates">
     <div class="container" style="max-width: 1080px;">
@@ -1163,7 +1242,7 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=19"></script>
+  <script src="js/app.js?v=20"></script>
 
   <!-- Full-Screen Image Lightbox for Daily Update Posts -->
   <div class="modal-overlay" id="image-lightbox-modal" onclick="if(event.target===this) this.classList.remove('active')">
