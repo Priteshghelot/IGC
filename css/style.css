@@ -3171,7 +3171,7 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .live-visitor-bar {
@@ -3179,19 +3179,20 @@ button {
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .visitor-stat-pill.visitor-stat-social-lg {
-  padding: 9px 18px;
-  font-size: 0.92rem;
+  padding: 7px 13px;
+  font-size: 0.82rem;
   font-weight: 700;
   border-width: 1.5px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
 }
 
 .visitor-stat-pill.visitor-stat-social-lg strong {
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: 950;
   letter-spacing: 0.02em;
 }
