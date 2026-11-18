@@ -3090,13 +3090,70 @@ button {
 }
 
 .enc27-portal-logo-img {
-  max-width: 340px;
-  max-height: 122px;
+  max-width: 320px;
+  max-height: 120px;
   width: auto;
   height: auto;
   object-fit: contain;
-  filter: invert(1) contrast(1.45) brightness(1.1) drop-shadow(0 0 22px rgba(56, 189, 248, 0.5));
-  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 22px rgba(56, 189, 248, 0.55));
+}
+
+.enc27-highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 780px;
+  margin: 1rem auto 1.15rem;
+}
+
+.enc27-highlight-grid-detail {
+  max-width: 100%;
+  margin: 1.1rem 0 0;
+}
+
+.enc27-highlight-chip {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.14), rgba(15, 23, 42, 0.85));
+  border: 1.5px solid rgba(56, 189, 248, 0.45);
+  border-radius: 12px;
+  padding: 10px 14px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.enc27-highlight-chip.enc27-chip-venue {
+  background: linear-gradient(135deg, rgba(255, 184, 0, 0.16), rgba(15, 23, 42, 0.85));
+  border-color: rgba(255, 184, 0, 0.5);
+}
+
+.enc27-chip-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  margin-bottom: 3px;
+}
+
+.enc27-chip-val {
+  display: block;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-size: 1.12rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+.enc27-chip-venue .enc27-chip-val {
+  color: #fbbf24;
+  text-shadow: 0 0 12px rgba(255, 184, 0, 0.35);
+}
+
+@media (max-width: 680px) {
+  .enc27-highlight-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .enc27-portal-title {
