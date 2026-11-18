@@ -4,6 +4,7 @@ const TOTAL_KEY = 'igc:stats:total_views';
 const DAILY_PREFIX = 'igc:stats:daily_views:';
 const ACTIVE_ZSET = 'igc:stats:active_sessions';
 const SOCIAL_CACHE_KEY = 'igc:stats:socials_v2';
+const SOCIAL_LAST_GOOD_KEY = 'igc:stats:socials_last_good';
 const ACTIVE_TTL_MS = 75000; // 75s window for active live viewers
 
 const memStats = {
@@ -25,23 +26,33 @@ async function fetchLiveSocials(redis) {
       const cached = await redis.get(SOCIAL_CACHE_KEY);
       if (cached) return JSON.parse(cached);
     } catch (e) {}
-  } else if (memStats.socials && (now - memStats.socialsAt < 60000)) {
+  } else if (memStats.socials && (now - memStats.socialsAt < 30000)) {
     return memStats.socials;
   }
 
-  let ytSubs = '6.38K';
-  let kickFollowers = '54';
-  let igFollowers = '8,228';
+  let lastGood = { ytSubs: '6.38K', kickFollowers: '54', igFollowers: '8,228' };
+  if (redis) {
+    try {
+      const lg = await redis.get(SOCIAL_LAST_GOOD_KEY);
+      if (lg) lastGood = { ...lastGood, ...JSON.parse(lg) };
+    } catch (e) {}
+  } else if (memStats.socials) {
+    lastGood = { ...lastGood, ...memStats.socials };
+  }
+
+  let ytSubs = lastGood.ytSubs;
+  let kickFollowers = lastGood.kickFollowers;
+  let igFollowers = lastGood.igFollowers;
 
   const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
 
   try {
     const [ytRes, kickRes, igRes] = await Promise.all([
-      fetch('https://www.youtube.com/@priteshgehlot', { headers: { 'User-Agent': ua } })
+      fetch('https://www.youtube.com/@priteshgehlot', { cache: 'no-store', headers: { 'User-Agent': ua } })
         .then(r => r.text()).catch(() => ''),
-      fetch('https://kick.com/api/v2/channels/pritesh-gehlot', { headers: { 'User-Agent': ua } })
+      fetch('https://kick.com/api/v2/channels/pritesh-gehlot', { cache: 'no-store', headers: { 'User-Agent': ua } })
         .then(r => r.json()).catch(() => null),
-      fetch('https://www.instagram.com/pritesh__gehlot/', { headers: { 'User-Agent': ua } })
+      fetch('https://www.instagram.com/pritesh__gehlot/', { cache: 'no-store', headers: { 'User-Agent': ua } })
         .then(r => r.text()).catch(() => '')
     ]);
 
@@ -63,7 +74,10 @@ async function fetchLiveSocials(redis) {
 
   const out = { ytSubs, kickFollowers, igFollowers };
   if (redis) {
-    try { await redis.set(SOCIAL_CACHE_KEY, JSON.stringify(out), 'EX', 60); } catch (e) {}
+    try {
+      await redis.set(SOCIAL_CACHE_KEY, JSON.stringify(out), 'EX', 30);
+      await redis.set(SOCIAL_LAST_GOOD_KEY, JSON.stringify(out));
+    } catch (e) {}
   } else {
     memStats.socials = out;
     memStats.socialsAt = now;

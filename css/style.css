@@ -3281,6 +3281,16 @@ button {
   letter-spacing: -0.02em;
 }
 
+@keyframes statGainFlash {
+  0%   { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+  40%  { transform: scale(1.06); box-shadow: 0 0 20px 4px rgba(74, 222, 128, 0.55); }
+  100% { transform: scale(1); }
+}
+
+.visitor-stat-pill.stat-updated-flash {
+  animation: statGainFlash 0.9s ease-out;
+}
+
 .live-visitor-bar {
   display: inline-flex;
   align-items: center;

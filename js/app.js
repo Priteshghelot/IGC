@@ -156,12 +156,25 @@ class CleanEsportsHub {
         const ytEl     = document.getElementById("stat-yt-subs");
         const kickEl   = document.getElementById("stat-kick-followers");
         const igEl     = document.getElementById("stat-ig-followers");
-        if (activeEl) activeEl.textContent = fmt(json.activeNow);
-        if (dailyEl)  dailyEl.textContent  = fmt(json.dailyViews);
-        if (totalEl)  totalEl.textContent  = fmt(json.totalViews);
-        if (ytEl && json.ytSubs)            ytEl.textContent   = json.ytSubs;
-        if (kickEl && json.kickFollowers)   kickEl.textContent = json.kickFollowers;
-        if (igEl && json.igFollowers)       igEl.textContent   = json.igFollowers;
+        const updateVal = (el, nextVal, flashOnChange = false) => {
+          if (!el || nextVal === undefined || nextVal === null) return;
+          const str = String(nextVal);
+          if (flashOnChange && el.textContent && el.textContent !== "—" && el.textContent !== str) {
+            const pill = el.closest(".visitor-stat-pill");
+            if (pill) {
+              pill.classList.remove("stat-updated-flash");
+              void pill.offsetWidth;
+              pill.classList.add("stat-updated-flash");
+            }
+          }
+          el.textContent = str;
+        };
+        updateVal(activeEl, fmt(json.activeNow));
+        updateVal(dailyEl, fmt(json.dailyViews));
+        updateVal(totalEl, fmt(json.totalViews));
+        if (json.ytSubs)        updateVal(ytEl, json.ytSubs, true);
+        if (json.kickFollowers) updateVal(kickEl, json.kickFollowers, true);
+        if (json.igFollowers)   updateVal(igEl, json.igFollowers, true);
       } catch (e) {}
     };
 
