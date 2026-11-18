@@ -3046,18 +3046,21 @@ button {
    ROAD TO ENC27 — INDIAN REGION PORTAL CARD & ROSTER OF ENC
    ============================================================================ */
 .enc27-section {
+  width: 100%;
   max-width: 1180px;
   margin: 2.5rem auto 1.5rem;
 }
 
 .portal-card.card-enc27 {
-  max-width: 560px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
+  padding: 2.85rem 2.5rem;
   position: relative;
   overflow: hidden;
-  background: radial-gradient(circle at top, rgba(34, 197, 94, 0.12), rgba(7, 17, 34, 0.96) 65%);
+  background: radial-gradient(circle at top, rgba(34, 197, 94, 0.14), rgba(7, 17, 34, 0.96) 65%);
   border: 1.5px solid rgba(56, 189, 248, 0.45);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55), 0 0 28px rgba(56, 189, 248, 0.12);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55), 0 0 28px rgba(56, 189, 248, 0.14);
 }
 
 .portal-card.card-enc27:hover {
@@ -3070,32 +3073,48 @@ button {
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
+  height: 5px;
   background: linear-gradient(90deg, #ff9933 0%, #ffffff 50%, #22c55e 100%);
 }
 
 .enc27-portal-logo-wrap {
-  height: 112px;
+  height: 136px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .enc27-portal-logo-img {
-  max-width: 240px;
-  max-height: 92px;
+  max-width: 340px;
+  max-height: 122px;
   width: auto;
   height: auto;
   object-fit: contain;
-  filter: invert(1) contrast(1.45) brightness(1.1) drop-shadow(0 0 18px rgba(56, 189, 248, 0.45));
+  filter: invert(1) contrast(1.45) brightness(1.1) drop-shadow(0 0 22px rgba(56, 189, 248, 0.5));
   mix-blend-mode: screen;
 }
 
 .enc27-portal-title {
+  font-size: clamp(2rem, 3.4vw, 2.65rem);
   background: linear-gradient(90deg, #ff9933 0%, #ffffff 50%, #22c55e 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.portal-card.card-enc27 .portal-summary {
+  max-width: 720px;
+  font-size: 1.05rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.portal-card.card-enc27 .btn-enc27 {
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.05rem;
+  padding: 1rem 1.75rem;
 }
 
 .tag-enc27 {
