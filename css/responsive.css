@@ -1186,3 +1186,73 @@ html, body {
   }
 }
 
+/* ── Mobile Header Stats, Brand Pill & ENC27 Polish (<= 768px) ── */
+@media (max-width: 768px) {
+  .home-header {
+    padding: 1.15rem 0.9rem;
+    border-radius: 18px;
+    margin-bottom: 1.5rem;
+  }
+
+  .home-top-bar {
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .header-left-stats,
+  .live-visitor-bar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .visitor-stat-pill,
+  .visitor-stat-pill.visitor-stat-social-lg {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    gap: 2px;
+    padding: 7px 4px;
+    border-radius: 12px;
+    font-size: 0.66rem;
+    line-height: 1.2;
+  }
+
+  .visitor-stat-pill strong,
+  .visitor-stat-pill.visitor-stat-social-lg strong {
+    font-size: 0.92rem;
+  }
+
+  .yt-dot-icon,
+  .kick-k-icon,
+  .ig-icon-badge {
+    width: 18px;
+    height: 18px;
+    font-size: 0.62rem;
+  }
+
+  .home-header .creator-brand-pill {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .portal-card.card-enc27 {
+    padding: 1.75rem 1.1rem;
+  }
+
+  .enc27-portal-logo-wrap {
+    height: 92px;
+    margin-bottom: 0.85rem;
+  }
+
+  .enc27-portal-logo-img {
+    max-width: 220px;
+    max-height: 80px;
+  }
+}
+
