@@ -177,17 +177,17 @@ body {
 }
 
 .india-flag-img {
-  width: 40px;
-  height: 27px;
+  width: 60px;
+  height: 40px;
   object-fit: cover;
-  border-radius: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+  border-radius: 6px;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
   flex-shrink: 0;
 }
 
 .ewc-badge-text {
-  font-size: 0.9rem;
+  font-size: 1.02rem;
   font-weight: 900;
   letter-spacing: 0.08em;
   color: #f8fafc;
@@ -238,13 +238,13 @@ button {
 }
 
 .creator-avatar-wrap {
-  width: 62px;
-  height: 62px;
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
   overflow: hidden;
   border: 2.5px solid var(--s8ul-blue);
   flex-shrink: 0;
-  box-shadow: 0 0 14px var(--s8ul-glow);
+  box-shadow: 0 0 18px var(--s8ul-glow);
 }
 
 .creator-avatar-img {
@@ -3159,32 +3159,27 @@ button {
    ============================================================================ */
 .home-top-bar {
   width: 100%;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 14px;
+  flex-wrap: wrap;
   margin-bottom: 1.25rem;
 }
 
 .header-left-stats {
-  grid-column: 1;
-  justify-self: start;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.creator-brand-pill.creator-brand-center-only {
-  grid-column: 2;
-  justify-self: center;
-  margin-bottom: 0;
-  padding: 8px 20px 8px 10px;
-}
-
 .live-visitor-bar {
-  grid-column: 3;
-  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .visitor-stat-pill.visitor-stat-social-lg {
@@ -3318,9 +3313,6 @@ button {
     flex-direction: column;
     align-items: center;
     gap: 10px;
-  }
-  .creator-brand-pill.creator-brand-center-only {
-    order: -1;
   }
   .header-left-stats,
   .live-visitor-bar {

@@ -1207,10 +1207,17 @@ html, body {
     max-width: 100%;
   }
 
-  .header-left-stats,
-  .live-visitor-bar {
+  .header-left-stats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .live-visitor-bar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
     width: 100%;
     max-width: 100%;
