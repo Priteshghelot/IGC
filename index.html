@@ -196,25 +196,32 @@
          ROAD TO ENC27 — INDIAN REGION PORTAL CARD
          ===================================================================== -->
     <div class="enc27-section" id="enc27-section">
-      <!-- ENC27 Games Marquee -->
-      <div class="daily-marquee-wrapper enc27-marquee-wrapper">
-        <button type="button" class="daily-marquee-btn enc27-marquee-btn" onclick="window.cleanHub && window.cleanHub.showEnc27()" aria-label="Open Road to ENC27 Page">
-          <div class="marquee-live-indicator enc27-marquee-indicator">
-            <span class="pulsing-live-dot"></span>
-            <span class="marquee-live-text">🇮🇳 ENC27 GAMES</span>
-          </div>
-          <div class="marquee-track-container">
-            <div class="marquee-scrolling-content" id="enc27-marquee-content">
-              <span class="marquee-headline">🎮 <strong>Loading ENC27 Titles...</strong></span>
-              <span class="marquee-divider">✦</span>
+      <!-- ENC27 Games Carousel (Matching EWC27 Games Style) -->
+      <section class="ewc27-games-section enc27-games-section" id="enc27-games-section">
+        <div class="ewc27-header-row">
+          <div class="ewc27-header-left">
+            <div class="ewc27-badge-pill">
+              <span class="pulsing-live-dot"></span>
+              <span>🇮🇳 INDIAN REGION ROADMAP</span>
             </div>
+            <h2 class="ewc27-main-title">ENC27 Games</h2>
+            <p class="ewc27-main-subtitle">
+              Official &amp; qualifier titles for the Esports Nations Cup 2027. Qualifiers kick off Feb 26, 2027 leading to Riyadh Finals in November 2027.
+            </p>
           </div>
-          <div class="marquee-cta-pill enc27-marquee-cta">
-            <span>ENC27 Hub</span>
-            <span class="marquee-cta-icon">➔</span>
+          <div class="ewc27-header-actions admin-only-btn" style="display:none;">
+            <button type="button" class="btn-ewc27-action btn-ewc27-add" onclick="window.cleanHub && window.cleanHub.openAddEnc27RosterModal()">
+              ➕ Add ENC Game
+            </button>
           </div>
-        </button>
-      </div>
+        </div>
+
+        <div class="ewc27-carousel-container">
+          <div class="ewc27-carousel-track" id="enc27-games-track">
+            <!-- Rendered dynamically by CleanEsportsHub.renderEnc27Games() -->
+          </div>
+        </div>
+      </section>
 
       <div class="portal-card card-enc27" id="card-enc27-select" onclick="window.cleanHub && window.cleanHub.showEnc27()">
         <div class="enc27-tricolor-bar"></div>

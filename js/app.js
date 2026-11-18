@@ -1404,7 +1404,7 @@ class CleanEsportsHub {
   // =========================================================================
   renderAll() {
     this.renderDailyMarquee();
-    this.renderEnc27Marquee();
+    this.renderEnc27Games();
     this.renderEwc27Games();
     this.renderEnc27Rosters();
     this.renderEWC("godlike", "godl-ewc-tbody", "var(--godl-gold)");
@@ -1433,18 +1433,20 @@ class CleanEsportsHub {
       : this.getDefaultEnc27Rosters();
   }
 
-  renderEnc27Marquee() {
-    const track = document.getElementById("enc27-marquee-content");
+  renderEnc27Games() {
+    const track = document.getElementById("enc27-games-track");
     if (!track) return;
     const items = this.getActiveEnc27Rosters();
-    if (!items.length) return;
-    const headlines = items.map(r => {
-      const cat = r.genre ? ` (${this.escapeHtml(r.genre)})` : "";
-      const st  = r.status ? ` • ${this.escapeHtml(r.status)}` : "";
-      return `<span class="marquee-headline">🎮 <strong>${this.escapeHtml(r.title)}</strong>${cat}${st}</span>`;
-    });
-    const oneLoop = headlines.map(h => `${h}<span class="marquee-divider">✦</span>`).join("");
-    track.innerHTML = oneLoop + oneLoop;
+    track.innerHTML = items.map(r => `
+      <div class="ewc27-game-card">
+        <div class="ewc27-card-content">
+          <h3 class="ewc27-game-name">${this.escapeHtml(r.title)}</h3>
+          ${r.status ? `<span class="ewc27-game-sub">${this.escapeHtml(r.status)}</span>` : ""}
+          ${r.genre ? `<span class="ewc27-game-genre">${this.escapeHtml(r.genre)}</span>` : ""}
+        </div>
+        ${this.isAdmin ? `<button class="ewc27-card-edit-btn" onclick="window.cleanHub.openEditEnc27RosterModal('${this.escapeHtml(r.id)}')" title="Edit ENC27 Game">✏️</button>` : ""}
+      </div>
+    `).join("");
   }
 
   renderEnc27Rosters(skipToolbar = false) {
@@ -1603,7 +1605,7 @@ class CleanEsportsHub {
       const ok = await this.cloudOp({ op: "saveEnc27Roster", roster: payload, seedList }, `✅ ENC27 roster "${title}" saved!`);
       if (ok) {
         this.renderEnc27Rosters();
-        this.renderEnc27Marquee();
+        this.renderEnc27Games();
       }
       return;
     }
@@ -1635,7 +1637,7 @@ class CleanEsportsHub {
     );
     if (ok) {
       this.renderEnc27Rosters();
-      this.renderEnc27Marquee();
+      this.renderEnc27Games();
     }
   }
 
