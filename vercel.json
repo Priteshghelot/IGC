@@ -3,7 +3,7 @@
   "rewrites": [
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/admin/", "destination": "/admin/index.html" },
-    { "source": "/post-image/:id.jpg", "destination": "/api/post?id=:id&img=1" },
+    { "source": "/post-image/:id/cover.jpg", "destination": "/api/post?id=:id&img=1" },
     { "source": "/post/:id", "destination": "/api/post?id=:id" }
   ]
 }

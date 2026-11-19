@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
       image = post.imageUrl;
       isCustomImage = true;
     } else if (post.imageUrl && /^data:image\//i.test(post.imageUrl)) {
-      image = `${baseUrl}/post-image/${encodeURIComponent(id)}.jpg`;
+      image = `${baseUrl}/post-image/${encodeURIComponent(id)}/cover.jpg`;
       isCustomImage = true;
     }
   }
