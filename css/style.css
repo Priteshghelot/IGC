@@ -3303,6 +3303,12 @@ button {
   animation: statGainFlash 0.9s ease-out;
 }
 
+.daily-mode-tabs.global-daily-quick-nav {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto 1.5rem;
+}
+
 .live-visitor-bar {
   display: inline-flex;
   align-items: center;

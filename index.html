@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>India EWC Hub | Developed by Pritesh Gehlot</title>
   <meta name="description" content="Official tracker for India's EWC Club Partners (GodLike Esports in Golden Yellow & S8UL Esports in Sky Blue) developed by Pritesh Gehlot.">
-  <link rel="stylesheet" href="css/style.css?v=34">
+  <link rel="stylesheet" href="css/style.css?v=35">
   <link rel="stylesheet" href="css/responsive.css?v=23">
 </head>
 <body>
@@ -132,6 +132,19 @@
           <span>Daily IGC Community</span>
           <span class="marquee-cta-icon">➔</span>
         </div>
+      </button>
+    </div>
+
+    <!-- Global Quick-Access Bar: Daily Updates | Major Tournaments | Community & 3rd-Party -->
+    <div class="daily-mode-tabs global-daily-quick-nav">
+      <button type="button" class="daily-mode-btn active" onclick="window.cleanHub && window.cleanHub.showDailyUpdates('updates')">
+        📰 Daily Updates
+      </button>
+      <button type="button" class="daily-mode-btn" onclick="window.cleanHub && window.cleanHub.showDailyUpdates('tournaments')">
+        🏆 Major Tournaments <span class="daily-mode-count">Top 10</span>
+      </button>
+      <button type="button" class="daily-mode-btn" onclick="window.cleanHub && window.cleanHub.showDailyUpdates('thirdparty')">
+        🎮 Community &amp; 3rd-Party <span class="daily-mode-count daily-mode-count-blue">Live</span>
       </button>
     </div>
 
@@ -341,6 +354,18 @@
       </div>
 
       <!-- Header Card with GodLike Logo -->
+      <div class="daily-mode-tabs global-daily-quick-nav">
+        <button type="button" class="daily-mode-btn active" onclick="window.cleanHub && window.cleanHub.showDailyUpdates('updates')">
+          📰 Daily Updates
+        </button>
+        <button type="button" class="daily-mode-btn" onclick="window.cleanHub && window.cleanHub.showDailyUpdates('tournaments')">
+          🏆 Major Tournaments <span class="daily-mode-count">Top 10</span>
+        </button>
+        <button type="button" class="daily-mode-btn" onclick="window.cleanHub && window.cleanHub.showDailyUpdates('thirdparty')">
+          🎮 Community &amp; 3rd-Party <span class="daily-mode-count daily-mode-count-blue">Live</span>
+        </button>
+      </div>
+
       <div class="detail-header-card" style="border-top: 3px solid var(--godl-gold);">
         <div class="detail-brand">
           <div class="detail-logo-small" style="border-color:var(--godl-gold);">
@@ -447,6 +472,18 @@
       </div>
 
       <!-- Header Card with S8UL Logo -->
+      <div class="daily-mode-tabs global-daily-quick-nav">
+        <button type="button" class="daily-mode-btn active" onclick="window.cleanHub && window.cleanHub.showDailyUpdates('updates')">
+          📰 Daily Updates
+        </button>
+        <button type="button" class="daily-mode-btn" onclick="window.cleanHub && window.cleanHub.showDailyUpdates('tournaments')">
+          🏆 Major Tournaments <span class="daily-mode-count">Top 10</span>
+        </button>
+        <button type="button" class="daily-mode-btn" onclick="window.cleanHub && window.cleanHub.showDailyUpdates('thirdparty')">
+          🎮 Community &amp; 3rd-Party <span class="daily-mode-count daily-mode-count-blue">Live</span>
+        </button>
+      </div>
+
       <div class="detail-header-card" style="border-top: 3px solid var(--s8ul-blue);">
         <div class="detail-brand">
           <div class="detail-logo-small" style="border-color:var(--s8ul-blue);">
@@ -546,6 +583,18 @@
       </div>
 
       <!-- ENC27 Header Card -->
+      <div class="daily-mode-tabs global-daily-quick-nav">
+        <button type="button" class="daily-mode-btn active" onclick="window.cleanHub && window.cleanHub.showDailyUpdates('updates')">
+          📰 Daily Updates
+        </button>
+        <button type="button" class="daily-mode-btn" onclick="window.cleanHub && window.cleanHub.showDailyUpdates('tournaments')">
+          🏆 Major Tournaments <span class="daily-mode-count">Top 10</span>
+        </button>
+        <button type="button" class="daily-mode-btn" onclick="window.cleanHub && window.cleanHub.showDailyUpdates('thirdparty')">
+          🎮 Community &amp; 3rd-Party <span class="daily-mode-count daily-mode-count-blue">Live</span>
+        </button>
+      </div>
+
       <div class="detail-header-card" style="border-top: 3px solid #38bdf8;">
         <div class="detail-brand">
           <div style="display:flex; align-items:center; justify-content:center; padding:4px 10px; flex-shrink:0;">
@@ -1349,7 +1398,7 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=31"></script>
+  <script src="js/app.js?v=32"></script>
 
   <!-- Full-Screen Image Lightbox for Daily Update Posts -->
   <div class="modal-overlay" id="image-lightbox-modal" onclick="if(event.target===this) this.classList.remove('active')">

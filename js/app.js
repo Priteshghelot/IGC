@@ -385,7 +385,7 @@ class CleanEsportsHub {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  showDailyUpdates() {
+  showDailyUpdates(initialTab = null) {
     this.homeScreen.style.display = "none";
     this.godlikeScreen.classList.remove("active");
     this.s8ulScreen.classList.remove("active");
@@ -398,6 +398,9 @@ class CleanEsportsHub {
       dateEl.textContent = `${today} · LIVE DESK`;
     }
 
+    if (initialTab) {
+      this.switchDailyTab(initialTab);
+    }
     this.renderApprovedPosts();
     this.renderUpcomingTournaments();
     this.renderThirdPartyTournaments();
