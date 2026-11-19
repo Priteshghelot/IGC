@@ -1522,7 +1522,7 @@ class CleanEsportsHub {
 
   async shareDailyPost(postId) {
     const post = (this.cachedApprovedPosts || this.pending || []).find(r => r.id === postId);
-    const shareUrl = `${window.location.origin}/#daily-updates`;
+    const shareUrl = `${window.location.origin}/api/post?id=${encodeURIComponent(postId)}`;
     const shareTitle = "India EWC & ENC27 Hub — Daily IGC Update";
     const shareText = post && post.caption
       ? `${String(post.caption).slice(0, 140)} — via India EWC Hub`
