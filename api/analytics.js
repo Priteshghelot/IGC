@@ -3,8 +3,8 @@ const { getRedis } = require('./_redis');
 const TOTAL_KEY = 'igc:stats:total_views';
 const DAILY_PREFIX = 'igc:stats:daily_views:';
 const ACTIVE_ZSET = 'igc:stats:active_sessions';
-const SOCIAL_CACHE_KEY = 'igc:stats:socials_v3';
-const SOCIAL_LAST_GOOD_KEY = 'igc:stats:socials_last_good';
+const SOCIAL_CACHE_KEY = 'igc:stats:socials_v4';
+const SOCIAL_LAST_GOOD_KEY = 'igc:stats:socials_last_good_v2';
 const ACTIVE_TTL_MS = 75000; // 75s window for active live viewers
 
 const memStats = {
@@ -30,7 +30,7 @@ async function fetchLiveSocials(redis) {
     return memStats.socials;
   }
 
-  let lastGood = { ytSubs: '6.38K', kickFollowers: '54', igFollowers: '8,228' };
+  let lastGood = { ytSubs: '6.38K', kickFollowers: '54', igFollowers: '8,232' };
   if (redis) {
     try {
       const lg = await redis.get(SOCIAL_LAST_GOOD_KEY);
