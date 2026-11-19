@@ -50,12 +50,12 @@ module.exports = async (req, res) => {
       image = post.imageUrl;
       isCustomImage = true;
     } else if (post.imageUrl && /^data:image\//i.test(post.imageUrl)) {
-      image = `${baseUrl}/api/post?id=${encodeURIComponent(id)}&img=1`;
+      image = `${baseUrl}/post-image/${encodeURIComponent(id)}.jpg`;
       isCustomImage = true;
     }
   }
 
-  const shareUrl = id ? `${baseUrl}/api/post?id=${encodeURIComponent(id)}` : `${baseUrl}/`;
+  const shareUrl = id ? `${baseUrl}/post/${encodeURIComponent(id)}` : `${baseUrl}/`;
   const dimTags = isCustomImage
     ? ''
     : `\n  <meta property="og:image:width" content="1024">\n  <meta property="og:image:height" content="576">`;
