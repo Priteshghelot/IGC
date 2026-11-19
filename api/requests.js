@@ -114,6 +114,73 @@ module.exports = async (req, res) => {
       return res.status(200).json({ ok: true, message, data: memData });
     }
 
+    if (action === 'like_post') {
+      const delta = Number(body.delta) < 0 ? -1 : 1;
+      let likes = 0;
+      if (redis) {
+        await atomicUpdate(redis, [REQ_KEY], (list) => {
+          const item = list.find(r => r.id === id);
+          if (!item) throw new Error('Post not found');
+          item.likes = Math.max(0, (Number(item.likes) || 0) + delta);
+          likes = item.likes;
+        });
+      } else {
+        const item = memRequests.find(r => r.id === id);
+        if (!item) return res.status(404).json({ ok: false, error: 'Post not found' });
+        item.likes = Math.max(0, (Number(item.likes) || 0) + delta);
+        likes = item.likes;
+      }
+      return res.status(200).json({ ok: true, likes });
+    }
+
+    if (action === 'comment_post') {
+      const text = String(body.text || '').trim().slice(0, 500);
+      const author = String(body.author || 'Community Fan').trim().slice(0, 60) || 'Community Fan';
+      if (!text) return res.status(400).json({ ok: false, error: 'Comment text is required' });
+      const comment = {
+        id: 'c-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+        author,
+        text,
+        createdAt: new Date().toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })
+      };
+      let comments = [];
+      if (redis) {
+        await atomicUpdate(redis, [REQ_KEY], (list) => {
+          const item = list.find(r => r.id === id);
+          if (!item) throw new Error('Post not found');
+          if (!Array.isArray(item.comments)) item.comments = [];
+          item.comments.push(comment);
+          comments = item.comments;
+        });
+      } else {
+        const item = memRequests.find(r => r.id === id);
+        if (!item) return res.status(404).json({ ok: false, error: 'Post not found' });
+        if (!Array.isArray(item.comments)) item.comments = [];
+        item.comments.push(comment);
+        comments = item.comments;
+      }
+      return res.status(200).json({ ok: true, comment, comments });
+    }
+
+    if (action === 'delete_comment') {
+      const commentId = String(body.commentId || '');
+      let comments = [];
+      if (redis) {
+        await atomicUpdate(redis, [REQ_KEY], (list) => {
+          const item = list.find(r => r.id === id);
+          if (!item) throw new Error('Post not found');
+          item.comments = (Array.isArray(item.comments) ? item.comments : []).filter(c => c.id !== commentId);
+          comments = item.comments;
+        });
+      } else {
+        const item = memRequests.find(r => r.id === id);
+        if (!item) return res.status(404).json({ ok: false, error: 'Post not found' });
+        item.comments = (Array.isArray(item.comments) ? item.comments : []).filter(c => c.id !== commentId);
+        comments = item.comments;
+      }
+      return res.status(200).json({ ok: true, comments });
+    }
+
     if (action === 'reject' || action === 'delete') {
       if (redis) {
         await atomicUpdate(redis, [REQ_KEY], (list) => {

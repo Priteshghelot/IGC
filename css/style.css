@@ -3309,6 +3309,137 @@ button {
   margin: 0 auto 1.5rem;
 }
 
+/* ============================================================================
+   DAILY POSTS — LIKE & COMMENT INTERACTION BAR
+   ============================================================================ */
+.daily-post-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.btn-post-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #e2e8f0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.btn-post-action:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.btn-post-action.liked {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #fca5a5;
+}
+
+.btn-post-action.active {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: rgba(56, 189, 248, 0.55);
+  color: #7dd3fc;
+}
+
+.daily-post-comments-drawer {
+  padding: 0.9rem 1.25rem 1rem;
+  background: rgba(6, 11, 22, 0.72);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.daily-comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 0.85rem;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.daily-comment-item {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.daily-comment-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-bottom: 3px;
+}
+
+.daily-comment-meta strong {
+  color: #38bdf8;
+}
+
+.btn-comment-del {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.78rem;
+  opacity: 0.75;
+}
+
+.btn-comment-del:hover {
+  opacity: 1;
+}
+
+.daily-comment-text {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #f1f5f9;
+  line-height: 1.4;
+}
+
+.daily-comment-empty {
+  font-size: 0.8rem;
+  color: #64748b;
+  padding: 4px 0;
+}
+
+.daily-comment-form {
+  display: grid;
+  grid-template-columns: 150px 1fr auto;
+  gap: 8px;
+}
+
+.btn-comment-submit {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #061224;
+  border: none;
+  border-radius: 8px;
+  padding: 0 16px;
+  font-weight: 800;
+  font-size: 0.84rem;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .daily-comment-form {
+    grid-template-columns: 1fr;
+  }
+  .btn-comment-submit {
+    padding: 9px 16px;
+  }
+}
+
 .live-visitor-bar {
   display: inline-flex;
   align-items: center;

@@ -1326,6 +1326,26 @@ class CleanEsportsHub {
           <span class="daily-img-zoom-hint">🔍 View Full</span>
         </div>` : "";
 
+      const likedSet = this.getLikedPostSet();
+      const isLiked = likedSet.has(post.id);
+      const likesCount = Number(post.likes) || 0;
+      const comments = Array.isArray(post.comments) ? post.comments : [];
+      const isCommentsOpen = this.openCommentPostIds && this.openCommentPostIds.has(post.id);
+      const defaultAuthor = localStorage.getItem("last_updater_name") || (this.isAdmin ? "Pritesh Gehlot" : "");
+
+      const commentsListHtml = comments.length > 0
+        ? comments.map(c => `
+            <div class="daily-comment-item">
+              <div class="daily-comment-meta">
+                <strong>👤 ${this.escapeHtml(c.author || "Fan")}</strong>
+                <span>${this.escapeHtml(c.createdAt || "")}</span>
+                ${this.isAdmin ? `<button type="button" class="btn-comment-del" onclick="window.cleanHub.deletePostComment('${this.escapeHtml(post.id)}', '${this.escapeHtml(c.id)}')" title="Delete Comment">🗑️</button>` : ""}
+              </div>
+              <p class="daily-comment-text">${this.escapeHtml(c.text || "")}</p>
+            </div>
+          `).join("")
+        : `<div class="daily-comment-empty">No comments yet. Be the first to comment!</div>`;
+
       return `
         <article class="daily-clean-post-card">
           <div class="daily-post-card-header">
@@ -1344,6 +1364,29 @@ class CleanEsportsHub {
             <p class="daily-post-text">${this.escapeHtml(post.caption || "")}</p>
           </div>
 
+          <div class="daily-post-actions-bar">
+            <button type="button" class="btn-post-action btn-post-like ${isLiked ? "liked" : ""}" onclick="window.cleanHub.toggleLikePost('${this.escapeHtml(post.id)}')">
+              <span>${isLiked ? "❤️" : "🤍"}</span>
+              <span>Like</span>
+              <strong>${likesCount}</strong>
+            </button>
+            <button type="button" class="btn-post-action btn-post-comment ${isCommentsOpen ? "active" : ""}" onclick="window.cleanHub.togglePostComments('${this.escapeHtml(post.id)}')">
+              <span>💬</span>
+              <span>Comments</span>
+              <strong>${comments.length}</strong>
+            </button>
+          </div>
+
+          ${isCommentsOpen ? `
+          <div class="daily-post-comments-drawer">
+            <div class="daily-comments-list">${commentsListHtml}</div>
+            <form class="daily-comment-form" onsubmit="window.cleanHub.handleAddPostComment(event, '${this.escapeHtml(post.id)}')">
+              <input type="text" class="form-input daily-comment-author" placeholder="Your name" value="${this.escapeHtml(defaultAuthor)}" required />
+              <input type="text" class="form-input daily-comment-input" placeholder="Write a comment..." maxlength="500" required />
+              <button type="submit" class="btn-comment-submit">Post</button>
+            </form>
+          </div>` : ""}
+
           <div class="daily-post-card-footer">
             <span class="daily-post-timestamp">🕒 ${this.escapeHtml(post.submittedAt || "Recent")}</span>
             <div style="display:flex; align-items:center; gap:8px;">
@@ -1354,6 +1397,118 @@ class CleanEsportsHub {
         </article>
       `;
     }).join("");
+  }
+
+  getLikedPostSet() {
+    try {
+      const arr = JSON.parse(localStorage.getItem("igc_liked_posts") || "[]");
+      return new Set(Array.isArray(arr) ? arr : []);
+    } catch (e) {
+      return new Set();
+    }
+  }
+
+  async toggleLikePost(postId) {
+    const likedSet = this.getLikedPostSet();
+    const alreadyLiked = likedSet.has(postId);
+    const delta = alreadyLiked ? -1 : 1;
+
+    if (alreadyLiked) likedSet.delete(postId);
+    else likedSet.add(postId);
+    try { localStorage.setItem("igc_liked_posts", JSON.stringify(Array.from(likedSet))); } catch (e) {}
+
+    const updateLocal = (list) => {
+      const item = (list || []).find(r => r.id === postId);
+      if (item) item.likes = Math.max(0, (Number(item.likes) || 0) + delta);
+    };
+    updateLocal(this.pending);
+    updateLocal(this.cachedApprovedPosts);
+    this.savePending();
+    this.renderApprovedPostsList(null, true);
+
+    try {
+      const res = await fetch("/api/requests", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "like_post", id: postId, delta })
+      });
+      const json = await res.json().catch(() => ({}));
+      if (res.ok && json.ok && typeof json.likes === "number") {
+        [this.pending, this.cachedApprovedPosts].forEach(list => {
+          const item = (list || []).find(r => r.id === postId);
+          if (item) item.likes = json.likes;
+        });
+        this.savePending();
+        this.renderApprovedPostsList(null, true);
+      }
+    } catch (e) {}
+  }
+
+  togglePostComments(postId) {
+    if (!this.openCommentPostIds) this.openCommentPostIds = new Set();
+    if (this.openCommentPostIds.has(postId)) this.openCommentPostIds.delete(postId);
+    else this.openCommentPostIds.add(postId);
+    this.renderApprovedPostsList(null, true);
+  }
+
+  async handleAddPostComment(e, postId) {
+    e.preventDefault();
+    const form = e.target;
+    const authorInput = form.querySelector(".daily-comment-author");
+    const textInput   = form.querySelector(".daily-comment-input");
+    const author = (authorInput?.value || "").trim() || "Community Fan";
+    const text   = (textInput?.value || "").trim();
+    if (!text) return;
+    localStorage.setItem("last_updater_name", author);
+
+    try {
+      const res = await fetch("/api/requests", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "comment_post", id: postId, author, text })
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) {
+        this.showToast("⚠️ " + (json.error || "Could not post comment."));
+        return;
+      }
+      [this.pending, this.cachedApprovedPosts].forEach(list => {
+        const item = (list || []).find(r => r.id === postId);
+        if (item && Array.isArray(json.comments)) item.comments = json.comments;
+      });
+      this.savePending();
+      if (!this.openCommentPostIds) this.openCommentPostIds = new Set();
+      this.openCommentPostIds.add(postId);
+      this.renderApprovedPostsList(null, true);
+      this.showToast("💬 Comment posted!");
+    } catch (err) {
+      this.showToast("⚠️ Network error. Could not post comment.");
+    }
+  }
+
+  async deletePostComment(postId, commentId) {
+    if (!this.checkAdminAuth()) return;
+    if (!confirm("⚠️ Delete this comment?")) return;
+    try {
+      const res = await fetch("/api/requests", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete_comment", id: postId, commentId })
+      });
+      const json = await res.json().catch(() => ({}));
+      if (res.ok && json.ok) {
+        [this.pending, this.cachedApprovedPosts].forEach(list => {
+          const item = (list || []).find(r => r.id === postId);
+          if (item && Array.isArray(json.comments)) item.comments = json.comments;
+        });
+        this.savePending();
+        this.renderApprovedPostsList(null, true);
+        this.showToast("🗑️ Comment deleted.");
+      }
+    } catch (e) {}
   }
 
   async deleteDailyPost(id) {
