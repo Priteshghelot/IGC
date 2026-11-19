@@ -1555,12 +1555,24 @@ class CleanEsportsHub {
     const post = (this.cachedApprovedPosts || this.pending || []).find(r => r.id === postId);
     const shareUrl = `${window.location.origin}/post/${encodeURIComponent(postId)}`;
     const shareTitle = "India EWC & ENC27 Hub — Daily IGC Update";
-    const shareText = post && post.caption
+    const shareText = post && post.caption && post.caption.trim() !== "."
       ? `${String(post.caption).slice(0, 140)} — via India EWC Hub`
-      : "Check out the latest Indian Esports update!";
+      : "Check out this update on India EWC & ENC27 Hub!";
 
     if (navigator.share) {
       try {
+        // Attach the post image file when supported (mobile WhatsApp / X / Telegram)
+        if (post && post.imageUrl) {
+          const imgRes = await fetch(`/post-image/${encodeURIComponent(postId)}/cover.jpg`).catch(() => null);
+          if (imgRes && imgRes.ok) {
+            const blob = await imgRes.blob();
+            const file = new File([blob], `${postId}.jpg`, { type: blob.type || "image/jpeg" });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({ title: shareTitle, text: `${shareText}\n${shareUrl}`, files: [file] });
+              return;
+            }
+          }
+        }
         await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
         return;
       } catch (e) {
