@@ -242,11 +242,11 @@ class CleanEsportsHub {
     const btnGl = document.getElementById("btn-vote-godl");
     if (btnS8) {
       btnS8.classList.toggle("voted", myVote === "s8ul");
-      btnS8.textContent = myVote === "s8ul" ? "✓ Supporting S8UL" : "💙 Support S8UL";
+      btnS8.textContent = myVote === "s8ul" ? "💙 ✓ Supporting S8UL" : "💙 Support S8UL";
     }
     if (btnGl) {
       btnGl.classList.toggle("voted", myVote === "godlike");
-      btnGl.textContent = myVote === "godlike" ? "✓ Supporting GodLike" : "💛 Support GodLike";
+      btnGl.textContent = myVote === "godlike" ? "💛 ✓ Supporting GodLike" : "💛 Support GodLike";
     }
   }
 
@@ -1553,7 +1553,7 @@ class CleanEsportsHub {
 
   async shareDailyPost(postId) {
     const post = (this.cachedApprovedPosts || this.pending || []).find(r => r.id === postId);
-    const shareUrl = `${window.location.origin}/api/post?id=${encodeURIComponent(postId)}&v=2`;
+    const shareUrl = `${window.location.origin}/api/post?id=${encodeURIComponent(postId)}&v=3`;
     const shareTitle = "India EWC & ENC27 Hub — Daily IGC Update";
     const shareText = post && post.caption
       ? `${String(post.caption).slice(0, 140)} — via India EWC Hub`
@@ -1569,8 +1569,8 @@ class CleanEsportsHub {
     }
 
     try {
-      await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-      this.showToast("🔗 Post link copied to clipboard!");
+      await navigator.clipboard.writeText(shareUrl);
+      this.showToast("🔗 Post share link copied!");
     } catch (e) {
       prompt("Copy this link to share:", shareUrl);
     }
