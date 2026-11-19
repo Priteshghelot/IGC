@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { getRedis } = require('./_redis');
 
 const TOTAL_KEY = 'igc:stats:total_views';
@@ -5,6 +6,7 @@ const DAILY_PREFIX = 'igc:stats:daily_views:';
 const ACTIVE_ZSET = 'igc:stats:active_sessions';
 const POLL_S8UL_KEY = 'igc:poll:s8ul';
 const POLL_GODL_KEY = 'igc:poll:godlike';
+const POLL_VOTERS_HASH = 'igc:poll:voters';
 const SOCIAL_CACHE_KEY = 'igc:stats:socials_v4';
 const SOCIAL_LAST_GOOD_KEY = 'igc:stats:socials_last_good_v2';
 const ACTIVE_TTL_MS = 75000; // 75s window for active live viewers
@@ -14,9 +16,17 @@ const memStats = {
   daily: {},
   sessions: new Map(),
   poll: { s8ul: 0, godlike: 0 },
+  voters: new Map(),
   socials: null,
   socialsAt: 0
 };
+
+function getVoterKey(req) {
+  const fwd = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  const ip = fwd || req.headers['x-real-ip'] || req.socket?.remoteAddress || 'unknown';
+  const ua = String(req.headers['user-agent'] || '').slice(0, 120);
+  return crypto.createHash('sha256').update(`${ip}|${ua}`).digest('hex').slice(0, 24);
+}
 
 function getTodayIST() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }); // YYYY-MM-DD
@@ -142,31 +152,47 @@ module.exports = async (req, res) => {
     if (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }
     body = body || {};
 
+    const voterKey = getVoterKey(req);
+
     if (req.method === 'POST' && body.action === 'vote') {
       const team = body.team === 's8ul' ? 's8ul' : (body.team === 'godlike' ? 'godlike' : null);
-      const prevTeam = body.prevTeam === 's8ul' ? 's8ul' : (body.prevTeam === 'godlike' ? 'godlike' : null);
       if (!team) return res.status(400).json({ ok: false, error: 'Invalid team' });
 
       if (redis) {
+        const existing = await redis.hget(POLL_VOTERS_HASH, voterKey);
+        if (existing === team) {
+          const [s8ulRaw, godlRaw] = await Promise.all([redis.get(POLL_S8UL_KEY), redis.get(POLL_GODL_KEY)]);
+          return res.status(200).json({
+            ok: true,
+            alreadyVoted: true,
+            myVote: existing,
+            poll: { s8ul: Math.max(0, parseInt(s8ulRaw, 10) || 0), godlike: Math.max(0, parseInt(godlRaw, 10) || 0) }
+          });
+        }
+        await redis.hset(POLL_VOTERS_HASH, voterKey, team);
         const incKey = team === 's8ul' ? POLL_S8UL_KEY : POLL_GODL_KEY;
         await redis.incr(incKey);
-        if (prevTeam && prevTeam !== team) {
-          const decKey = prevTeam === 's8ul' ? POLL_S8UL_KEY : POLL_GODL_KEY;
+        if (existing && existing !== team) {
+          const decKey = existing === 's8ul' ? POLL_S8UL_KEY : POLL_GODL_KEY;
           const cur = parseInt(await redis.get(decKey), 10) || 0;
           if (cur > 0) await redis.decr(decKey);
         }
         const [s8ulRaw, godlRaw] = await Promise.all([redis.get(POLL_S8UL_KEY), redis.get(POLL_GODL_KEY)]);
         return res.status(200).json({
           ok: true,
+          myVote: team,
           poll: { s8ul: Math.max(0, parseInt(s8ulRaw, 10) || 0), godlike: Math.max(0, parseInt(godlRaw, 10) || 0) }
         });
       }
 
-      if (team !== prevTeam) {
-        memStats.poll[team] += 1;
-        if (prevTeam && memStats.poll[prevTeam] > 0) memStats.poll[prevTeam] -= 1;
+      const existing = memStats.voters.get(voterKey);
+      if (existing === team) {
+        return res.status(200).json({ ok: true, alreadyVoted: true, myVote: existing, poll: { ...memStats.poll } });
       }
-      return res.status(200).json({ ok: true, poll: { ...memStats.poll } });
+      memStats.voters.set(voterKey, team);
+      memStats.poll[team] += 1;
+      if (existing && memStats.poll[existing] > 0) memStats.poll[existing] -= 1;
+      return res.status(200).json({ ok: true, myVote: team, poll: { ...memStats.poll } });
     }
 
     const isHit = req.method === 'POST' && Boolean(body.hit);
@@ -192,16 +218,18 @@ module.exports = async (req, res) => {
       multi.zcard(ACTIVE_ZSET);
       multi.get(POLL_S8UL_KEY);
       multi.get(POLL_GODL_KEY);
+      multi.hget(POLL_VOTERS_HASH, voterKey);
 
       const [results, socials] = await Promise.all([multi.exec(), socialsPromise]);
       const totalViews = parseInt(results[0][1], 10) || 0;
       const dailyViews = parseInt(results[1][1], 10) || 0;
       const len = results.length;
-      const activeNow = Math.max(1, parseInt(results[len - 3][1], 10) || 0);
+      const activeNow = Math.max(1, parseInt(results[len - 4][1], 10) || 0);
       const poll = {
-        s8ul: Math.max(0, parseInt(results[len - 2][1], 10) || 0),
-        godlike: Math.max(0, parseInt(results[len - 1][1], 10) || 0)
+        s8ul: Math.max(0, parseInt(results[len - 3][1], 10) || 0),
+        godlike: Math.max(0, parseInt(results[len - 2][1], 10) || 0)
       };
+      const myVote = results[len - 1][1] || null;
 
       return res.status(200).json({
         ok: true,
@@ -209,6 +237,7 @@ module.exports = async (req, res) => {
         dailyViews,
         totalViews,
         poll,
+        myVote,
         ytSubs: socials.ytSubs,
         kickFollowers: socials.kickFollowers,
         igFollowers: socials.igFollowers,

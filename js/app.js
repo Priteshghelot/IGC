@@ -175,6 +175,7 @@ class CleanEsportsHub {
         if (json.ytSubs)        updateVal(ytEl, json.ytSubs, true);
         if (json.kickFollowers) updateVal(kickEl, json.kickFollowers, true);
         if (json.igFollowers)   updateVal(igEl, json.igFollowers, true);
+        if (json.myVote)        localStorage.setItem("igc_fan_poll_vote", json.myVote);
         if (json.poll)          this.renderFanPoll(json.poll);
       } catch (e) {}
     };
@@ -265,8 +266,13 @@ class CleanEsportsHub {
       });
       const json = await res.json().catch(() => ({}));
       if (res.ok && json.ok && json.poll) {
+        if (json.myVote) localStorage.setItem("igc_fan_poll_vote", json.myVote);
         this.renderFanPoll(json.poll);
-        this.showToast(`🔥 Vote counted for ${team === "s8ul" ? "S8UL Esports" : "GodLike Esports"}!`);
+        this.showToast(
+          json.alreadyVoted
+            ? `ℹ️ Your unique vote is already recorded for ${team === "s8ul" ? "S8UL Esports" : "GodLike Esports"}!`
+            : `🔥 Vote counted for ${team === "s8ul" ? "S8UL Esports" : "GodLike Esports"}!`
+        );
       }
     } catch (e) {
       this.showToast("⚠️ Could not save vote. Please try again.");
