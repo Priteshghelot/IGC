@@ -30,7 +30,7 @@
   <meta name="twitter:description" content="Track active rosters for S8UL Esports &amp; GodLike Esports, Road to ENC27 Team India lineups, Major &amp; 3rd-Party Tournaments, and Daily IGC Updates.">
   <meta name="twitter:image" content="https://igcewc.vercel.app/images/ewc_banner.jpg">
 
-  <link rel="stylesheet" href="css/style.css?v=37">
+  <link rel="stylesheet" href="css/style.css?v=38">
   <link rel="stylesheet" href="css/responsive.css?v=23">
 </head>
 <body>
@@ -253,9 +253,12 @@
       </div>
 
       <div class="fan-poll-meter-wrap" aria-label="Fan Support Meter">
+        <div class="fan-poll-leader-row">
+          <span class="fan-poll-leader-badge" id="poll-leader-badge">⚡ Tied 50% – 50%</span>
+        </div>
         <div class="fan-poll-meter-track">
-          <div class="fan-poll-fill-s8ul" id="poll-bar-s8ul" style="width: 50%;"></div>
-          <div class="fan-poll-fill-godl" id="poll-bar-godl" style="width: 50%;"></div>
+          <div class="fan-poll-fill-s8ul" id="poll-bar-s8ul" style="width: 50%;"><span class="poll-bar-label" id="poll-bar-s8ul-label">S8UL 50%</span></div>
+          <div class="fan-poll-fill-godl" id="poll-bar-godl" style="width: 50%;"><span class="poll-bar-label" id="poll-bar-godl-label">GodLike 50%</span></div>
           <div class="fan-poll-needle" id="poll-needle" style="left: 50%;">⚡</div>
         </div>
       </div>
@@ -1468,7 +1471,7 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=35"></script>
+  <script src="js/app.js?v=36"></script>
 
   <!-- Full-Screen Image Lightbox for Daily Update Posts -->
   <div class="modal-overlay" id="image-lightbox-modal" onclick="if(event.target===this) this.classList.remove('active')">

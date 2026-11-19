@@ -3559,11 +3559,46 @@ button {
   width: 100%;
 }
 
+.fan-poll-leader-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.fan-poll-leader-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
+}
+
+.fan-poll-leader-badge.lead-s8ul {
+  background: rgba(0, 168, 255, 0.2);
+  border-color: #38bdf8;
+  color: #7dd3fc;
+  box-shadow: 0 0 16px rgba(0, 168, 255, 0.35);
+}
+
+.fan-poll-leader-badge.lead-godl {
+  background: rgba(255, 184, 0, 0.2);
+  border-color: #ffb800;
+  color: #fde047;
+  box-shadow: 0 0 16px rgba(255, 184, 0, 0.35);
+}
+
 .fan-poll-meter-track {
   position: relative;
   display: flex;
   width: 100%;
-  height: 18px;
+  height: 26px;
   border-radius: 999px;
   overflow: visible;
   background: rgba(255, 255, 255, 0.08);
@@ -3574,22 +3609,48 @@ button {
   height: 100%;
   border-radius: 999px 0 0 999px;
   background: linear-gradient(90deg, #0284c7, #38bdf8);
-  transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 12px;
+  overflow: hidden;
+}
+
+.fan-poll-fill-s8ul.is-winning {
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.75);
 }
 
 .fan-poll-fill-godl {
   height: 100%;
   border-radius: 0 999px 999px 0;
   background: linear-gradient(90deg, #ffb800, #fde047);
-  transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  overflow: hidden;
+}
+
+.fan-poll-fill-godl.is-winning {
+  box-shadow: 0 0 20px rgba(255, 184, 0, 0.75);
+}
+
+.poll-bar-label {
+  font-size: 0.72rem;
+  font-weight: 950;
+  color: #061224;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
 .fan-poll-needle {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #0f172a;
   border: 2px solid #ffffff;
@@ -3598,8 +3659,18 @@ button {
   align-items: center;
   justify-content: center;
   font-size: 0.85rem;
-  transition: left 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: left 0.55s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
   z-index: 2;
+}
+
+.fan-poll-needle.lead-s8ul {
+  border-color: #38bdf8;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.85);
+}
+
+.fan-poll-needle.lead-godl {
+  border-color: #ffb800;
+  box-shadow: 0 0 18px rgba(255, 184, 0, 0.85);
 }
 
 @media (max-width: 768px) {

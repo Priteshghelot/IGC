@@ -200,6 +200,9 @@ class CleanEsportsHub {
     const totalEl   = document.getElementById("poll-total-votes");
     const s8Bar     = document.getElementById("poll-bar-s8ul");
     const glBar     = document.getElementById("poll-bar-godl");
+    const s8BarLbl  = document.getElementById("poll-bar-s8ul-label");
+    const glBarLbl  = document.getElementById("poll-bar-godl-label");
+    const leaderEl  = document.getElementById("poll-leader-badge");
     const needle    = document.getElementById("poll-needle");
 
     if (s8CountEl) s8CountEl.textContent = s8.toLocaleString("en-IN");
@@ -209,7 +212,29 @@ class CleanEsportsHub {
     if (totalEl)   totalEl.textContent   = `${total.toLocaleString("en-IN")} Total Vote${total === 1 ? "" : "s"}`;
     if (s8Bar)     s8Bar.style.width     = `${s8Pct}%`;
     if (glBar)     glBar.style.width     = `${glPct}%`;
+    if (s8BarLbl)  s8BarLbl.textContent  = s8Pct >= 18 ? `S8UL ${s8Pct}%` : "";
+    if (glBarLbl)  glBarLbl.textContent  = glPct >= 18 ? `GodLike ${glPct}%` : "";
     if (needle)    needle.style.left     = `${s8Pct}%`;
+
+    if (s8Bar && glBar && leaderEl) {
+      s8Bar.classList.toggle("is-winning", s8 > gl);
+      glBar.classList.toggle("is-winning", gl > s8);
+      leaderEl.classList.remove("lead-s8ul", "lead-godl");
+      if (needle) needle.classList.remove("lead-s8ul", "lead-godl");
+
+      if (s8 > gl) {
+        leaderEl.classList.add("lead-s8ul");
+        leaderEl.textContent = `💙 S8UL Winning (${s8Pct}%)`;
+        if (needle) { needle.classList.add("lead-s8ul"); needle.textContent = "💙"; }
+      } else if (gl > s8) {
+        leaderEl.classList.add("lead-godl");
+        leaderEl.textContent = `💛 GodLike Winning (${glPct}%)`;
+        if (needle) { needle.classList.add("lead-godl"); needle.textContent = "💛"; }
+      } else {
+        leaderEl.textContent = total > 0 ? `⚡ Tied (${s8Pct}% – ${glPct}%)` : "⚡ Vote Now — 50% / 50%";
+        if (needle) needle.textContent = "⚡";
+      }
+    }
 
     const myVote = localStorage.getItem("igc_fan_poll_vote");
     const btnS8 = document.getElementById("btn-vote-s8ul");
