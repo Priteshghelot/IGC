@@ -1270,5 +1270,70 @@ html, body {
     max-width: 220px;
     max-height: 80px;
   }
+
+  .daily-mode-tabs.global-daily-quick-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding: 6px;
+    margin-bottom: 1.15rem;
+  }
+
+  .daily-mode-tabs.global-daily-quick-nav .daily-mode-btn {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    gap: 3px;
+    padding: 8px 6px;
+    font-size: 0.72rem;
+    line-height: 1.2;
+  }
+
+  .daily-mode-tabs.global-daily-quick-nav .daily-mode-count {
+    font-size: 0.62rem;
+    padding: 1px 6px;
+  }
+
+  .fan-poll-section {
+    padding: 1rem 0.9rem;
+    margin-bottom: 1.25rem;
+    border-radius: 16px;
+  }
+
+  .fan-poll-logo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .fan-poll-team-name {
+    font-size: 0.9rem;
+  }
+
+  .fan-poll-count-line {
+    font-size: 0.76rem;
+  }
+
+  .btn-fan-vote {
+    padding: 7px 12px;
+    font-size: 0.76rem;
+  }
+
+  .daily-post-actions-bar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding: 0.65rem 0.85rem;
+  }
+
+  .btn-post-action {
+    justify-content: center;
+    padding: 7px 6px;
+    font-size: 0.75rem;
+    gap: 4px;
+  }
+
+  .daily-post-comments-drawer {
+    padding: 0.8rem 0.85rem 0.9rem;
+  }
 }
 
