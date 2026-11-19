@@ -3,6 +3,8 @@ const { getRedis } = require('./_redis');
 const TOTAL_KEY = 'igc:stats:total_views';
 const DAILY_PREFIX = 'igc:stats:daily_views:';
 const ACTIVE_ZSET = 'igc:stats:active_sessions';
+const POLL_S8UL_KEY = 'igc:poll:s8ul';
+const POLL_GODL_KEY = 'igc:poll:godlike';
 const SOCIAL_CACHE_KEY = 'igc:stats:socials_v4';
 const SOCIAL_LAST_GOOD_KEY = 'igc:stats:socials_last_good_v2';
 const ACTIVE_TTL_MS = 75000; // 75s window for active live viewers
@@ -11,6 +13,7 @@ const memStats = {
   total: 0,
   daily: {},
   sessions: new Map(),
+  poll: { s8ul: 0, godlike: 0 },
   socials: null,
   socialsAt: 0
 };
@@ -139,6 +142,33 @@ module.exports = async (req, res) => {
     if (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) {} }
     body = body || {};
 
+    if (req.method === 'POST' && body.action === 'vote') {
+      const team = body.team === 's8ul' ? 's8ul' : (body.team === 'godlike' ? 'godlike' : null);
+      const prevTeam = body.prevTeam === 's8ul' ? 's8ul' : (body.prevTeam === 'godlike' ? 'godlike' : null);
+      if (!team) return res.status(400).json({ ok: false, error: 'Invalid team' });
+
+      if (redis) {
+        const incKey = team === 's8ul' ? POLL_S8UL_KEY : POLL_GODL_KEY;
+        await redis.incr(incKey);
+        if (prevTeam && prevTeam !== team) {
+          const decKey = prevTeam === 's8ul' ? POLL_S8UL_KEY : POLL_GODL_KEY;
+          const cur = parseInt(await redis.get(decKey), 10) || 0;
+          if (cur > 0) await redis.decr(decKey);
+        }
+        const [s8ulRaw, godlRaw] = await Promise.all([redis.get(POLL_S8UL_KEY), redis.get(POLL_GODL_KEY)]);
+        return res.status(200).json({
+          ok: true,
+          poll: { s8ul: Math.max(0, parseInt(s8ulRaw, 10) || 0), godlike: Math.max(0, parseInt(godlRaw, 10) || 0) }
+        });
+      }
+
+      if (team !== prevTeam) {
+        memStats.poll[team] += 1;
+        if (prevTeam && memStats.poll[prevTeam] > 0) memStats.poll[prevTeam] -= 1;
+      }
+      return res.status(200).json({ ok: true, poll: { ...memStats.poll } });
+    }
+
     const isHit = req.method === 'POST' && Boolean(body.hit);
     const sid = req.method === 'POST' && body.sid ? String(body.sid).slice(0, 64) : null;
 
@@ -160,17 +190,25 @@ module.exports = async (req, res) => {
       }
       multi.zremrangebyscore(ACTIVE_ZSET, '-inf', cutoff);
       multi.zcard(ACTIVE_ZSET);
+      multi.get(POLL_S8UL_KEY);
+      multi.get(POLL_GODL_KEY);
 
       const [results, socials] = await Promise.all([multi.exec(), socialsPromise]);
       const totalViews = parseInt(results[0][1], 10) || 0;
       const dailyViews = parseInt(results[1][1], 10) || 0;
-      const activeNow = Math.max(1, parseInt(results[results.length - 1][1], 10) || 0);
+      const len = results.length;
+      const activeNow = Math.max(1, parseInt(results[len - 3][1], 10) || 0);
+      const poll = {
+        s8ul: Math.max(0, parseInt(results[len - 2][1], 10) || 0),
+        godlike: Math.max(0, parseInt(results[len - 1][1], 10) || 0)
+      };
 
       return res.status(200).json({
         ok: true,
         activeNow,
         dailyViews,
         totalViews,
+        poll,
         ytSubs: socials.ytSubs,
         kickFollowers: socials.kickFollowers,
         igFollowers: socials.igFollowers,
@@ -195,6 +233,7 @@ module.exports = async (req, res) => {
       activeNow: Math.max(1, memStats.sessions.size),
       dailyViews: memStats.daily[today] || 0,
       totalViews: memStats.total || 0,
+      poll: { ...memStats.poll },
       ytSubs: socials.ytSubs,
       kickFollowers: socials.kickFollowers,
       igFollowers: socials.igFollowers,

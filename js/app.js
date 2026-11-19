@@ -175,6 +175,7 @@ class CleanEsportsHub {
         if (json.ytSubs)        updateVal(ytEl, json.ytSubs, true);
         if (json.kickFollowers) updateVal(kickEl, json.kickFollowers, true);
         if (json.igFollowers)   updateVal(igEl, json.igFollowers, true);
+        if (json.poll)          this.renderFanPoll(json.poll);
       } catch (e) {}
     };
 
@@ -182,6 +183,69 @@ class CleanEsportsHub {
     this._visitorHeartbeat = setInterval(() => {
       if (!document.hidden) ping(false);
     }, 10000);
+  }
+
+  renderFanPoll(poll) {
+    if (!poll) return;
+    const s8 = Math.max(0, Number(poll.s8ul) || 0);
+    const gl = Math.max(0, Number(poll.godlike) || 0);
+    const total = s8 + gl;
+    const s8Pct = total > 0 ? Math.round((s8 / total) * 100) : 50;
+    const glPct = total > 0 ? (100 - s8Pct) : 50;
+
+    const s8CountEl = document.getElementById("poll-s8ul-count");
+    const glCountEl = document.getElementById("poll-godl-count");
+    const s8PctEl   = document.getElementById("poll-s8ul-pct");
+    const glPctEl   = document.getElementById("poll-godl-pct");
+    const totalEl   = document.getElementById("poll-total-votes");
+    const s8Bar     = document.getElementById("poll-bar-s8ul");
+    const glBar     = document.getElementById("poll-bar-godl");
+    const needle    = document.getElementById("poll-needle");
+
+    if (s8CountEl) s8CountEl.textContent = s8.toLocaleString("en-IN");
+    if (glCountEl) glCountEl.textContent = gl.toLocaleString("en-IN");
+    if (s8PctEl)   s8PctEl.textContent   = `${s8Pct}%`;
+    if (glPctEl)   glPctEl.textContent   = `${glPct}%`;
+    if (totalEl)   totalEl.textContent   = `${total.toLocaleString("en-IN")} Total Vote${total === 1 ? "" : "s"}`;
+    if (s8Bar)     s8Bar.style.width     = `${s8Pct}%`;
+    if (glBar)     glBar.style.width     = `${glPct}%`;
+    if (needle)    needle.style.left     = `${s8Pct}%`;
+
+    const myVote = localStorage.getItem("igc_fan_poll_vote");
+    const btnS8 = document.getElementById("btn-vote-s8ul");
+    const btnGl = document.getElementById("btn-vote-godl");
+    if (btnS8) {
+      btnS8.classList.toggle("voted", myVote === "s8ul");
+      btnS8.textContent = myVote === "s8ul" ? "✓ Supporting S8UL" : "💙 Support S8UL";
+    }
+    if (btnGl) {
+      btnGl.classList.toggle("voted", myVote === "godlike");
+      btnGl.textContent = myVote === "godlike" ? "✓ Supporting GodLike" : "💛 Support GodLike";
+    }
+  }
+
+  async voteFanPoll(team) {
+    const prevTeam = localStorage.getItem("igc_fan_poll_vote");
+    if (prevTeam === team) {
+      this.showToast(`🔥 You are already supporting ${team === "s8ul" ? "S8UL" : "GodLike"}!`);
+      return;
+    }
+    localStorage.setItem("igc_fan_poll_vote", team);
+    try {
+      const res = await fetch("/api/analytics", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "vote", team, prevTeam })
+      });
+      const json = await res.json().catch(() => ({}));
+      if (res.ok && json.ok && json.poll) {
+        this.renderFanPoll(json.poll);
+        this.showToast(`🔥 Vote counted for ${team === "s8ul" ? "S8UL Esports" : "GodLike Esports"}!`);
+      }
+    } catch (e) {
+      this.showToast("⚠️ Could not save vote. Please try again.");
+    }
   }
 
   startAutoLiveSync() {
@@ -1375,6 +1439,10 @@ class CleanEsportsHub {
               <span>Comments</span>
               <strong>${comments.length}</strong>
             </button>
+            <button type="button" class="btn-post-action btn-post-share" onclick="window.cleanHub.shareDailyPost('${this.escapeHtml(post.id)}')" title="Share this post">
+              <span>🔗</span>
+              <span>Share</span>
+            </button>
           </div>
 
           ${isCommentsOpen ? `
@@ -1450,6 +1518,31 @@ class CleanEsportsHub {
     if (this.openCommentPostIds.has(postId)) this.openCommentPostIds.delete(postId);
     else this.openCommentPostIds.add(postId);
     this.renderApprovedPostsList(null, true);
+  }
+
+  async shareDailyPost(postId) {
+    const post = (this.cachedApprovedPosts || this.pending || []).find(r => r.id === postId);
+    const shareUrl = `${window.location.origin}/#daily-updates`;
+    const shareTitle = "India EWC & ENC27 Hub — Daily IGC Update";
+    const shareText = post && post.caption
+      ? `${String(post.caption).slice(0, 140)} — via India EWC Hub`
+      : "Check out the latest Indian Esports update!";
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+        return;
+      } catch (e) {
+        if (e && e.name === "AbortError") return;
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+      this.showToast("🔗 Post link copied to clipboard!");
+    } catch (e) {
+      prompt("Copy this link to share:", shareUrl);
+    }
   }
 
   async handleAddPostComment(e, postId) {
