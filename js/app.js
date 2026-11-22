@@ -686,6 +686,174 @@ class CleanEsportsHub {
     ].map((t, i) => ({ id: "maj-" + (i + 1), ...t }));
   }
 
+  getClubUpcomingTournaments(clubKey) {
+    const clubs = {
+      s8ul: [
+        {
+          title: "PUBG India Challenge 2026 — Grand Finals",
+          game: "PUBG (PC)",
+          organizer: "KRAFTON & Tesseract (A-Tier)",
+          startDate: "2026-11-11",
+          endDate: "2026-11-29",
+          time: "18:30 IST (Grand Finals: Nov 28–29)",
+          prize: "₹25,00,000 INR",
+          teams: "S8UL Esports (Qualified · 10 Bonus Pts)",
+          location: "India (Online)",
+          liquipediaUrl: "https://liquipedia.net/pubg/S8UL_Esports"
+        },
+        {
+          title: "PUBG Mobile Global Championship (PMGC) 2026",
+          game: "PUBG Mobile",
+          organizer: "KRAFTON & Level Infinite (S-Tier)",
+          startDate: "2026-11-26",
+          endDate: "2026-12-13",
+          time: "17:00 IST (12:00 UTC · 15:00 TRT)",
+          prize: "$3,000,000 USD",
+          teams: "Team SouL (The Gauntlet Invite)",
+          location: "İstanbul, Türkiye",
+          liquipediaUrl: "https://liquipedia.net/pubgmobile/PUBG_Mobile_Global_Championship/2026"
+        },
+        {
+          title: "Google Play Arena 2026 — Free Fire",
+          game: "Free Fire",
+          organizer: "Google Play / Garena (B-Tier)",
+          startDate: "2026-12-19",
+          endDate: "2026-12-20",
+          time: "19–20 Dec 2026 (IST)",
+          prize: "₹21,00,000 INR",
+          teams: "S8UL Esports (Invited Partner Club)",
+          location: "Mumbai, India",
+          liquipediaUrl: "https://liquipedia.net/freefire/S8UL_Esports"
+        },
+        {
+          title: "Esports World Cup 2027 (EWC 2027)",
+          game: "Multi-Title",
+          organizer: "EWCF & ESL FACEIT (S-Tier)",
+          startDate: "2027-07-20",
+          endDate: "2027-08-01",
+          time: "20 Jul – 1 Aug 2027 (AST / IST)",
+          prize: "Club & Title Pools (CS2: $2,000,000 USD)",
+          teams: "S8UL Esports (EWC Partner Club)",
+          location: "Riyadh, Saudi Arabia",
+          liquipediaUrl: "https://liquipedia.net/"
+        }
+      ],
+      godlike: [
+        {
+          title: "Delta Force Invitational 2026",
+          game: "Delta Force",
+          organizer: "Team Jade & TiMi (S-Tier)",
+          startDate: "2026-11-27",
+          endDate: "2026-11-29",
+          time: "16:30 IST (11:00 UTC · 12:00 CET)",
+          prize: "$500,000 USD",
+          teams: "GodLike Esports (2nd · RISE Series Americas S2)",
+          location: "Stockholm, Sweden",
+          liquipediaUrl: "https://liquipedia.net/deltaforce/Delta_Force_Invitational/2026"
+        },
+        {
+          title: "Call of Duty: Mobile World Championship 2026",
+          game: "COD Mobile",
+          organizer: "Activision (S-Tier)",
+          startDate: "2026-12-04",
+          endDate: "2026-12-06",
+          time: "4–6 Dec 2026 (CST / UTC)",
+          prize: "$500,000 USD",
+          teams: "GodLike Esports (India Representative)",
+          location: "Mexico City, Mexico",
+          liquipediaUrl: "https://liquipedia.net/callofduty/Call_of_Duty_Mobile_World_Championship/2026"
+        },
+        {
+          title: "Google Play Arena 2026 — BGMI",
+          game: "BGMI",
+          organizer: "Google Play / KRAFTON (B-Tier)",
+          startDate: "2026-12-14",
+          endDate: "2026-12-20",
+          time: "14–20 Dec 2026 (IST)",
+          prize: "₹28,00,000 INR",
+          teams: "GodLike Esports (Invited Partner Club)",
+          location: "India (Online & LAN)",
+          liquipediaUrl: "https://liquipedia.net/pubgmobile/GodLike_Esports"
+        },
+        {
+          title: "Google Play Arena 2026 — Free Fire",
+          game: "Free Fire",
+          organizer: "Google Play / Garena (B-Tier)",
+          startDate: "2026-12-19",
+          endDate: "2026-12-20",
+          time: "19–20 Dec 2026 (IST)",
+          prize: "₹21,00,000 INR",
+          teams: "GodLike Esports (Grand Finals Partner Club)",
+          location: "Mumbai, India",
+          liquipediaUrl: "https://liquipedia.net/freefire/GodLike_Esports"
+        },
+        {
+          title: "Esports World Cup 2027 (EWC 2027)",
+          game: "Multi-Title",
+          organizer: "EWCF & ESL FACEIT (S-Tier)",
+          startDate: "2027-07-20",
+          endDate: "2027-08-01",
+          time: "20 Jul – 1 Aug 2027 (AST / IST)",
+          prize: "Club & Title Pools (CS2: $2,000,000 USD)",
+          teams: "GodLike Esports (EWC Partner Club)",
+          location: "Riyadh, Saudi Arabia",
+          liquipediaUrl: "https://liquipedia.net/"
+        }
+      ]
+    };
+    return (clubs[clubKey] || []).map((t, i) => ({ id: `${clubKey}-up-${i + 1}`, ...t }));
+  }
+
+  toggleClubUpcoming(clubKey) {
+    const panel = document.getElementById("club-upcoming-panel");
+    const listEl = document.getElementById("club-upcoming-list");
+    const logoEl = document.getElementById("club-panel-logo");
+    const titleEl = document.getElementById("club-panel-title");
+    const s8ulCard = document.getElementById("club-card-s8ul");
+    const godlCard = document.getElementById("club-card-godlike");
+    if (!panel || !listEl) return;
+
+    if (this.activeClubUpcoming === clubKey && panel.style.display !== "none") {
+      this.closeClubUpcoming();
+      return;
+    }
+
+    this.activeClubUpcoming = clubKey;
+    const isS8ul = clubKey === "s8ul";
+    if (logoEl) logoEl.src = isS8ul ? "images/s8ul_logo.png" : "images/godlike_logo.png";
+    if (titleEl) titleEl.textContent = isS8ul ? "S8UL Esports — Upcoming Tournaments" : "GodLike Esports — Upcoming Tournaments";
+
+    if (s8ulCard) {
+      s8ulCard.classList.toggle("active", isS8ul);
+      s8ulCard.setAttribute("aria-expanded", isS8ul ? "true" : "false");
+    }
+    if (godlCard) {
+      godlCard.classList.toggle("active", !isS8ul);
+      godlCard.setAttribute("aria-expanded", !isS8ul ? "true" : "false");
+    }
+
+    const items = this.getClubUpcomingTournaments(clubKey);
+    this.renderTournamentCards(listEl, items, 10, "No Upcoming Tournaments Found", false);
+    panel.style.display = "block";
+    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  closeClubUpcoming() {
+    this.activeClubUpcoming = null;
+    const panel = document.getElementById("club-upcoming-panel");
+    const s8ulCard = document.getElementById("club-card-s8ul");
+    const godlCard = document.getElementById("club-card-godlike");
+    if (panel) panel.style.display = "none";
+    if (s8ulCard) {
+      s8ulCard.classList.remove("active");
+      s8ulCard.setAttribute("aria-expanded", "false");
+    }
+    if (godlCard) {
+      godlCard.classList.remove("active");
+      godlCard.setAttribute("aria-expanded", "false");
+    }
+  }
+
   extractPostGameTags(caption) {
     const text = String(caption || "").toLowerCase();
     const gameRules = [

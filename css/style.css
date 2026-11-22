@@ -4388,3 +4388,170 @@ button {
   color: #94a3b8;
   font-weight: 600;
 }
+
+/* =====================================================================
+   UPCOMING TOURNAMENT UPDATES (S8UL & GODLIKE LOGO SELECTOR)
+   ===================================================================== */
+.club-upcoming-section {
+  max-width: 1180px;
+  margin: 2.2rem auto 1.6rem;
+  padding: 1.8rem 1.4rem;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.88), rgba(10, 15, 28, 0.94));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+}
+
+.club-upcoming-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.club-upcoming-kicker {
+  display: inline-block;
+  padding: 0.32rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  margin-bottom: 0.55rem;
+}
+
+.club-upcoming-title {
+  font-size: clamp(1.45rem, 2.6vw, 2rem);
+  font-weight: 900;
+  color: #f8fafc;
+  margin: 0 0 0.35rem;
+}
+
+.club-upcoming-subtitle {
+  color: #94a3b8;
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+.club-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.club-logo-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 1.45rem 1.2rem;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.club-logo-card:hover {
+  transform: translateY(-4px);
+}
+
+.club-logo-s8ul:hover,
+.club-logo-s8ul.active {
+  border-color: #0ea5e9;
+  background: linear-gradient(145deg, rgba(14, 165, 233, 0.16), rgba(15, 23, 42, 0.92));
+  box-shadow: 0 10px 28px rgba(14, 165, 233, 0.25);
+}
+
+.club-logo-godlike:hover,
+.club-logo-godlike.active {
+  border-color: #facc15;
+  background: linear-gradient(145deg, rgba(250, 204, 21, 0.16), rgba(15, 23, 42, 0.92));
+  box-shadow: 0 10px 28px rgba(250, 204, 21, 0.22);
+}
+
+.club-logo-img {
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+}
+
+.club-logo-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.club-logo-hint {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #94a3b8;
+  padding: 0.24rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.club-upcoming-panel {
+  margin-top: 1.6rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.club-upcoming-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.15rem;
+}
+
+.club-upcoming-panel-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.club-panel-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.club-panel-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.club-panel-source {
+  font-size: 0.78rem;
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.club-panel-close {
+  padding: 0.42rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.club-panel-close:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+@media (max-width: 540px) {
+  .club-logo-grid {
+    grid-template-columns: 1fr;
+  }
+}
