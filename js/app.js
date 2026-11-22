@@ -552,130 +552,136 @@ class CleanEsportsHub {
   getDefaultMajorTournaments() {
     return [
       {
-        title: "GULLY WARS 2026",
-        game: "BGMI / Mobile",
-        startDate: "2026-09-20",
-        endDate: "2026-11-29",
-        prize: "Indian Grassroots / Open",
-        teams: "Open & Community Indian Squads",
-        location: "India"
-      },
-      {
-        title: "Google Event 2026 (Registration Open)",
-        game: "Multi-Title",
-        startDate: "2026-10-23",
-        endDate: "2026-12-20",
-        prize: "Official Google Event",
-        teams: "BGMI, FC Mobile, Free Fire, Chess, Real Cricket & Mobile Legends",
-        location: "India (Online)"
-      },
-      {
-        title: "CEGC 2026 Championship",
+        title: "Chennai Esports Global Championship (CEGC) 2026",
         game: "BGMI",
+        organizer: "Skyesports & SDAT",
         startDate: "2026-11-03",
-        endDate: "2026-11-30",
-        prize: "₹75,00,000 (75 Lakh Overall)",
-        teams: "Top Indian Pro Squads",
-        location: "India"
+        endDate: "2026-12-13",
+        time: "Grand Finals: 11–13 Dec (IST)",
+        prize: "₹75,00,000 INR",
+        teams: "Top Indian & Global Contenders",
+        location: "Chennai, India",
+        liquipediaUrl: "https://liquipedia.net/pubgmobile/Chennai_Esports_Global_Championship/2026"
       },
       {
         title: "FFWS Global Finals 2026",
-        game: "Free Fire MAX",
+        game: "Free Fire",
+        organizer: "Garena (S-Tier)",
         startDate: "2026-11-06",
-        endDate: "2026-11-29",
-        prize: "FFWS Global Pool",
-        teams: "Team Apex Gaming (TAG) & Team Resurrection (Reg)",
-        location: "Global LAN"
+        endDate: "2026-11-28",
+        time: "Last Chance: Nov 27, 15:45 IST · Finals: Nov 28, 15:30 IST",
+        prize: "$1,200,000 USD",
+        teams: "24 Teams · Team Apex Gaming (TAG) & Team Resurrection (Reg)",
+        location: "Bangkok, Thailand",
+        liquipediaUrl: "https://liquipedia.net/freefire/Free_Fire_World_Series/2026"
       },
       {
-        title: "PUBG India Challenge 2026 (PUBG PC)",
-        game: "PUBG: Battlegrounds (PC)",
+        title: "PUBG India Challenge 2026",
+        game: "PUBG (PC)",
+        organizer: "KRAFTON & Tesseract (A-Tier)",
         startDate: "2026-11-11",
         endDate: "2026-11-29",
-        prize: "₹2,500,000 INR",
-        teams: "Indian PUBG PC Contenders",
-        location: "India"
+        time: "18:30 IST (Matchdays)",
+        prize: "₹25,00,000 INR",
+        teams: "32 Indian Squads",
+        location: "India (Online)",
+        liquipediaUrl: "https://liquipedia.net/pubg/PUBG_India_Challenge/2026"
       },
       {
         title: "PUBG Mobile Global Championship (PMGC) 2026",
-        game: "PUBG Mobile / BGMI",
-        startDate: "2026-11-24",
-        endDate: "2026-12-14",
+        game: "PUBG Mobile",
+        organizer: "KRAFTON & Level Infinite (S-Tier)",
+        startDate: "2026-11-26",
+        endDate: "2026-12-13",
+        time: "17:00 IST (12:00 UTC · 15:00 TRT)",
         prize: "$3,000,000 USD",
-        teams: "Team SouL (India) & International Champions",
-        location: "Global LAN"
+        teams: "39 Teams · Team SouL (India)",
+        location: "İstanbul, Türkiye",
+        liquipediaUrl: "https://liquipedia.net/pubgmobile/PUBG_Mobile_Global_Championship/2026"
       },
       {
         title: "Delta Force Invitational 2026",
         game: "Delta Force",
+        organizer: "Team Jade & TiMi (S-Tier)",
         startDate: "2026-11-27",
         endDate: "2026-11-29",
-        prize: "Global Invitational Pool",
-        teams: "GodLike Delta Force & Invited Global Squads",
-        location: "Global Invitational"
+        time: "16:30 IST (11:00 UTC · 12:00 CET)",
+        prize: "$500,000 USD",
+        teams: "12 Global Teams (Operations PC)",
+        location: "Stockholm, Sweden",
+        liquipediaUrl: "https://liquipedia.net/deltaforce/Delta_Force_Invitational/2026"
+      },
+      {
+        title: "JioBLAST Gully Wars 2026 (Grand Finals)",
+        game: "BGMI",
+        organizer: "JioBLAST & KRAFTON (B-Tier)",
+        startDate: "2026-11-27",
+        endDate: "2026-11-29",
+        time: "27–29 Nov (IST)",
+        prize: "₹10,00,000 INR",
+        teams: "16 Grand Finals Indian Squads",
+        location: "India (Online)",
+        liquipediaUrl: "https://liquipedia.net/pubgmobile/JioBLAST_Gully_Wars/2026"
       },
       {
         title: "FC Pro 27 Open",
-        game: "EA SPORTS FC",
+        game: "EA SPORTS FC 27",
+        organizer: "EA (S-Tier)",
         startDate: "2026-11-30",
-        endDate: "2026-12-06",
-        prize: "FC Pro Points & Pool",
-        teams: "Indian & Global FC Pro Contenders",
-        location: "Online / Global"
+        endDate: "2027-01-25",
+        time: "Group Stage & Finals (UTC / CET)",
+        prize: "$533,000 USD",
+        teams: "24 Players (4 Groups of 6)",
+        location: "Europe (Offline)",
+        liquipediaUrl: "https://liquipedia.net/easportsfc/FC_Pro/27/Open"
       },
       {
-        title: "CODM World Championship 2026",
-        game: "Call of Duty: Mobile",
+        title: "Call of Duty: Mobile World Championship 2026",
+        game: "COD Mobile",
+        organizer: "Activision (S-Tier)",
         startDate: "2026-12-04",
         endDate: "2026-12-06",
-        prize: "World Championship Pool",
-        teams: "GodLike Esports (India) & World Finalists",
-        location: "Mexico"
+        time: "4–6 Dec (CST / UTC)",
+        prize: "$500,000 USD",
+        teams: "16 Teams · GodLike Esports (India)",
+        location: "Mexico City, Mexico",
+        liquipediaUrl: "https://liquipedia.net/callofduty/Call_of_Duty_Mobile_World_Championship/2026"
       },
       {
-        title: "KIC — Honor of Kings International Championship 2026",
+        title: "Honor of Kings International Championship (KIC) 2026",
         game: "Honor of Kings",
+        organizer: "Level Infinite (S-Tier)",
         startDate: "2026-12-26",
         endDate: "2027-01-10",
-        prize: "International Championship Pool",
-        teams: "Global & South Asia Contenders",
-        location: "International LAN"
+        time: "26 Dec – 10 Jan (WIB / UTC)",
+        prize: "TBD (India Qualifier: ₹5,00,000 INR)",
+        teams: "16 Global Teams (incl. India Qualifier)",
+        location: "Jakarta, Indonesia",
+        liquipediaUrl: "https://liquipedia.net/honorofkings/Honor_of_Kings_International_Championship/2026"
       },
       {
-        title: "Japan Habba — Bengaluru 2027 (South Asia Major)",
-        game: "Fighting / FGC",
-        startDate: "2027-01-09",
-        endDate: "2027-01-10",
-        prize: "South Asia Major",
-        teams: "Indian & South Asia FGC Contenders",
-        location: "Bengaluru, India"
-      },
-      {
-        title: "VCT Pacific 2027 (JioBlast)",
+        title: "VCT 2027: Pacific Kickoff",
         game: "Valorant",
-        startDate: "2027-01-18",
-        endDate: "2027-02-08",
+        organizer: "Riot Games (S-Tier)",
+        startDate: "2027-01-11",
+        endDate: "2027-01-31",
+        time: "11–31 Jan (KST / IST)",
         prize: "Masters Qualification",
-        teams: "Global Esports (India Rep) & Top APAC Clubs · JioBlast",
-        location: "Seoul / APAC"
+        teams: "VCT Pacific Teams · Global Esports (India)",
+        location: "Seoul, South Korea",
+        liquipediaUrl: "https://liquipedia.net/valorant/VCT/2027/Pacific/Kickoff"
       },
       {
-        title: "EWC Direct & Satellite Last Chance Qualifiers (LCQ)",
-        game: "Multi-Title (EWC Qualification)",
-        startDate: "2027-02-15",
-        endDate: "2027-05-15",
-        prize: "EWC 2027 Direct Slots & Satellite LCQ",
-        teams: "S8UL Esports, GodLike Esports & Indian Qualifiers",
-        location: "India / Global Qualifiers"
-      },
-      {
-        title: "Esports World Cup (EWC) 2027 — Riyadh",
-        game: "All Official EWC27 Titles",
-        startDate: "2027-07-08",
-        endDate: "2027-08-24",
-        prize: "$60,000,000+ Club & Game Pools",
-        teams: "GodLike Esports, S8UL Esports & Global Club Partners",
-        location: "Riyadh, Saudi Arabia"
+        title: "Esports World Cup 2027 (EWC 2027)",
+        game: "Multi-Title",
+        organizer: "EWCF & ESL FACEIT (S-Tier)",
+        startDate: "2027-07-20",
+        endDate: "2027-08-01",
+        time: "20 Jul – 1 Aug (AST / IST)",
+        prize: "Club & Title Pools (CS2: $2,000,000 USD)",
+        teams: "Global Partner Clubs (S8UL, GodLike & Qualifiers)",
+        location: "Riyadh, Saudi Arabia",
+        liquipediaUrl: "https://liquipedia.net/"
       }
     ].map((t, i) => ({ id: "maj-" + (i + 1), ...t }));
   }
@@ -1177,10 +1183,10 @@ class CleanEsportsHub {
           </div>
           <h3 class="tournament-title">${this.escapeHtml(t.title)}</h3>
           <div class="tournament-meta-grid">
-            <div class="tournament-meta-item"><span>📅 Schedule</span><strong>${formatRange(t.startDate, t.endDate || t.startDate)}</strong></div>
+            <div class="tournament-meta-item"><span>📅 Date &amp; Time</span><strong>${formatRange(t.startDate, t.endDate || t.startDate)}${t.time ? `<br><small style="color:#38bdf8;font-weight:500;">🕒 ${this.escapeHtml(t.time)}</small>` : ""}</strong></div>
             <div class="tournament-meta-item"><span>💰 Prize / Stakes</span><strong>${this.escapeHtml(t.prize || "TBA")}</strong></div>
             <div class="tournament-meta-item"><span>📍 Region</span><strong>${this.escapeHtml(t.location || "India")}</strong></div>
-            <div class="tournament-meta-item"><span>🛡️ Featured</span><strong>${this.escapeHtml(t.teams || "Indian Pro Clubs")}</strong></div>
+            <div class="tournament-meta-item"><span>🛡️ Teams / Source</span><strong>${this.escapeHtml(t.teams || "Indian Pro Clubs")}${t.liquipediaUrl ? ` · <a href="${this.escapeHtml(t.liquipediaUrl)}" target="_blank" rel="noopener noreferrer" style="color:#38bdf8;text-decoration:underline;">Liquipedia ↗</a>` : ""}</strong></div>
           </div>
           ${(editable === true || editable === "thirdparty") && t.id ? `
           <div class="tournament-card-actions">
