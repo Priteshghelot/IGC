@@ -738,6 +738,13 @@ const INITIAL_HUB_DATA = {
       "genre": "Sports Simulation",
       "sub": "EA Sports",
       "isNewlyAdded": false
+    },
+    {
+      "id": "e27-11",
+      "title": "STREET FIGHTER 6",
+      "genre": "Fighting Game (FGC)",
+      "sub": "Capcom",
+      "isNewlyAdded": true
     }
   ],
   "dailyUpdates": []
