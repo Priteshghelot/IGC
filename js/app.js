@@ -552,112 +552,121 @@ class CleanEsportsHub {
   getDefaultMajorTournaments() {
     return [
       {
-        title: "PUBG Mobile Global Championship (PMGC) 2026",
-        game: "PUBG Mobile",
-        startDate: "2026-11-24",
-        endDate: "2026-12-14",
-        prize: "$3,000,000 USD",
-        teams: "International Champions & South Asia / India Contenders",
+        title: "GULLY WARS 2026",
+        game: "BGMI / Mobile",
+        startDate: "2026-09-20",
+        endDate: "2026-11-29",
+        prize: "Indian Grassroots / Open",
+        teams: "Open & Community Indian Squads",
+        location: "India"
+      },
+      {
+        title: "Google Event 2026 (Registration Open)",
+        game: "Multi-Title",
+        startDate: "2026-10-23",
+        endDate: "2026-12-20",
+        prize: "Official Google Event",
+        teams: "BGMI, FC Mobile, Free Fire, Chess, Real Cricket & Mobile Legends",
+        location: "India (Online)"
+      },
+      {
+        title: "CEGC 2026 Championship",
+        game: "BGMI",
+        startDate: "2026-11-03",
+        endDate: "2026-11-30",
+        prize: "₹75,00,000 (75 Lakh Overall)",
+        teams: "Top Indian Pro Squads",
+        location: "India"
+      },
+      {
+        title: "FFWS Global Finals 2026",
+        game: "Free Fire MAX",
+        startDate: "2026-11-06",
+        endDate: "2026-11-29",
+        prize: "FFWS Global Pool",
+        teams: "Team Apex Gaming (TAG) & Team Resurrection (Reg)",
         location: "Global LAN"
       },
       {
-        title: "Valorant Challengers South Asia: Split 1",
-        game: "Valorant",
-        startDate: "2026-11-28",
-        endDate: "2026-12-18",
-        prize: "$50,000 USD",
-        teams: "GodLike, Global Esports Academy, Orangutan, Velocity",
-        location: "South Asia / Mumbai"
+        title: "PUBG India Challenge 2026 (PUBG PC)",
+        game: "PUBG: Battlegrounds (PC)",
+        startDate: "2026-11-11",
+        endDate: "2026-11-29",
+        prize: "₹2,500,000 INR",
+        teams: "Indian PUBG PC Contenders",
+        location: "India"
       },
       {
-        title: "Free Fire MAX India Winter Championship",
-        game: "Free Fire MAX",
-        startDate: "2026-12-05",
-        endDate: "2026-12-22",
-        prize: "₹50,00,000",
-        teams: "Top 18 Indian Mobile Rosters (GodLike, S8UL, TSG)",
-        location: "Online + Delhi LAN"
+        title: "PUBG Mobile Global Championship (PMGC) 2026",
+        game: "PUBG Mobile / BGMI",
+        startDate: "2026-11-24",
+        endDate: "2026-12-14",
+        prize: "$3,000,000 USD",
+        teams: "Team SouL (India) & International Champions",
+        location: "Global LAN"
       },
       {
-        title: "CODM India National Qualifiers 2026",
+        title: "Delta Force Invitational 2026",
+        game: "Delta Force",
+        startDate: "2026-11-27",
+        endDate: "2026-11-29",
+        prize: "Global Invitational Pool",
+        teams: "GodLike Delta Force & Invited Global Squads",
+        location: "Global Invitational"
+      },
+      {
+        title: "FC Pro 27 Open",
+        game: "EA SPORTS FC",
+        startDate: "2026-11-30",
+        endDate: "2026-12-06",
+        prize: "FC Pro Points & Pool",
+        teams: "Indian & Global FC Pro Contenders",
+        location: "Online / Global"
+      },
+      {
+        title: "CODM World Championship 2026",
         game: "Call of Duty: Mobile",
-        startDate: "2026-12-12",
-        endDate: "2026-12-29",
-        prize: "$40,000 USD",
-        teams: "GodLike CODM, S8UL & Top Indian Mobile Squads",
-        location: "India Regional"
+        startDate: "2026-12-04",
+        endDate: "2026-12-06",
+        prize: "World Championship Pool",
+        teams: "GodLike Esports (India) & World Finalists",
+        location: "Mexico"
       },
       {
-        title: "Pokemon UNITE India Winter Invitational",
-        game: "Pokemon UNITE",
-        startDate: "2026-12-19",
-        endDate: "2027-01-04",
-        prize: "$25,000 USD",
-        teams: "S8UL Pokemon Unite & India Top 16",
-        location: "India / APAC"
-      },
-      {
-        title: "MLBB South Asia & India Championship",
-        game: "MLBB",
+        title: "KIC — Honor of Kings International Championship 2026",
+        game: "Honor of Kings",
         startDate: "2026-12-26",
-        endDate: "2027-01-12",
-        prize: "$50,000 USD",
-        teams: "GodLike MLBB Women, S8UL MLBB & Indian Challengers",
-        location: "India / SEA Qualifier"
+        endDate: "2027-01-10",
+        prize: "International Championship Pool",
+        teams: "Global & South Asia Contenders",
+        location: "International LAN"
       },
       {
-        title: "BGMI India Series (BGIS) 2027",
-        game: "BGMI",
-        startDate: "2027-01-10",
-        endDate: "2027-02-15",
-        prize: "₹2,00,00,000+",
-        teams: "All Indian Pro & Underdog Squads (GodLike, Team SouL, S8UL)",
-        location: "Pan-India + LAN Grand Finals"
+        title: "Japan Habba — Bengaluru 2027 (South Asia Major)",
+        game: "Fighting / FGC",
+        startDate: "2027-01-09",
+        endDate: "2027-01-10",
+        prize: "South Asia Major",
+        teams: "Indian & South Asia FGC Contenders",
+        location: "Bengaluru, India"
       },
       {
-        title: "VCT Pacific Kickoff 2027",
+        title: "VCT Pacific 2027 (JioBlast)",
         game: "Valorant",
         startDate: "2027-01-18",
         endDate: "2027-02-08",
         prize: "Masters Qualification",
-        teams: "Global Esports (India Rep) & Top APAC Clubs",
-        location: "Seoul, South Korea"
+        teams: "Global Esports (India Rep) & Top APAC Clubs · JioBlast",
+        location: "Seoul / APAC"
       },
       {
-        title: "Tekken World Tour: India & South Asia Major",
-        game: "Tekken 8",
-        startDate: "2027-02-05",
-        endDate: "2027-02-16",
-        prize: "TWT Ranking Points + $20,000",
-        teams: "S8UL (Soul, AK, Arhaan), GodLike FGC & Top Indian Players",
-        location: "Bengaluru / South Asia"
-      },
-      {
-        title: "EWC 2027 India & South Asia Qualifiers",
-        game: "Multi-Title (Tekken 8, Chess, FC, MLBB)",
-        startDate: "2027-02-20",
-        endDate: "2027-03-25",
-        prize: "Riyadh EWC27 Slots",
-        teams: "GodLike Esports, S8UL Esports & Indian Athletes",
-        location: "India / Riyadh Road"
-      },
-      {
-        title: "Skyesports Championship 2027 (BGMI & Valorant)",
-        game: "BGMI / Valorant",
-        startDate: "2027-03-10",
-        endDate: "2027-04-02",
-        prize: "₹1,50,00,000",
-        teams: "GodLike, S8UL, Revenant, Orangutan & Invited Clubs",
-        location: "Mumbai / Pune LAN"
-      },
-      {
-        title: "PUBG Mobile World Cup (PMWC) 2027 Qualifiers",
-        game: "PUBG Mobile / BGMI",
-        startDate: "2027-04-15",
-        endDate: "2027-05-10",
-        prize: "EWC27 Riyadh Qualification",
-        teams: "India & South Asia Champion Squads",
-        location: "Regional + Riyadh"
+        title: "EWC Direct & Satellite Last Chance Qualifiers (LCQ)",
+        game: "Multi-Title (EWC Qualification)",
+        startDate: "2027-02-15",
+        endDate: "2027-05-15",
+        prize: "EWC 2027 Direct Slots & Satellite LCQ",
+        teams: "S8UL Esports, GodLike Esports & Indian Qualifiers",
+        location: "India / Global Qualifiers"
       },
       {
         title: "Esports World Cup (EWC) 2027 — Riyadh",
@@ -799,7 +808,7 @@ class CleanEsportsHub {
     this.renderTournamentCards(
       container,
       filtered,
-      10,
+      20,
       isFiltered ? "No Matching Major Tournaments Found" : "No Upcoming Major Tournaments Scheduled",
       "major"
     );
