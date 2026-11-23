@@ -119,13 +119,14 @@ class CleanEsportsHub {
 
   async syncCloudPending() {
     try {
-      const res = await fetch('/api/requests', { cache: 'no-store' });
+      const res = await fetch('/api/requests?lite=1', { cache: 'no-store' });
       if (res.ok) {
         this._lastRequestsSyncMs = Date.now();
         const json = await res.json();
         if (json.ok && Array.isArray(json.requests)) {
-          // Server is the single source of truth for requests
-          this.pending = json.requests;
+          // Preserve any already-fetched full images in memory when merging lite metadata
+          const existingImg = new Map((this.pending || []).filter(r => r && r.imageUrl).map(r => [r.id, r.imageUrl]));
+          this.pending = json.requests.map(r => (r.hasDataImage && !r.imageUrl && existingImg.has(r.id)) ? { ...r, imageUrl: existingImg.get(r.id) } : r);
           this.savePending();
           this.updateAdminUI();
           this.renderDailyMarquee();
@@ -1568,12 +1569,13 @@ class CleanEsportsHub {
     // 1. Gather all approved daily_post items from local pending (auto-expiring > 3 days)
     let approved = (this.pending || []).filter(r => r.type === "daily_post" && r.status === "approved" && !this.isDailyPostExpired(r));
 
-    // 2. Fetch fresh from cloud Redis (skip if synced within last 15s to save Fast Origin Transfer)
-    if (Date.now() - (this._lastRequestsSyncMs || 0) >= 15000) {
+    // 2. Fetch full daily_post items (including images) only when Daily Updates is opened (30s dedupe)
+    const missingImg = approved.some(r => r.hasDataImage && !r.imageUrl);
+    if (missingImg || Date.now() - (this._lastFullDailySyncMs || 0) >= 30000) {
       try {
-        const res = await fetch("/api/requests");
+        const res = await fetch("/api/requests?daily=1");
         if (res.ok) {
-          this._lastRequestsSyncMs = Date.now();
+          this._lastFullDailySyncMs = Date.now();
           const json = await res.json();
           if (json.ok && Array.isArray(json.requests)) {
             const map = new Map();

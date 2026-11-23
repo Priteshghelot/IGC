@@ -85,7 +85,23 @@ module.exports = async (req, res) => {
         if (redis) await redis.set(REQ_KEY, JSON.stringify(requests));
         else memRequests = requests;
       }
-      return res.status(200).json({ ok: true, requests, prunedDailyPosts: removed });
+      const isLite = req.query && req.query.lite === '1';
+      const isDaily = req.query && req.query.daily === '1';
+      let out = requests;
+      if (isLite) {
+        out = requests
+          .filter(r => r && (r.status === 'pending' || r.type === 'daily_post'))
+          .map(r => {
+            if (r.type === 'daily_post' && typeof r.imageUrl === 'string' && r.imageUrl.startsWith('data:')) {
+              const { imageUrl, ...rest } = r;
+              return { ...rest, hasDataImage: true };
+            }
+            return r;
+          });
+      } else if (isDaily) {
+        out = requests.filter(r => r && r.type === 'daily_post');
+      }
+      return res.status(200).json({ ok: true, requests: out, prunedDailyPosts: removed });
     }
 
     if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Method not allowed' });
