@@ -913,6 +913,8 @@ class CleanEsportsHub {
     if (logoEl) {
       logoEl.src = meta.logo;
       logoEl.style.borderRadius = clubKey === "tag" ? "10px" : "0";
+      logoEl.style.background = clubKey === "tag" ? "#f5f0e1" : "transparent";
+      logoEl.style.padding = clubKey === "tag" ? "6px" : "0";
     }
     if (titleEl) {
       titleEl.textContent = meta.title;

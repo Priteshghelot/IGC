@@ -4476,6 +4476,9 @@ button {
 
 .club-logo-img-rounded {
   border-radius: 18px;
+  background: #f5f0e1;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .club-logo-img {
@@ -4650,6 +4653,12 @@ button {
   border-color: #f97316;
   background: rgba(249, 115, 22, 0.18);
   box-shadow: 0 4px 16px rgba(249, 115, 22, 0.22);
+}
+
+.club-switch-tag img {
+  background: #f5f0e1;
+  padding: 2px;
+  border-radius: 6px;
 }
 
 #club-page-header-card {
