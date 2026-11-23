@@ -777,18 +777,6 @@ class CleanEsportsHub {
           teams: "S8UL Esports (Invited Partner Club)",
           location: "Mumbai, India",
           liquipediaUrl: "https://liquipedia.net/freefire/Google_Play_Arena/2026"
-        },
-        {
-          title: "Esports World Cup 2027 (EWC 2027)",
-          game: "Multi-Title",
-          organizer: "EWCF & ESL FACEIT (S-Tier)",
-          startDate: "2027-07-20",
-          endDate: "2027-08-01",
-          time: "20 Jul – 1 Aug 2027 (AST / IST)",
-          prize: "Club & Title Pools (CS2: $2,000,000 USD)",
-          teams: "S8UL Esports (EWC Partner Club)",
-          location: "Riyadh, Saudi Arabia",
-          liquipediaUrl: "https://liquipedia.net/"
         }
       ],
       godlike: [
@@ -851,18 +839,6 @@ class CleanEsportsHub {
           teams: "GodLike Esports (Grand Finals Partner Club)",
           location: "Mumbai, India",
           liquipediaUrl: "https://liquipedia.net/freefire/Google_Play_Arena/2026"
-        },
-        {
-          title: "Esports World Cup 2027 (EWC 2027)",
-          game: "Multi-Title",
-          organizer: "EWCF & ESL FACEIT (S-Tier)",
-          startDate: "2027-07-20",
-          endDate: "2027-08-01",
-          time: "20 Jul – 1 Aug 2027 (AST / IST)",
-          prize: "Club & Title Pools (CS2: $2,000,000 USD)",
-          teams: "GodLike Esports (EWC Partner Club)",
-          location: "Riyadh, Saudi Arabia",
-          liquipediaUrl: "https://liquipedia.net/"
         }
       ],
       tag: [
@@ -940,13 +916,13 @@ class CleanEsportsHub {
         logo: "images/s8ul_logo.png",
         title: "S8UL Esports — Upcoming & Ongoing Tournaments",
         color: "var(--s8ul-blue)",
-        sub: "Verified Liquipedia schedule for S8UL Esports & Team SouL across PUBG PC, PUBG Mobile, Free Fire & EWC 2027."
+        sub: "Verified Liquipedia schedule for S8UL Esports & Team SouL across PUBG PC, PUBG Mobile & Free Fire."
       },
       godlike: {
         logo: "images/godlike_logo.png",
         title: "GodLike Esports — Upcoming & Ongoing Tournaments",
         color: "var(--godl-gold)",
-        sub: "Verified Liquipedia schedule for GodLike Esports across BGMI (CEGC), Delta Force, COD Mobile, Free Fire & EWC 2027."
+        sub: "Verified Liquipedia schedule for GodLike Esports across BGMI (CEGC & GPA), Delta Force, COD Mobile & Free Fire."
       },
       tag: {
         logo: "images/team_apex_logo.avif",
