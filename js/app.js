@@ -729,7 +729,7 @@ class CleanEsportsHub {
           prize: "₹21,00,000 INR",
           teams: "S8UL Esports (Invited Partner Club)",
           location: "Mumbai, India",
-          liquipediaUrl: "https://liquipedia.net/freefire/S8UL_Esports"
+          liquipediaUrl: "https://liquipedia.net/freefire/Google_Play_Arena/2026"
         },
         {
           title: "Esports World Cup 2027 (EWC 2027)",
@@ -791,7 +791,7 @@ class CleanEsportsHub {
           prize: "₹28,00,000 INR",
           teams: "GodLike Esports (Invited Partner Club)",
           location: "India (Online & LAN)",
-          liquipediaUrl: "https://liquipedia.net/pubgmobile/GodLike_Esports"
+          liquipediaUrl: "https://liquipedia.net/pubgmobile/Google_Play_Arena/2026"
         },
         {
           title: "Google Play Arena 2026 — Free Fire",
@@ -803,7 +803,7 @@ class CleanEsportsHub {
           prize: "₹21,00,000 INR",
           teams: "GodLike Esports (Grand Finals Partner Club)",
           location: "Mumbai, India",
-          liquipediaUrl: "https://liquipedia.net/freefire/GodLike_Esports"
+          liquipediaUrl: "https://liquipedia.net/freefire/Google_Play_Arena/2026"
         },
         {
           title: "Esports World Cup 2027 (EWC 2027)",
@@ -1055,113 +1055,81 @@ class CleanEsportsHub {
     return [
       {
         id: "tp-1",
-        title: "Upthrust Esports: The Patriot Cup (BGMI)",
+        title: "Chennai Esports Global Championship 2026 (CEGC 2026)",
         game: "BGMI",
-        organizer: "Upthrust Esports",
-        startDate: "2026-11-18",
-        endDate: "2026-11-30",
-        prize: "₹15,00,000",
-        teams: "GodLike, Team SouL, Revenant, Orangutan & Underdogs",
-        location: "India (Online)"
+        organizer: "Skyesports & SDAT (B-Tier)",
+        startDate: "2026-11-03",
+        endDate: "2026-12-13",
+        time: "Grand Finals: 11–13 Dec (IST)",
+        prize: "₹75,00,000 INR (~$80,246 USD)",
+        teams: "33 Teams · GodLike Esports & Indian Pro Squads",
+        location: "Chennai, India",
+        liquipediaUrl: "https://liquipedia.net/pubgmobile/Chennai_Esports_Global_Championship/2026"
       },
       {
         id: "tp-2",
-        title: "iQOO Pro Series Season 5 (BGMI)",
-        game: "BGMI",
-        organizer: "iQOO / NODWIN Gaming",
-        startDate: "2026-11-22",
-        endDate: "2026-12-10",
-        prize: "₹40,00,000",
-        teams: "Invited Tier-1 Indian Rosters & Community Qualifiers",
-        location: "India (Online + LAN)"
+        title: "Free Fire India Campus Cup (FFICC) Season 2",
+        game: "Free Fire",
+        organizer: "Garena (B-Tier)",
+        startDate: "2026-11-10",
+        endDate: "2026-12-15",
+        time: "Nov 10 – Dec 2026 (IST)",
+        prize: "₹5,00,000 INR (~$5,350 USD)",
+        teams: "49 Collegiate Squads",
+        location: "India (Online & Offline)",
+        liquipediaUrl: "https://liquipedia.net/freefire/Free_Fire_India_Campus_Cup/Season_2"
       },
       {
         id: "tp-3",
-        title: "Villager Esports Winter Domin8r Series",
-        game: "BGMI / Free Fire MAX",
-        organizer: "Villager Esports",
-        startDate: "2026-11-29",
-        endDate: "2026-12-16",
-        prize: "₹12,00,000",
-        teams: "Top 24 Indian Mobile Contenders",
-        location: "India (Online)"
+        title: "JioBLAST Gully Wars 2026",
+        game: "BGMI",
+        organizer: "JioBLAST & KRAFTON (B-Tier)",
+        startDate: "2026-11-27",
+        endDate: "2026-11-29",
+        time: "27–29 Nov 2026 (IST)",
+        prize: "₹10,00,000 INR (~$10,549 USD)",
+        teams: "16 Grand Finals Indian Squads",
+        location: "India (Online)",
+        liquipediaUrl: "https://liquipedia.net/pubgmobile/JioBLAST_Gully_Wars/2026"
       },
       {
         id: "tp-4",
-        title: "Skyesports Souvenir: Mumbai Edition",
-        game: "Valorant / Counter-Strike 2",
-        organizer: "Skyesports",
-        startDate: "2026-12-06",
-        endDate: "2026-12-20",
-        prize: "$30,000 USD",
-        teams: "Indian & South Asian Invited PC Squads",
-        location: "Mumbai LAN"
+        title: "Battlin Open Season 1 — Track 2",
+        game: "BGMI",
+        organizer: "Battlin Open (B-Tier)",
+        startDate: "2026-11-27",
+        endDate: "2026-11-29",
+        time: "27–29 Nov 2026 (IST)",
+        prize: "$16,049 USD (~₹15,00,000 INR)",
+        teams: "16 Indian Squads",
+        location: "India (Online)",
+        liquipediaUrl: "https://liquipedia.net/pubgmobile/Battlin_Open/Season_1/Track_2"
       },
       {
         id: "tp-5",
-        title: "NODWIN Gaming: Masters Winter Showdown",
-        game: "BGMI / Valorant",
-        organizer: "NODWIN Gaming",
+        title: "Google Play Arena 2026 — BGMI",
+        game: "BGMI",
+        organizer: "Google Play & NODWIN Gaming (B-Tier)",
         startDate: "2026-12-14",
-        endDate: "2027-01-03",
-        prize: "₹50,00,000",
-        teams: "GodLike Esports, S8UL, Global Esports & Top Clubs",
-        location: "Delhi NCR LAN"
+        endDate: "2026-12-20",
+        time: "14–20 Dec 2026 (IST)",
+        prize: "₹28,00,000 INR (~$29,770 USD)",
+        teams: "16 Teams · GodLike Esports & Qualifiers",
+        location: "India (Online & LAN)",
+        liquipediaUrl: "https://liquipedia.net/pubgmobile/Google_Play_Arena/2026"
       },
       {
         id: "tp-6",
-        title: "Snapdragon Pro Series: India Mobile Open",
-        game: "BGMI / CODM / Brawl Stars",
-        organizer: "ESL & Qualcomm",
-        startDate: "2026-12-22",
-        endDate: "2027-01-20",
-        prize: "₹1,00,00,000",
-        teams: "Open Qualifiers + Pro Indian Lineups",
-        location: "Pan-India + LAN"
-      },
-      {
-        id: "tp-7",
-        title: "The Esports Club (TEC) Challenger Series",
-        game: "Valorant",
-        organizer: "The Esports Club",
-        startDate: "2027-01-12",
-        endDate: "2027-02-02",
-        prize: "₹15,00,000",
-        teams: "South Asia & India Tier-1/Tier-2 Valorant Teams",
-        location: "India / South Asia"
-      },
-      {
-        id: "tp-8",
-        title: "Lidoma Battlegrounds Invitational 2027",
-        game: "BGMI / Free Fire MAX",
-        organizer: "Lidoma Esports",
-        startDate: "2027-01-25",
-        endDate: "2027-02-14",
-        prize: "₹20,00,000",
-        teams: "Top Indian & Regional Scrims Powerhouses",
-        location: "India (Online)"
-      },
-      {
-        id: "tp-9",
-        title: "Upthrust Esports: India Rising Series 2027",
-        game: "BGMI",
-        organizer: "Upthrust Esports",
-        startDate: "2027-02-10",
-        endDate: "2027-03-01",
-        prize: "₹25,00,000",
-        teams: "GodLike, S8UL, Entity, TX & Qualifier Teams",
-        location: "India (Online + LAN)"
-      },
-      {
-        id: "tp-10",
-        title: "Skyesports Grand Slam 2027",
-        game: "Counter-Strike 2 / Valorant",
-        organizer: "Skyesports",
-        startDate: "2027-03-04",
-        endDate: "2027-03-18",
-        prize: "$50,000 USD",
-        teams: "Top Indian & International Invited Squads",
-        location: "Pune / Bengaluru LAN"
+        title: "Google Play Arena 2026 — Free Fire",
+        game: "Free Fire",
+        organizer: "Google Play & NODWIN Gaming (B-Tier)",
+        startDate: "2026-12-19",
+        endDate: "2026-12-20",
+        time: "19–20 Dec 2026 (IST)",
+        prize: "₹21,00,000 INR (~$22,659 USD)",
+        teams: "18 Teams · S8UL Esports & GodLike Esports",
+        location: "Mumbai, India",
+        liquipediaUrl: "https://liquipedia.net/freefire/Google_Play_Arena/2026"
       }
     ];
   }

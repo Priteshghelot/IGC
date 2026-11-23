@@ -4629,3 +4629,52 @@ button {
   background: rgba(250, 204, 21, 0.18);
   box-shadow: 0 4px 16px rgba(250, 204, 21, 0.22);
 }
+
+#club-page-header-card {
+  padding: 1.5rem 1.75rem;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(20, 27, 45, 0.94), rgba(12, 17, 30, 0.98));
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+}
+
+#club-page-header-card .detail-header-identity {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+}
+
+#club-page-header-card .detail-header-logo {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px;
+}
+
+#club-page-header-card .detail-header-logo img {
+  width: 100%;
+  height: 100%;
+  max-width: 56px;
+  max-height: 56px;
+  object-fit: contain;
+}
+
+@media (max-width: 600px) {
+  #club-page-header-card {
+    padding: 1.15rem 1rem;
+  }
+  #club-page-header-card .detail-header-logo {
+    width: 56px;
+    height: 56px;
+    padding: 6px;
+  }
+  #club-page-header-card .detail-header-logo img {
+    max-width: 44px;
+    max-height: 44px;
+  }
+}
