@@ -113,6 +113,7 @@ class CleanEsportsHub {
           this.renderAll();
         }
       }
+      this.syncLiquipediaUpdates();
     } catch(e) {}
   }
 
@@ -555,8 +556,33 @@ class CleanEsportsHub {
     if (tabName === "thirdparty")  this.renderThirdPartyTournaments();
   }
 
+  async syncLiquipediaUpdates() {
+    try {
+      const cacheKey = "igc_liquipedia_live_v1";
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && Date.now() - parsed.ts < 1800000 && Array.isArray(parsed.major)) {
+          this.liveLiquipediaMajor = parsed.major;
+          this.renderUpcomingTournaments();
+          this.renderDailyMarquee();
+          return;
+        }
+      }
+      const res = await fetch("/api/liquipedia");
+      if (!res.ok) return;
+      const json = await res.json();
+      if (json && json.ok && Array.isArray(json.major) && json.major.length > 0) {
+        this.liveLiquipediaMajor = json.major;
+        try { sessionStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), major: json.major })); } catch (e) {}
+        this.renderUpcomingTournaments();
+        this.renderDailyMarquee();
+      }
+    } catch (e) { /* Silent fallback to curated Liquipedia defaults */ }
+  }
+
   getDefaultMajorTournaments() {
-    return [
+    const base = [
       {
         title: "Chennai Esports Global Championship (CEGC) 2026",
         game: "BGMI",
@@ -689,7 +715,28 @@ class CleanEsportsHub {
         location: "Riyadh, Saudi Arabia",
         liquipediaUrl: "https://liquipedia.net/"
       }
-    ].map((t, i) => ({ id: "maj-" + (i + 1), ...t }));
+    ];
+    const extra = Array.isArray(this.liveLiquipediaMajor) ? this.liveLiquipediaMajor : [];
+    const seen = new Set(base.map(t => t.title.toLowerCase()));
+    const merged = [...base];
+    extra.forEach(item => {
+      if (item && item.title && !seen.has(item.title.toLowerCase())) {
+        seen.add(item.title.toLowerCase());
+        merged.push({
+          title: item.title,
+          game: item.game || "Esports",
+          organizer: "Liquipedia Auto-Sync",
+          startDate: item.startDate,
+          endDate: item.endDate || item.startDate,
+          time: "Check Liquipedia",
+          prize: item.prize || "TBA",
+          teams: "Global / Regional Contenders",
+          location: item.location || "Global",
+          liquipediaUrl: item.liquipediaUrl || "https://liquipedia.net/"
+        });
+      }
+    });
+    return merged.map((t, i) => ({ id: "maj-" + (i + 1), ...t }));
   }
 
   getClubUpcomingTournaments(clubKey) {

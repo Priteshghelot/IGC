@@ -238,12 +238,30 @@
     gap: 0.6rem;
   }
 
+  .roster-toolbar {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .roster-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 100%;
+  }
+
   .roster-search-wrap {
-    max-width: none;
+    width: 100%;
+    max-width: 100%;
     min-width: 0;
   }
 
   .roster-cat-pills {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     flex-wrap: nowrap;
     overflow-x: auto;
     padding-bottom: 4px;
@@ -1108,14 +1126,36 @@ html, body {
   }
 
   .daily-mode-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 6px;
-    padding: 5px;
+    padding: 6px;
     margin-bottom: 1.25rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .daily-mode-btn {
-    font-size: 0.82rem;
-    padding: 9px 10px;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    padding: 8px 6px;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .daily-mode-count {
+    font-size: 0.62rem;
+    padding: 2px 6px;
+    white-space: nowrap;
+  }
+
+  .enc27-cta-btn {
+    white-space: nowrap;
+    font-size: 0.88rem;
   }
 
   .tournaments-header-card {
