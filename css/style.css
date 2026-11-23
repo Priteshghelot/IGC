@@ -4217,6 +4217,7 @@ button {
 .tournament-rank-wrap {
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -4673,6 +4674,75 @@ button {
   max-width: 56px;
   max-height: 56px;
   object-fit: contain;
+}
+
+#club-page-header-card .detail-title {
+  font-size: clamp(1.28rem, 4.2vw, 1.9rem);
+  font-weight: 900;
+  line-height: 1.25;
+  margin: 0 0 0.4rem;
+}
+
+#club-page-header-card .detail-subtitle {
+  font-size: clamp(0.82rem, 2.4vw, 0.96rem);
+  color: #cbd5e1;
+  line-height: 1.45;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  #screen-club-upcoming .detail-top-nav {
+    flex-direction: column;
+    align-items: center !important;
+    gap: 0.75rem;
+  }
+
+  #screen-club-upcoming .club-page-switcher {
+    justify-content: center;
+    gap: 0.45rem;
+    width: 100%;
+  }
+
+  #screen-club-upcoming .club-switch-btn {
+    padding: 0.42rem 0.75rem;
+    font-size: 0.76rem;
+    gap: 0.35rem;
+    white-space: nowrap;
+  }
+
+  #screen-club-upcoming .club-switch-btn img {
+    width: 18px;
+    height: 18px;
+  }
+
+  #club-page-header-card {
+    padding: 1.15rem 1rem;
+  }
+
+  #club-page-header-card .detail-header-identity {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  #club-page-header-card .detail-header-logo {
+    width: 60px;
+    height: 60px;
+    padding: 6px;
+  }
+
+  #club-page-header-card .detail-header-logo img {
+    max-width: 48px;
+    max-height: 48px;
+  }
+
+  .tournament-game-pill,
+  .tournament-org-pill {
+    white-space: nowrap;
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
 }
 
 #club-page-header-card {
