@@ -6,10 +6,16 @@
    ============================================================================= */
 
 :root {
-  --bg-color: #090e20;
-  --card-bg: rgba(16, 23, 42, 0.84);
-  --card-hover: rgba(23, 33, 58, 0.94);
-  --border-color: rgba(56, 78, 118, 0.55);
+  --bg-color: #160c2e;
+  --card-bg: rgba(31, 18, 58, 0.82);
+  --card-hover: rgba(46, 26, 84, 0.94);
+  --border-color: rgba(255, 78, 205, 0.32);
+
+  /* GTA 6 Vice City / Leonida Sunset Palette */
+  --vice-pink: #ff2a85;
+  --vice-magenta: #ff4ecd;
+  --vice-sunset: #ff7b54;
+  --vice-aqua: #00f5d4;
   
   /* Indian Tiranga Theme Colors */
   --tiranga-saffron: #ff9933;
@@ -17,21 +23,21 @@
   --tiranga-green: #138808;
   --ashoka-navy: #000080;
   
-  /* GodLike: Golden Yellow (Harmonized with Saffron) */
+  /* GodLike: Golden Yellow (Harmonized with Leonida Sunset) */
   --godl-gold: #ffb800;
   --godl-gold-dark: #d97706;
-  --godl-glow: rgba(255, 184, 0, 0.28);
-  --godl-bg-subtle: rgba(255, 184, 0, 0.12);
+  --godl-glow: rgba(255, 184, 0, 0.32);
+  --godl-bg-subtle: rgba(255, 184, 0, 0.14);
 
-  /* S8UL: Sky Blue (Harmonized with Ashoka Navy & Cyan) */
-  --s8ul-blue: #00a8ff;
+  /* S8UL: Sky Blue (Harmonized with Vice Aqua) */
+  --s8ul-blue: #00d2ff;
   --s8ul-blue-dark: #0284c7;
-  --s8ul-glow: rgba(0, 168, 255, 0.28);
-  --s8ul-bg-subtle: rgba(0, 168, 255, 0.12);
+  --s8ul-glow: rgba(0, 210, 255, 0.32);
+  --s8ul-bg-subtle: rgba(0, 210, 255, 0.14);
 
-  --text-main: #f8fafc;
-  --text-sub: #94a3b8;
-  --text-muted: #64748b;
+  --text-main: #fff7fb;
+  --text-sub: #cbd5e1;
+  --text-muted: #94a3b8;
   
   --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
@@ -45,10 +51,10 @@
 body {
   background-color: var(--bg-color);
   background-image:
-    radial-gradient(120% 80% at 15% 10%, rgba(0, 168, 255, 0.14) 0%, transparent 55%),
-    radial-gradient(110% 75% at 85% 15%, rgba(99, 102, 241, 0.16) 0%, transparent 55%),
-    radial-gradient(100% 70% at 50% 95%, rgba(16, 185, 129, 0.1) 0%, transparent 60%),
-    linear-gradient(160deg, #070b18 0%, #0d1630 50%, #081122 100%);
+    radial-gradient(120% 80% at 12% 8%, rgba(255, 42, 133, 0.24) 0%, transparent 55%),
+    radial-gradient(110% 75% at 88% 12%, rgba(255, 123, 84, 0.22) 0%, transparent 55%),
+    radial-gradient(100% 70% at 50% 95%, rgba(0, 245, 212, 0.18) 0%, transparent 60%),
+    linear-gradient(155deg, #1b0e36 0%, #2b134a 45%, #161a42 100%);
   background-attachment: fixed;
   color: var(--text-main);
   font-family: var(--font-stack);
@@ -70,16 +76,16 @@ body {
   overflow: hidden;
 }
 
-/* Saffron Radiant Cyber Aurora (Top-Left, accenting GodLike) */
+/* GTA 6 Leonida Sunset Glow (Top-Left) */
 .fx-glow-saffron {
   position: absolute;
   top: -15%;
   left: -10%;
   width: 55vw;
   height: 55vw;
-  max-width: 700px;
-  max-height: 700px;
-  background: radial-gradient(circle, rgba(255, 153, 51, 0.16) 0%, rgba(255, 184, 0, 0.07) 45%, transparent 70%);
+  max-width: 720px;
+  max-height: 720px;
+  background: radial-gradient(circle, rgba(255, 42, 133, 0.28) 0%, rgba(255, 123, 84, 0.14) 45%, transparent 70%);
   filter: blur(65px);
   border-radius: 50%;
   animation: floatSaffron 14s ease-in-out infinite alternate;
@@ -4661,6 +4667,14 @@ button {
   border-radius: 6px;
 }
 
+#club-page-header-card .detail-header-logo img {
+  width: 100%;
+  height: 100%;
+  max-width: 56px;
+  max-height: 56px;
+  object-fit: contain;
+}
+
 #club-page-header-card {
   padding: 1.5rem 1.75rem;
   border-radius: 20px;
@@ -4687,12 +4701,42 @@ button {
   padding: 8px;
 }
 
-#club-page-header-card .detail-header-logo img {
-  width: 100%;
-  height: 100%;
-  max-width: 56px;
-  max-height: 56px;
-  object-fit: contain;
+/* =====================================================================
+   GTA 6 VICE CITY THEME OVERRIDES (BRIGHTER TWILIGHT CARDS & NEON ACCENTS)
+   ===================================================================== */
+.club-upcoming-section,
+.ewc27-games-section,
+.fan-poll-section,
+.tournaments-header-card,
+.daily-clean-post-card,
+.tournament-card,
+#club-page-header-card {
+  background: linear-gradient(135deg, rgba(38, 20, 72, 0.88), rgba(22, 24, 58, 0.92)) !important;
+  border-color: rgba(255, 78, 205, 0.26) !important;
+  box-shadow: 0 14px 38px rgba(10, 4, 24, 0.45), 0 0 28px rgba(255, 42, 133, 0.08) !important;
+}
+
+.club-logo-card {
+  background: linear-gradient(145deg, rgba(44, 24, 82, 0.82), rgba(24, 24, 62, 0.9)) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+.daily-mode-tabs {
+  background: rgba(34, 18, 64, 0.88) !important;
+  border-color: rgba(255, 78, 205, 0.3) !important;
+}
+
+.daily-mode-btn.active {
+  background: linear-gradient(135deg, rgba(255, 42, 133, 0.34), rgba(0, 245, 212, 0.26)) !important;
+  border-color: rgba(255, 78, 205, 0.65) !important;
+}
+
+.daily-post-image-box {
+  background: #140b29 !important;
+}
+
+.portal-card {
+  background: linear-gradient(145deg, rgba(36, 20, 68, 0.86), rgba(20, 24, 58, 0.92));
 }
 
 @media (max-width: 600px) {
