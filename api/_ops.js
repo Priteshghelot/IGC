@@ -133,6 +133,11 @@ function applyOp(data, op) {
       }
       return 'EWC27 games updated';
     }
+    case 'deleteEwc27Game': {
+      if (!Array.isArray(data.ewc27Games)) return 'EWC27 games empty';
+      data.ewc27Games = data.ewc27Games.filter(x => x.id !== op.id);
+      return 'EWC27 game deleted';
+    }
     case 'setEwc27Meta': {
       data.ewc27Meta = { title: String(op.meta?.title || 'EWC27 Games'), subtitle: String(op.meta?.subtitle || '') };
       return 'EWC27 text updated';

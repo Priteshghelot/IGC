@@ -712,34 +712,6 @@ const INITIAL_HUB_DATA = {
       "isNewlyAdded": false
     },
     {
-      "id": "e27-7",
-      "title": "TEKKEN 8",
-      "genre": "Fighting Game (FGC)",
-      "sub": "Bandai Namco",
-      "isNewlyAdded": false
-    },
-    {
-      "id": "e27-8",
-      "title": "PUBG MOBILE / BGMI",
-      "genre": "Battle Royale",
-      "sub": "Krafton",
-      "isNewlyAdded": false
-    },
-    {
-      "id": "e27-9",
-      "title": "APEX LEGENDS",
-      "genre": "Battle Royale / Hero",
-      "sub": "Respawn",
-      "isNewlyAdded": false
-    },
-    {
-      "id": "e27-10",
-      "title": "EA SPORTS FC",
-      "genre": "Sports Simulation",
-      "sub": "EA Sports",
-      "isNewlyAdded": false
-    },
-    {
       "id": "e27-11",
       "title": "STREET FIGHTER 6",
       "genre": "Fighting Game (FGC)",
