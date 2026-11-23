@@ -1543,14 +1543,29 @@ class CleanEsportsHub {
     this.renderApprovedPosts();
   }
 
+  isDailyPostExpired(r) {
+    if (!r || r.type !== "daily_post") return false;
+    let ts = typeof r.createdAtMs === "number" && r.createdAtMs > 0 ? r.createdAtMs : 0;
+    if (!ts) {
+      const idMatch = String(r.id || "").match(/^dp_(\d{12,})$/);
+      if (idMatch) ts = Number(idMatch[1]);
+    }
+    if (!ts) {
+      const rawDate = String(r.submittedAt || "").replace(/\s+at\s+/i, " ").trim();
+      const parsed = rawDate ? Date.parse(rawDate) : NaN;
+      if (Number.isFinite(parsed)) ts = parsed;
+    }
+    return ts > 0 && (Date.now() - ts) > (3 * 24 * 60 * 60 * 1000);
+  }
+
   // ── Render approved posts: Recent Post Upload at Top ──────────────────────
   async renderApprovedPosts() {
     const container = document.getElementById("daily-posts-feed-container");
     const counter   = document.getElementById("daily-feed-counter");
     if (!container) return;
 
-    // 1. Gather all approved daily_post items from local pending
-    let approved = (this.pending || []).filter(r => r.type === "daily_post" && r.status === "approved");
+    // 1. Gather all approved daily_post items from local pending (auto-expiring > 3 days)
+    let approved = (this.pending || []).filter(r => r.type === "daily_post" && r.status === "approved" && !this.isDailyPostExpired(r));
 
     // 2. Fetch fresh from cloud Redis
     try {
@@ -1559,13 +1574,13 @@ class CleanEsportsHub {
         const json = await res.json();
         if (json.ok && Array.isArray(json.requests)) {
           const map = new Map();
-          this.pending.forEach(r => map.set(r.id, r));
-          json.requests.forEach(r => map.set(r.id, r));
+          this.pending.filter(r => !this.isDailyPostExpired(r)).forEach(r => map.set(r.id, r));
+          json.requests.filter(r => !this.isDailyPostExpired(r)).forEach(r => map.set(r.id, r));
           this.pending = Array.from(map.values());
           this.savePending();
           this.updateAdminUI();
 
-          approved = this.pending.filter(r => r.type === "daily_post" && r.status === "approved");
+          approved = this.pending.filter(r => r.type === "daily_post" && r.status === "approved" && !this.isDailyPostExpired(r));
         }
       }
     } catch(err) { /* use local */ }

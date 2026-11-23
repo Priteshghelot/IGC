@@ -1,6 +1,33 @@
 const { getRedis } = require('./_redis');
 const { DATA_KEY, REQ_KEY, applyOp, requestToOp, readJSON } = require('./_ops');
 
+const DAILY_POST_TTL_MS = 3 * 24 * 60 * 60 * 1000; // Auto-delete Daily Updates posts after 3 days
+
+function getDailyPostTimestampMs(r) {
+  if (!r || typeof r !== 'object') return 0;
+  if (typeof r.createdAtMs === 'number' && r.createdAtMs > 0) return r.createdAtMs;
+  const idMatch = String(r.id || '').match(/^dp_(\d{12,})$/);
+  if (idMatch) return Number(idMatch[1]);
+  const rawDate = String(r.submittedAt || '').replace(/\s+at\s+/i, ' ').trim();
+  const parsed = rawDate ? Date.parse(rawDate) : NaN;
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function pruneExpiredDailyPosts(list) {
+  const now = Date.now();
+  let removed = 0;
+  const kept = (Array.isArray(list) ? list : []).filter(r => {
+    if (!r || r.type !== 'daily_post') return true;
+    const ts = getDailyPostTimestampMs(r);
+    if (ts > 0 && (now - ts) > DAILY_POST_TTL_MS) {
+      removed++;
+      return false;
+    }
+    return true;
+  });
+  return { kept, removed };
+}
+
 let memRequests = [];
 let memData = {};
 
@@ -52,8 +79,13 @@ module.exports = async (req, res) => {
 
   try {
     if (req.method === 'GET') {
-      const requests = redis ? await readJSON(redis, REQ_KEY, []) : memRequests;
-      return res.status(200).json({ ok: true, requests });
+      const rawRequests = redis ? await readJSON(redis, REQ_KEY, []) : memRequests;
+      const { kept: requests, removed } = pruneExpiredDailyPosts(rawRequests);
+      if (removed > 0) {
+        if (redis) await redis.set(REQ_KEY, JSON.stringify(requests));
+        else memRequests = requests;
+      }
+      return res.status(200).json({ ok: true, requests, prunedDailyPosts: removed });
     }
 
     if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Method not allowed' });
@@ -75,10 +107,16 @@ module.exports = async (req, res) => {
       let isDup = false;
       if (redis) {
         await atomicUpdate(redis, [REQ_KEY], (list) => {
+          const { kept } = pruneExpiredDailyPosts(list);
+          if (kept.length !== list.length) {
+            list.length = 0;
+            list.push(...kept);
+          }
           isDup = list.some(r => r.id === newReq.id || (r.status === 'pending' && requestFingerprint(r) === newFp));
           if (!isDup) list.unshift(newReq);
         });
       } else {
+        memRequests = pruneExpiredDailyPosts(memRequests).kept;
         isDup = memRequests.some(r => r.id === newReq.id || (r.status === 'pending' && requestFingerprint(r) === newFp));
         if (!isDup) memRequests.unshift(newReq);
       }
