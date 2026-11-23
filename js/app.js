@@ -817,28 +817,16 @@ class CleanEsportsHub {
           liquipediaUrl: "https://liquipedia.net/callofduty/Call_of_Duty_Mobile_World_Championship/2026"
         },
         {
-          title: "Google Play Arena 2026 — BGMI",
-          game: "BGMI",
-          organizer: "Google Play / KRAFTON (B-Tier)",
+          title: "Google Play Arena 2026 (BGMI & Free Fire)",
+          game: "BGMI · Free Fire",
+          organizer: "Google Play & NODWIN (B-Tier)",
           startDate: "2026-12-14",
           endDate: "2026-12-20",
-          time: "14–20 Dec 2026 (IST)",
-          prize: "₹28,00,000 INR",
+          time: "BGMI: 14–20 Dec · Free Fire: 19–20 Dec (IST)",
+          prize: "₹49,00,000 INR (BGMI ₹28L · FF ₹21L)",
           teams: "GodLike Esports (Invited Partner Club)",
-          location: "India (Online & LAN)",
+          location: "Mumbai, India (Online & LAN)",
           liquipediaUrl: "https://liquipedia.net/pubgmobile/Google_Play_Arena/2026"
-        },
-        {
-          title: "Google Play Arena 2026 — Free Fire",
-          game: "Free Fire",
-          organizer: "Google Play / Garena (B-Tier)",
-          startDate: "2026-12-19",
-          endDate: "2026-12-20",
-          time: "19–20 Dec 2026 (IST)",
-          prize: "₹21,00,000 INR",
-          teams: "GodLike Esports (Grand Finals Partner Club)",
-          location: "Mumbai, India",
-          liquipediaUrl: "https://liquipedia.net/freefire/Google_Play_Arena/2026"
         }
       ],
       tag: [
@@ -1204,29 +1192,16 @@ class CleanEsportsHub {
       },
       {
         id: "tp-5",
-        title: "Google Play Arena 2026 — BGMI",
-        game: "BGMI",
+        title: "Google Play Arena 2026 (BGMI & Free Fire)",
+        game: "BGMI · Free Fire",
         organizer: "Google Play & NODWIN Gaming (B-Tier)",
         startDate: "2026-12-14",
         endDate: "2026-12-20",
-        time: "14–20 Dec 2026 (IST)",
-        prize: "₹28,00,000 INR (~$29,770 USD)",
-        teams: "16 Teams · GodLike Esports & Qualifiers",
-        location: "India (Online & LAN)",
+        time: "BGMI: 14–20 Dec · Free Fire: 19–20 Dec (IST)",
+        prize: "₹49,00,000 INR (BGMI ₹28L · FF ₹21L)",
+        teams: "S8UL Esports, GodLike Esports & Team Apex Gaming",
+        location: "Mumbai, India (Online & LAN)",
         liquipediaUrl: "https://liquipedia.net/pubgmobile/Google_Play_Arena/2026"
-      },
-      {
-        id: "tp-6",
-        title: "Google Play Arena 2026 — Free Fire",
-        game: "Free Fire",
-        organizer: "Google Play & NODWIN Gaming (B-Tier)",
-        startDate: "2026-12-19",
-        endDate: "2026-12-20",
-        time: "19–20 Dec 2026 (IST)",
-        prize: "₹21,00,000 INR (~$22,659 USD)",
-        teams: "18 Teams · S8UL Esports & GodLike Esports",
-        location: "Mumbai, India",
-        liquipediaUrl: "https://liquipedia.net/freefire/Google_Play_Arena/2026"
       }
     ];
   }
