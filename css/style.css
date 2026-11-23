@@ -4566,100 +4566,43 @@ button {
 
 @media (max-width: 768px) {
   .club-upcoming-section {
-    padding: 1.25rem 0.95rem;
-    margin: 0.9rem auto 1.4rem;
+    padding: 1.35rem 1rem;
+    margin: 1rem auto 1.6rem;
     border-radius: 18px;
   }
 
   .club-upcoming-header {
-    margin-bottom: 1rem;
-  }
-
-  .club-upcoming-title {
-    font-size: 1.32rem;
-    line-height: 1.25;
+    margin-bottom: 1.15rem;
   }
 
   .club-upcoming-subtitle {
-    font-size: 0.82rem;
-    line-height: 1.4;
+    font-size: 0.85rem;
   }
 
   .club-logo-grid {
     grid-template-columns: 1fr;
-    gap: 0.7rem;
+    gap: 0.85rem;
   }
 
   .club-logo-card {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    text-align: left;
-    min-height: auto;
-    padding: 0.85rem 1rem;
-    gap: 0.85rem;
-    border-radius: 15px;
+    min-height: 150px;
+    padding: 1.15rem 0.75rem;
+    gap: 0.5rem;
+    border-radius: 16px;
   }
 
   .club-logo-img {
-    width: 52px;
-    height: 52px;
-    flex-shrink: 0;
-  }
-
-  .club-logo-img-rounded {
-    padding: 6px;
-    border-radius: 12px;
+    width: 70px;
+    height: 70px;
   }
 
   .club-logo-name {
-    flex: 1;
-    font-size: 0.98rem;
-    line-height: 1.25;
+    font-size: 0.96rem;
   }
 
   .club-logo-hint {
-    font-size: 0.72rem;
-    padding: 0.28rem 0.7rem;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .club-page-switcher {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.45rem;
-    width: 100%;
-  }
-
-  .club-switch-btn {
-    justify-content: center;
-    padding: 0.48rem 0.35rem;
-    font-size: 0.72rem;
-    gap: 0.3rem;
-    min-width: 0;
-    white-space: nowrap;
-  }
-
-  .club-switch-btn img {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-  }
-
-  #club-page-header-card .detail-header-identity {
-    align-items: flex-start;
-    gap: 0.85rem;
-  }
-
-  #club-page-title {
-    font-size: 1.15rem !important;
-    line-height: 1.25 !important;
-  }
-
-  #club-page-subtitle {
-    font-size: 0.8rem !important;
-    line-height: 1.4 !important;
+    font-size: 0.74rem;
+    padding: 0.22rem 0.65rem;
   }
 }
 
