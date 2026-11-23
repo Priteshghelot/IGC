@@ -30,7 +30,7 @@
   <meta name="twitter:description" content="Track active rosters for S8UL Esports &amp; GodLike Esports, Road to ENC27 Team India lineups, Major &amp; 3rd-Party Tournaments, and Daily IGC Updates.">
   <meta name="twitter:image" content="https://igcewc.vercel.app/images/ewc_banner.jpg">
 
-  <link rel="stylesheet" href="css/style.css?v=44">
+  <link rel="stylesheet" href="css/style.css?v=45">
   <link rel="stylesheet" href="css/responsive.css?v=24">
 </head>
 <body>
@@ -174,12 +174,12 @@
     </div>
 
     <!-- =====================================================================
-         UPCOMING TOURNAMENT UPDATES (S8UL & GODLIKE)
+         UPCOMING TOURNAMENT UPDATES (S8UL, GODLIKE & TEAM APEX GAMING)
          ===================================================================== -->
     <section class="club-upcoming-section" id="club-upcoming-section">
       <div class="club-upcoming-header">
-        <h2 class="club-upcoming-title">Upcoming Tournament Updates</h2>
-        <p class="club-upcoming-subtitle">Tap a club logo below to open its upcoming tournaments &amp; match timings.</p>
+        <h2 class="club-upcoming-title">Upcoming &amp; Ongoing Tournament Updates</h2>
+        <p class="club-upcoming-subtitle">Tap a club logo below to open its ongoing &amp; upcoming tournaments and match timings.</p>
       </div>
 
       <div class="club-logo-grid">
@@ -192,6 +192,12 @@
         <button type="button" class="club-logo-card club-logo-godlike" id="club-card-godlike" onclick="window.cleanHub && window.cleanHub.showClubUpcoming('godlike')">
           <img src="images/godlike_logo.png" alt="GodLike Esports Logo" class="club-logo-img">
           <span class="club-logo-name">GodLike Esports</span>
+          <span class="club-logo-hint">View Schedule →</span>
+        </button>
+
+        <button type="button" class="club-logo-card club-logo-tag" id="club-card-tag" onclick="window.cleanHub && window.cleanHub.showClubUpcoming('tag')">
+          <img src="images/team_apex_logo.avif" alt="Team Apex Gaming Logo" class="club-logo-img club-logo-img-rounded">
+          <span class="club-logo-name">Team Apex Gaming</span>
           <span class="club-logo-hint">View Schedule →</span>
         </button>
       </div>
@@ -987,6 +993,9 @@
           <button type="button" class="club-switch-btn club-switch-godlike" id="club-switch-godlike" onclick="window.cleanHub && window.cleanHub.showClubUpcoming('godlike')">
             <img src="images/godlike_logo.png" alt="GodLike"> GodLike Esports
           </button>
+          <button type="button" class="club-switch-btn club-switch-tag" id="club-switch-tag" onclick="window.cleanHub && window.cleanHub.showClubUpcoming('tag')">
+            <img src="images/team_apex_logo.avif" alt="Team Apex Gaming" style="border-radius:4px;"> Team Apex Gaming
+          </button>
         </div>
       </div>
 
@@ -1539,7 +1548,7 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=4"></script>
-  <script src="js/app.js?v=46"></script>
+  <script src="js/app.js?v=47"></script>
 
   <!-- Full-Screen Image Lightbox for Daily Update Posts -->
   <div class="modal-overlay" id="image-lightbox-modal" onclick="if(event.target===this) this.classList.remove('active')">

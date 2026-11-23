@@ -817,6 +817,56 @@ class CleanEsportsHub {
           location: "Riyadh, Saudi Arabia",
           liquipediaUrl: "https://liquipedia.net/"
         }
+      ],
+      tag: [
+        {
+          title: "Chennai Esports Global Championship (CEGC) 2026",
+          game: "BGMI",
+          organizer: "Skyesports & SDAT (B-Tier)",
+          startDate: "2026-11-03",
+          endDate: "2026-12-13",
+          time: "Grand Finals: 11–13 Dec (IST)",
+          prize: "₹75,00,000 INR",
+          teams: "Team Apex Gaming (TAG · Group Stage Invite)",
+          location: "Chennai, India",
+          liquipediaUrl: "https://liquipedia.net/pubgmobile/Chennai_Esports_Global_Championship/2026"
+        },
+        {
+          title: "FFWS Global Finals 2026",
+          game: "Free Fire",
+          organizer: "Garena (S-Tier)",
+          startDate: "2026-11-06",
+          endDate: "2026-11-28",
+          time: "Last Chance: Nov 27, 15:45 IST · Finals: Nov 28, 15:30 IST",
+          prize: "$1,200,000 USD",
+          teams: "Team Apex Gaming (TAG · 24 Global Teams)",
+          location: "Bangkok, Thailand",
+          liquipediaUrl: "https://liquipedia.net/freefire/Free_Fire_World_Series/2026"
+        },
+        {
+          title: "PUBG India Challenge 2026 — Grand Finals",
+          game: "PUBG (PC)",
+          organizer: "KRAFTON & Tesseract (A-Tier)",
+          startDate: "2026-11-11",
+          endDate: "2026-11-29",
+          time: "18:30 IST (Grand Finals: Nov 28–29)",
+          prize: "₹25,00,000 INR",
+          teams: "Team Apex Gaming (TAG · Qualified for Grand Finals)",
+          location: "India (Online)",
+          liquipediaUrl: "https://liquipedia.net/pubg/PUBG_India_Challenge/2026"
+        },
+        {
+          title: "Google Play Arena 2026 — BGMI",
+          game: "BGMI",
+          organizer: "Google Play & NODWIN Gaming (B-Tier)",
+          startDate: "2026-12-14",
+          endDate: "2026-12-20",
+          time: "14–20 Dec 2026 (IST)",
+          prize: "₹28,00,000 INR",
+          teams: "Team Apex Gaming (TAG · Invited Partner Club)",
+          location: "India (Online & LAN)",
+          liquipediaUrl: "https://liquipedia.net/pubgmobile/Google_Play_Arena/2026"
+        }
       ]
     };
     return (clubs[clubKey] || []).map((t, i) => ({ id: `${clubKey}-up-${i + 1}`, ...t }));
@@ -830,26 +880,48 @@ class CleanEsportsHub {
     if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.remove("active");
     if (this.clubUpcomingScreen) this.clubUpcomingScreen.classList.add("active");
 
-    const isS8ul = clubKey === "s8ul";
     const logoEl = document.getElementById("club-page-logo");
     const titleEl = document.getElementById("club-page-title");
     const subEl = document.getElementById("club-page-subtitle");
     const listEl = document.getElementById("club-upcoming-list");
     const s8ulBtn = document.getElementById("club-switch-s8ul");
     const godlBtn = document.getElementById("club-switch-godlike");
+    const tagBtn = document.getElementById("club-switch-tag");
 
-    if (logoEl) logoEl.src = isS8ul ? "images/s8ul_logo.png" : "images/godlike_logo.png";
+    const metaMap = {
+      s8ul: {
+        logo: "images/s8ul_logo.png",
+        title: "S8UL Esports — Upcoming & Ongoing Tournaments",
+        color: "var(--s8ul-blue)",
+        sub: "Verified Liquipedia schedule for S8UL Esports & Team SouL across PUBG PC, PUBG Mobile, Free Fire & EWC 2027."
+      },
+      godlike: {
+        logo: "images/godlike_logo.png",
+        title: "GodLike Esports — Upcoming & Ongoing Tournaments",
+        color: "var(--godl-gold)",
+        sub: "Verified Liquipedia schedule for GodLike Esports across BGMI (CEGC), Delta Force, COD Mobile, Free Fire & EWC 2027."
+      },
+      tag: {
+        logo: "images/team_apex_logo.avif",
+        title: "Team Apex Gaming (TAG) — Upcoming & Ongoing Tournaments",
+        color: "#fb923c",
+        sub: "Verified Liquipedia schedule for Team Apex Gaming (TAG) across Free Fire (FFWS), BGMI (CEGC & GPA) & PUBG PC."
+      }
+    };
+    const meta = metaMap[clubKey] || metaMap.s8ul;
+
+    if (logoEl) {
+      logoEl.src = meta.logo;
+      logoEl.style.borderRadius = clubKey === "tag" ? "10px" : "0";
+    }
     if (titleEl) {
-      titleEl.textContent = isS8ul ? "S8UL Esports — Upcoming Tournaments" : "GodLike Esports — Upcoming Tournaments";
-      titleEl.style.color = isS8ul ? "var(--s8ul-blue)" : "var(--godl-gold)";
+      titleEl.textContent = meta.title;
+      titleEl.style.color = meta.color;
     }
-    if (subEl) {
-      subEl.textContent = isS8ul
-        ? "Verified Liquipedia schedule for S8UL Esports & Team SouL across PUBG PC, PUBG Mobile, Free Fire & EWC 2027."
-        : "Verified Liquipedia schedule for GodLike Esports across BGMI, Delta Force, COD Mobile, Free Fire & EWC 2027.";
-    }
-    if (s8ulBtn) s8ulBtn.classList.toggle("active", isS8ul);
-    if (godlBtn) godlBtn.classList.toggle("active", !isS8ul);
+    if (subEl) subEl.textContent = meta.sub;
+    if (s8ulBtn) s8ulBtn.classList.toggle("active", clubKey === "s8ul");
+    if (godlBtn) godlBtn.classList.toggle("active", clubKey === "godlike");
+    if (tagBtn) tagBtn.classList.toggle("active", clubKey === "tag");
 
     if (listEl) {
       const items = this.getClubUpcomingTournaments(clubKey);

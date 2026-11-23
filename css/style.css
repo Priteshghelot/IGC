@@ -4427,8 +4427,8 @@ button {
 
 .club-logo-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
@@ -4465,6 +4465,17 @@ button {
   border-color: #facc15;
   background: linear-gradient(145deg, rgba(250, 204, 21, 0.18), rgba(15, 23, 42, 0.94));
   box-shadow: 0 12px 32px rgba(250, 204, 21, 0.24);
+}
+
+.club-logo-tag:hover,
+.club-logo-tag.active {
+  border-color: #f97316;
+  background: linear-gradient(145deg, rgba(249, 115, 22, 0.18), rgba(15, 23, 42, 0.94));
+  box-shadow: 0 12px 32px rgba(249, 115, 22, 0.24);
+}
+
+.club-logo-img-rounded {
+  border-radius: 18px;
 }
 
 .club-logo-img {
@@ -4560,6 +4571,7 @@ button {
   }
 
   .club-logo-grid {
+    grid-template-columns: 1fr;
     gap: 0.85rem;
   }
 
@@ -4631,6 +4643,13 @@ button {
   border-color: #facc15;
   background: rgba(250, 204, 21, 0.18);
   box-shadow: 0 4px 16px rgba(250, 204, 21, 0.22);
+}
+
+.club-switch-tag.active,
+.club-switch-tag:hover {
+  border-color: #f97316;
+  background: rgba(249, 115, 22, 0.18);
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.22);
 }
 
 #club-page-header-card {
