@@ -20,6 +20,7 @@ class CleanEsportsHub {
     this.s8ulScreen         = document.getElementById("screen-s8ul");
     this.enc27Screen        = document.getElementById("screen-enc27");
     this.dailyUpdatesScreen = document.getElementById("screen-daily-updates");
+    this.clubUpcomingScreen = document.getElementById("screen-club-upcoming");
     this.cardGodlike        = document.getElementById("card-godlike-select");
     this.cardS8ul           = document.getElementById("card-s8ul-select");
     this.dailyUpdates       = (typeof INITIAL_DAILY_UPDATES !== "undefined") ? INITIAL_DAILY_UPDATES : (INITIAL_HUB_DATA.dailyUpdates || []);
@@ -445,6 +446,7 @@ class CleanEsportsHub {
     this.s8ulScreen.classList.remove("active");
     if (this.enc27Screen) this.enc27Screen.classList.remove("active");
     if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.remove("active");
+    if (this.clubUpcomingScreen) this.clubUpcomingScreen.classList.remove("active");
     this.homeScreen.style.display = "flex";
     if (window.location.hash === "#daily-updates" || window.location.hash === "#enc27") {
       try { history.replaceState(null, null, " "); } catch(e) {}
@@ -457,6 +459,7 @@ class CleanEsportsHub {
     this.s8ulScreen.classList.remove("active");
     if (this.enc27Screen) this.enc27Screen.classList.remove("active");
     if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.remove("active");
+    if (this.clubUpcomingScreen) this.clubUpcomingScreen.classList.remove("active");
     this.godlikeScreen.classList.add("active");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -466,6 +469,7 @@ class CleanEsportsHub {
     this.godlikeScreen.classList.remove("active");
     if (this.enc27Screen) this.enc27Screen.classList.remove("active");
     if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.remove("active");
+    if (this.clubUpcomingScreen) this.clubUpcomingScreen.classList.remove("active");
     this.s8ulScreen.classList.add("active");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -475,6 +479,7 @@ class CleanEsportsHub {
     this.godlikeScreen.classList.remove("active");
     this.s8ulScreen.classList.remove("active");
     if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.remove("active");
+    if (this.clubUpcomingScreen) this.clubUpcomingScreen.classList.remove("active");
     if (this.enc27Screen) this.enc27Screen.classList.add("active");
     this.renderEnc27Rosters();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -485,6 +490,7 @@ class CleanEsportsHub {
     this.godlikeScreen.classList.remove("active");
     this.s8ulScreen.classList.remove("active");
     if (this.enc27Screen) this.enc27Screen.classList.remove("active");
+    if (this.clubUpcomingScreen) this.clubUpcomingScreen.classList.remove("active");
     if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.add("active");
     
     const dateEl = document.getElementById("daily-live-date-text");
@@ -740,6 +746,18 @@ class CleanEsportsHub {
       ],
       godlike: [
         {
+          title: "Chennai Esports Global Championship (CEGC) 2026",
+          game: "BGMI",
+          organizer: "Skyesports & SDAT (B-Tier)",
+          startDate: "2026-11-03",
+          endDate: "2026-12-13",
+          time: "Grand Finals: 11–13 Dec (IST)",
+          prize: "₹75,00,000 INR",
+          teams: "GodLike Esports (Active Participant)",
+          location: "Chennai, India",
+          liquipediaUrl: "https://liquipedia.net/pubgmobile/Chennai_Esports_Global_Championship/2026"
+        },
+        {
           title: "Delta Force Invitational 2026",
           game: "Delta Force",
           organizer: "Team Jade & TiMi (S-Tier)",
@@ -804,54 +822,40 @@ class CleanEsportsHub {
     return (clubs[clubKey] || []).map((t, i) => ({ id: `${clubKey}-up-${i + 1}`, ...t }));
   }
 
-  toggleClubUpcoming(clubKey) {
-    const panel = document.getElementById("club-upcoming-panel");
-    const listEl = document.getElementById("club-upcoming-list");
-    const logoEl = document.getElementById("club-panel-logo");
-    const titleEl = document.getElementById("club-panel-title");
-    const s8ulCard = document.getElementById("club-card-s8ul");
-    const godlCard = document.getElementById("club-card-godlike");
-    if (!panel || !listEl) return;
+  showClubUpcoming(clubKey) {
+    this.homeScreen.style.display = "none";
+    this.godlikeScreen.classList.remove("active");
+    this.s8ulScreen.classList.remove("active");
+    if (this.enc27Screen) this.enc27Screen.classList.remove("active");
+    if (this.dailyUpdatesScreen) this.dailyUpdatesScreen.classList.remove("active");
+    if (this.clubUpcomingScreen) this.clubUpcomingScreen.classList.add("active");
 
-    if (this.activeClubUpcoming === clubKey && panel.style.display !== "none") {
-      this.closeClubUpcoming();
-      return;
-    }
-
-    this.activeClubUpcoming = clubKey;
     const isS8ul = clubKey === "s8ul";
+    const logoEl = document.getElementById("club-page-logo");
+    const titleEl = document.getElementById("club-page-title");
+    const subEl = document.getElementById("club-page-subtitle");
+    const listEl = document.getElementById("club-upcoming-list");
+    const s8ulBtn = document.getElementById("club-switch-s8ul");
+    const godlBtn = document.getElementById("club-switch-godlike");
+
     if (logoEl) logoEl.src = isS8ul ? "images/s8ul_logo.png" : "images/godlike_logo.png";
-    if (titleEl) titleEl.textContent = isS8ul ? "S8UL Esports — Upcoming Tournaments" : "GodLike Esports — Upcoming Tournaments";
+    if (titleEl) {
+      titleEl.textContent = isS8ul ? "S8UL Esports — Upcoming Tournaments" : "GodLike Esports — Upcoming Tournaments";
+      titleEl.style.color = isS8ul ? "var(--s8ul-blue)" : "var(--godl-gold)";
+    }
+    if (subEl) {
+      subEl.textContent = isS8ul
+        ? "Verified Liquipedia schedule for S8UL Esports & Team SouL across PUBG PC, PUBG Mobile, Free Fire & EWC 2027."
+        : "Verified Liquipedia schedule for GodLike Esports across BGMI, Delta Force, COD Mobile, Free Fire & EWC 2027.";
+    }
+    if (s8ulBtn) s8ulBtn.classList.toggle("active", isS8ul);
+    if (godlBtn) godlBtn.classList.toggle("active", !isS8ul);
 
-    if (s8ulCard) {
-      s8ulCard.classList.toggle("active", isS8ul);
-      s8ulCard.setAttribute("aria-expanded", isS8ul ? "true" : "false");
+    if (listEl) {
+      const items = this.getClubUpcomingTournaments(clubKey);
+      this.renderTournamentCards(listEl, items, 12, "No Upcoming Tournaments Found", false);
     }
-    if (godlCard) {
-      godlCard.classList.toggle("active", !isS8ul);
-      godlCard.setAttribute("aria-expanded", !isS8ul ? "true" : "false");
-    }
-
-    const items = this.getClubUpcomingTournaments(clubKey);
-    this.renderTournamentCards(listEl, items, 10, "No Upcoming Tournaments Found", false);
-    panel.style.display = "block";
-    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }
-
-  closeClubUpcoming() {
-    this.activeClubUpcoming = null;
-    const panel = document.getElementById("club-upcoming-panel");
-    const s8ulCard = document.getElementById("club-card-s8ul");
-    const godlCard = document.getElementById("club-card-godlike");
-    if (panel) panel.style.display = "none";
-    if (s8ulCard) {
-      s8ulCard.classList.remove("active");
-      s8ulCard.setAttribute("aria-expanded", "false");
-    }
-    if (godlCard) {
-      godlCard.classList.remove("active");
-      godlCard.setAttribute("aria-expanded", "false");
-    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   extractPostGameTags(caption) {

@@ -4587,3 +4587,45 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+.club-page-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.club-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  background: rgba(15, 23, 42, 0.85);
+  color: #e2e8f0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.club-switch-btn img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.club-switch-s8ul.active,
+.club-switch-s8ul:hover {
+  border-color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.18);
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.25);
+}
+
+.club-switch-godlike.active,
+.club-switch-godlike:hover {
+  border-color: #facc15;
+  background: rgba(250, 204, 21, 0.18);
+  box-shadow: 0 4px 16px rgba(250, 204, 21, 0.22);
+}
