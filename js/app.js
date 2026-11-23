@@ -121,6 +121,7 @@ class CleanEsportsHub {
     try {
       const res = await fetch('/api/requests', { cache: 'no-store' });
       if (res.ok) {
+        this._lastRequestsSyncMs = Date.now();
         const json = await res.json();
         if (json.ok && Array.isArray(json.requests)) {
           // Server is the single source of truth for requests
@@ -185,7 +186,7 @@ class CleanEsportsHub {
     ping(true);
     this._visitorHeartbeat = setInterval(() => {
       if (!document.hidden) ping(false);
-    }, 10000);
+    }, 60000);
   }
 
   renderFanPoll(poll) {
@@ -282,17 +283,17 @@ class CleanEsportsHub {
   }
 
   startAutoLiveSync() {
-    this._liveDataSync = setInterval(() => {
+    this._liveDataSync = setInterval(async () => {
       if (document.hidden) return;
       // Avoid interrupting while user is typing in a search box or editing a modal
       const activeTag = document.activeElement?.tagName;
       if (activeTag === "INPUT" || activeTag === "TEXTAREA" || document.querySelector(".modal-overlay.active")) return;
-      this.syncCloudData();
-      this.syncCloudPending();
+      await this.syncCloudData();
+      await this.syncCloudPending();
       if (this.dailyUpdatesScreen?.classList.contains("active")) {
         this.renderApprovedPosts();
       }
-    }, 10000);
+    }, 120000);
   }
 
   requestFingerprint(r) {
@@ -1567,23 +1568,26 @@ class CleanEsportsHub {
     // 1. Gather all approved daily_post items from local pending (auto-expiring > 3 days)
     let approved = (this.pending || []).filter(r => r.type === "daily_post" && r.status === "approved" && !this.isDailyPostExpired(r));
 
-    // 2. Fetch fresh from cloud Redis
-    try {
-      const res = await fetch("/api/requests");
-      if (res.ok) {
-        const json = await res.json();
-        if (json.ok && Array.isArray(json.requests)) {
-          const map = new Map();
-          this.pending.filter(r => !this.isDailyPostExpired(r)).forEach(r => map.set(r.id, r));
-          json.requests.filter(r => !this.isDailyPostExpired(r)).forEach(r => map.set(r.id, r));
-          this.pending = Array.from(map.values());
-          this.savePending();
-          this.updateAdminUI();
+    // 2. Fetch fresh from cloud Redis (skip if synced within last 15s to save Fast Origin Transfer)
+    if (Date.now() - (this._lastRequestsSyncMs || 0) >= 15000) {
+      try {
+        const res = await fetch("/api/requests");
+        if (res.ok) {
+          this._lastRequestsSyncMs = Date.now();
+          const json = await res.json();
+          if (json.ok && Array.isArray(json.requests)) {
+            const map = new Map();
+            this.pending.filter(r => !this.isDailyPostExpired(r)).forEach(r => map.set(r.id, r));
+            json.requests.filter(r => !this.isDailyPostExpired(r)).forEach(r => map.set(r.id, r));
+            this.pending = Array.from(map.values());
+            this.savePending();
+            this.updateAdminUI();
 
-          approved = this.pending.filter(r => r.type === "daily_post" && r.status === "approved" && !this.isDailyPostExpired(r));
+            approved = this.pending.filter(r => r.type === "daily_post" && r.status === "approved" && !this.isDailyPostExpired(r));
+          }
         }
-      }
-    } catch(err) { /* use local */ }
+      } catch(err) { /* use local */ }
+    }
 
     // 3. Sort newest/recent first by id or timestamp so recent post upload is on TOP
     approved.sort((a, b) => {
