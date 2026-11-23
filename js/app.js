@@ -2264,15 +2264,16 @@ class CleanEsportsHub {
     }
 
     track.innerHTML = games.map(g => {
+      const isMystery = String(g.title || "").trim() === "?";
       const isHighlighted = g.isNewlyAdded || g.highlight;
       const highlightClass = isHighlighted ? "ewc27-card-highlighted" : "";
       const badgeHtml = isHighlighted ? `<span class="ewc27-card-badge">⭐ REVEALED</span>` : "";
 
       return `
-        <div class="ewc27-game-card enc27-game-card-clickable ${highlightClass}" onclick="window.cleanHub && window.cleanHub.openEwc27ClubRoster('${this.escapeHtml(g.title)}')" title="View S8UL & GodLike rosters for ${this.escapeHtml(g.title)}">
+        <div class="ewc27-game-card enc27-game-card-clickable ${highlightClass}" onclick="window.cleanHub && window.cleanHub.openEwc27ClubRoster('${this.escapeHtml(g.title)}')" title="${isMystery ? "Next EWC27 Game — To Be Revealed" : `View S8UL & GodLike rosters for ${this.escapeHtml(g.title)}`}">
           ${badgeHtml}
           <div class="ewc27-card-content">
-            <h3 class="ewc27-game-name">${this.escapeHtml(g.title)}</h3>
+            <h3 class="ewc27-game-name ${isMystery ? "ewc27-mystery-q" : ""}">${this.escapeHtml(g.title)}</h3>
             ${g.sub ? `<span class="ewc27-game-sub">${this.escapeHtml(g.sub)}</span>` : ""}
             ${g.genre ? `<span class="ewc27-game-genre">${this.escapeHtml(g.genre)}</span>` : ""}
           </div>

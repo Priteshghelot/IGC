@@ -717,6 +717,13 @@ const INITIAL_HUB_DATA = {
       "genre": "Fighting Game (FGC)",
       "sub": "Capcom",
       "isNewlyAdded": true
+    },
+    {
+      "id": "e27-12",
+      "title": "?",
+      "genre": "",
+      "sub": "",
+      "isNewlyAdded": false
     }
   ],
   "dailyUpdates": []
