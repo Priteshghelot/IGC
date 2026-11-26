@@ -670,6 +670,18 @@ class CleanEsportsHub {
         liquipediaUrl: "https://liquipedia.net/easportsfc/FC_Pro/27/Open"
       },
       {
+        title: "PUBG Global Championship 2026 (PGC 2026)",
+        game: "PUBG (PC)",
+        organizer: "KRAFTON (S-Tier)",
+        startDate: "2026-12-01",
+        endDate: "2026-12-13",
+        time: "Qualifiers: Dec 1–6 (Shanghai) · Finals: Dec 11–13 (İstanbul)",
+        prize: "$1,500,000 USD",
+        teams: "32 Teams · GodLike Esports (Americas #3)",
+        location: "Shanghai / İstanbul, Türkiye",
+        liquipediaUrl: "https://liquipedia.net/pubg/PUBG_Global_Championship/2026"
+      },
+      {
         title: "Call of Duty: Mobile World Championship 2026",
         game: "COD Mobile",
         organizer: "Activision (S-Tier)",
@@ -807,6 +819,18 @@ class CleanEsportsHub {
           liquipediaUrl: "https://liquipedia.net/deltaforce/Delta_Force_Invitational/2026"
         },
         {
+          title: "PUBG Global Championship 2026 (PGC 2026)",
+          game: "PUBG (PC)",
+          organizer: "KRAFTON (S-Tier)",
+          startDate: "2026-12-01",
+          endDate: "2026-12-13",
+          time: "Qualifiers: Dec 1–6 (Shanghai) · Finals: Dec 11–13 (İstanbul)",
+          prize: "$1,500,000 USD",
+          teams: "GodLike Esports (Qualified · Americas #3)",
+          location: "Shanghai / İstanbul, Türkiye",
+          liquipediaUrl: "https://liquipedia.net/pubg/PUBG_Global_Championship/2026"
+        },
+        {
           title: "Call of Duty: Mobile World Championship 2026",
           game: "COD Mobile",
           organizer: "Activision (S-Tier)",
@@ -912,7 +936,7 @@ class CleanEsportsHub {
         logo: "images/godlike_logo.png",
         title: "GodLike Esports — Upcoming & Ongoing Tournaments",
         color: "var(--godl-gold)",
-        sub: "Verified Liquipedia schedule for GodLike Esports across BGMI (CEGC & GPA), Delta Force, COD Mobile & Free Fire."
+        sub: "Verified Liquipedia schedule for GodLike Esports across BGMI (CEGC & GPA), PUBG PC (PGC), Delta Force, COD Mobile & Free Fire."
       },
       tag: {
         logo: "images/team_apex_logo.avif",
