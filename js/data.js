@@ -670,13 +670,6 @@ const INITIAL_HUB_DATA = {
   },
   "ewc27Games": [
     {
-      "id": "e27-1",
-      "title": "COUNTER STRIKE 2",
-      "genre": "Tactical FPS",
-      "sub": "Valve",
-      "isNewlyAdded": false
-    },
-    {
       "id": "e27-2",
       "title": "VALORANT",
       "genre": "Hero Tactical Shooter",
@@ -716,6 +709,13 @@ const INITIAL_HUB_DATA = {
       "title": "STREET FIGHTER 6",
       "genre": "Fighting Game (FGC)",
       "sub": "Capcom",
+      "isNewlyAdded": true
+    },
+    {
+      "id": "e27-1",
+      "title": "COUNTER STRIKE 2",
+      "genre": "Tactical FPS",
+      "sub": "Valve",
       "isNewlyAdded": true
     },
     {
